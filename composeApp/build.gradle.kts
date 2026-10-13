@@ -96,7 +96,7 @@ compose.desktop {
             targetFormats(TargetFormat.Deb)
             packageName = "dawem"
             packageVersion = "0.5.2"
-            description = "Private notes, journal, tasks, habits and money in plain files"
+            description = "Private notes, journal, tasks and habits in plain files"
             vendor = "Zimam"
             linux {
                 menuGroup = "Office"
