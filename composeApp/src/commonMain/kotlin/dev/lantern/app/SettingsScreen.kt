@@ -56,7 +56,7 @@ fun SettingsScreen(store: LanternStore) {
         Header("Your vault")
         Text(store.location, Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyLarge)
         Text(
-            "${store.notes.size} notes, ${store.tasks.size} tasks, ${store.habits.count { !it.archived }} habits, ${store.txns.size} transactions. " +
+            "${store.notes.size} notes, ${store.tasks.size} tasks, ${store.habits.count { !it.archived }} habits. " +
                 "Everything is plain files in this folder, so any editor, Obsidian or a sync tool can read it.",
             Modifier.padding(horizontal = 24.dp, vertical = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -67,7 +67,7 @@ fun SettingsScreen(store: LanternStore) {
         Action(Icons.Rounded.IosShare, "Export the vault as a zip", "Save a copy to share with your laptop or keep as a backup.") { platform.exportVault() }
         Header("About")
         Text("${Brand.NAME} ${Brand.VERSION}  ·  by ${Brand.MAKER}", Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyLarge)
-        Text("Private notes, journal, tasks, habits and money. MIT licence.", Modifier.padding(horizontal = 24.dp, vertical = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Private notes, journal, tasks and habits. MIT licence.", Modifier.padding(horizontal = 24.dp, vertical = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 

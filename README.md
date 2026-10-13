@@ -2,19 +2,18 @@
 
 <h1 align="center">Dawem</h1>
 
-<p align="center">Private notes, journal, tasks, habits and money, by <a href="https://github.com/zimamlabs">Zimam</a>. Formerly Lantern.</p>
+<p align="center">Private notes, journal, tasks and habits, by <a href="https://github.com/zimamlabs">Zimam</a>. Formerly Lantern.</p>
 
-Notes, a journal, tasks, habits and a money tracker in one private app. Your data is plain files in a folder you own, so it works offline, opens in any editor and moves between your phone and laptop by copying the folder.
+Notes, a journal, tasks and habits in one private app. Your data is plain files in a folder you own, so it works offline, opens in any editor and moves between your phone and laptop by copying the folder.
 
 Dawem (داوم, "keep at it") runs on **Android** and **Linux** (Debian and Ubuntu) from one codebase.
 
 ## What is in it
 
-- **Today**: mood, a journal entry for the day, today's habits and tasks, and the month's money at a glance.
+- **Today**: mood, a journal entry for the day, today's habits and tasks at a glance.
 - **Notes**: Markdown notes with tags, pinning and search.
 - **Tasks**: a checklist with due dates (today, tomorrow, next week).
 - **Habits**: daily or chosen weekdays, a 14-day grid you can tap, and streaks.
-- **Money**: accounts, income and spending, monthly totals and a category breakdown.
 
 ## Your data
 
@@ -25,7 +24,6 @@ notes/<title>-<id>.md          Markdown with a small header (id, title, tags, da
 journal/<year>/<date>.md       one file a day: mood in the header, text below
 tasks/Tasks.md                 a Markdown checklist
 habits/habits.json, log.csv    what you track, and the days you did it
-money/accounts.json, <year>.csv  accounts and transactions in minor units (cents)
 .lantern/                      settings and the trash
 ```
 
@@ -47,6 +45,19 @@ Get the files for your system from the [latest release](../../releases/latest). 
 ```
 sha256sum -c Dawem_<version>_Linux_amd64.deb.sha256
 sudo apt install ./Dawem_<version>_Linux_amd64.deb
+```
+
+### Verify the Android download
+
+Every APK is signed with Dawem's own key. Android installs it without a store because the signature is valid, and shows its usual "unknown source" notice for anything that did not come from Google Play. To check a file is really ours, compare its signing certificate with this fingerprint:
+
+```
+SHA-256: 09:7A:B4:82:7A:35:AF:FB:5A:0D:D5:AB:01:26:EA:77:10:6B:29:4A:83:B4:E6:A8:B8:32:91:33:64:F0:EB:EA
+```
+
+```
+apksigner verify --print-certs Dawem_<version>_Android_arm64-v8a.apk
+sha256sum -c Dawem_<version>_Android_arm64-v8a.apk.sha256
 ```
 
 ## Build

@@ -3,12 +3,10 @@ package dev.lantern.app
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.ImageComposeScene
 import androidx.compose.ui.unit.Density
-import dev.lantern.core.Account
 import dev.lantern.core.Habit
 import dev.lantern.core.JournalEntry
 import dev.lantern.core.Note
 import dev.lantern.core.Task
-import dev.lantern.core.Txn
 import dev.lantern.core.Vault
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -44,10 +42,6 @@ class ScreenshotTest {
         ))
         vault.saveHabits(listOf(Habit("h1", "Read 20 pages"), Habit("h2", "Walk", days = listOf(1, 3, 5))))
         for (back in listOf(0, 1, 2, 4, 5)) vault.setHabitDone("h1", today.minus(back, DateTimeUnit.DAY), true)
-        vault.saveAccounts(listOf(Account("acc", "Cash", "USD", 50_000)))
-        vault.saveTransaction(Txn("", today.minus(3, DateTimeUnit.DAY), 250_000, "acc", "Salary"))
-        vault.saveTransaction(Txn("", today.minus(2, DateTimeUnit.DAY), -4_550, "acc", "Food", "Lunch"))
-        vault.saveTransaction(Txn("", today.minus(1, DateTimeUnit.DAY), -12_000, "acc", "Bills"))
         return LanternStore(vault, "/v")
     }
 
@@ -78,7 +72,7 @@ class ScreenshotTest {
     @Test fun themes() {
         val s = { palette: String, mode: String -> dev.lantern.core.AppSettings(palette, mode) }
         shot("theme-forest-light-today", 412, 860, s("forest", "light")) { it.go(Section.Today) }
-        shot("theme-rose-dark-money", 412, 860, s("rose", "dark")) { it.go(Section.Money) }
+        shot("theme-rose-dark-notes", 412, 860, s("rose", "dark")) { it.go(Section.Notes) }
         shot("theme-ocean-light-habits", 412, 860, s("ocean", "light")) { it.go(Section.Habits) }
         shot("theme-slate-dark-insights", 412, 860, s("slate", "dark")) { it.screen = Screen.Insights }
         shot("theme-settings", 412, 860, s("amber", "light")) { it.screen = Screen.Settings }
@@ -86,6 +80,6 @@ class ScreenshotTest {
 
     @Test fun laptop() {
         shot("laptop-today", 1100, 760) { it.go(Section.Today) }
-        shot("laptop-money", 1100, 760) { it.go(Section.Money) }
+        shot("laptop-habits", 1100, 760) { it.go(Section.Habits) }
     }
 }

@@ -3,12 +3,10 @@ package dev.lantern.app
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import dev.lantern.core.Account
 import dev.lantern.core.Habit
 import dev.lantern.core.JournalEntry
 import dev.lantern.core.Note
 import dev.lantern.core.Task
-import dev.lantern.core.Txn
 import dev.lantern.core.Vault
 import kotlinx.datetime.LocalDate
 
@@ -22,10 +20,6 @@ class LanternStore(val vault: Vault, val location: String) {
         private set
     var habitLog by mutableStateOf(vault.habitLog())
         private set
-    var accounts by mutableStateOf(vault.accounts())
-        private set
-    var txns by mutableStateOf(vault.allTransactions())
-        private set
     var settings by mutableStateOf(vault.settings())
         private set
     var today by mutableStateOf(vault.today())
@@ -36,7 +30,7 @@ class LanternStore(val vault: Vault, val location: String) {
     /** Reads everything again (the vault may have changed on disk, or the date rolled over). */
     fun reload() {
         notes = vault.notes(); tasks = vault.tasks(); habits = vault.habits(); habitLog = vault.habitLog()
-        accounts = vault.accounts(); txns = vault.allTransactions(); today = vault.today(); todayEntry = vault.journal(today); settings = vault.settings()
+        today = vault.today(); todayEntry = vault.journal(today); settings = vault.settings()
     }
 
     /** The names of the task lists in use, in order of first use; tasks with no list are the inbox. */
@@ -69,8 +63,4 @@ class LanternStore(val vault: Vault, val location: String) {
     fun saveHabits(list: List<Habit>) { vault.saveHabits(list); habits = list }
     fun setHabitDone(id: String, date: LocalDate, done: Boolean) { vault.setHabitDone(id, date, done); habitLog = vault.habitLog() }
 
-    // money
-    fun saveAccounts(list: List<Account>) { vault.saveAccounts(list); accounts = list }
-    fun saveTxn(txn: Txn) { vault.saveTransaction(txn); txns = vault.allTransactions() }
-    fun deleteTxn(id: String) { vault.deleteTransaction(id); txns = vault.allTransactions() }
 }

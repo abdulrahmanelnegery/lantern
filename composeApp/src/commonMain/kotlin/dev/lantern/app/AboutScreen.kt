@@ -31,7 +31,7 @@ fun AboutScreen() {
         Text("داوم  ·  keep at it", color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text("Version ${Brand.VERSION}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(
-            "Private notes, journal, tasks, habits and money in plain files you own. No account, no tracking, nothing leaves your device.",
+            "Private notes, journal, tasks and habits in plain files you own. No account, no tracking, nothing leaves your device.",
             Modifier.padding(top = 8.dp), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium,
         )
         Text("by ${Brand.MAKER}", Modifier.padding(top = 12.dp), style = MaterialTheme.typography.titleMedium, color = Color(0xFFFF5A1F))

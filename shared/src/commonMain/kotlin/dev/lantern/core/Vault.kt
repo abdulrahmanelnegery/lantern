@@ -20,7 +20,6 @@ import okio.Path.Companion.toPath
  * journal/<year>/<date>.md         one file a day: mood in the header, text below
  * tasks/Tasks.md                   a Markdown checklist
  * habits/habits.json, log.csv      what you track, and the days you did it
- * money/accounts.json, <year>.csv  accounts and transactions in minor units
  * .lantern/                        settings and the trash
  * ```
  */
@@ -33,7 +32,7 @@ class Vault(
     private val json = Json { prettyPrint = true; ignoreUnknownKeys = true; encodeDefaults = true }
 
     init {
-        listOf("notes", "journal", "tasks", "habits", "money", ".lantern/trash").forEach { fs.createDirectories(root / it) }
+        listOf("notes", "journal", "tasks", "habits", ".lantern/trash").forEach { fs.createDirectories(root / it) }
     }
 
     fun today(): LocalDate = clock.now().toLocalDateTime(zone).date
@@ -168,57 +167,30 @@ class Vault(
 
     fun saveHabits(habits: List<Habit>) = write(habitsPath, json.encodeToString(ListSerializer(Habit.serializer()), habits))
 
-    /** The days each habit was done, by habit id. */
-    fun habitLog(): Map<String, Set<LocalDate>> =
+    private fun habitRows(): List<Triple<String, LocalDate, HabitMark>> =
         Csv.parse(read(habitLogPath) ?: "").drop(1).mapNotNull { r ->
             val date = runCatching { LocalDate.parse(r.getOrElse(1) { "" }) }.getOrNull() ?: return@mapNotNull null
-            r[0] to date
-        }.groupBy({ it.first }, { it.second }).mapValues { it.value.toSet() }
+            // Older files have two columns, and every row there is a day that was done.
+            Triple(r[0], date, if (r.getOrElse(2) { "" } == "skip") HabitMark.Skipped else HabitMark.Done)
+        }
 
-    fun setHabitDone(habitId: String, date: LocalDate, done: Boolean) {
-        val log = habitLog().toMutableMap()
-        val days = (log[habitId] ?: emptySet()).let { if (done) it + date else it - date }
-        log[habitId] = days
-        val rows = listOf(listOf("habit", "date")) + log.flatMap { (h, ds) -> ds.sorted().map { listOf(h, it.toString()) } }
-        write(habitLogPath, Csv.format(rows))
+    /** The days each habit was done, by habit id. */
+    fun habitLog(): Map<String, Set<LocalDate>> =
+        habitRows().filter { it.third == HabitMark.Done }.groupBy({ it.first }, { it.second }).mapValues { it.value.toSet() }
+
+    /** The days each habit was skipped on purpose (a sick day, a trip): they neither break a streak nor count against it. */
+    fun habitSkips(): Map<String, Set<LocalDate>> =
+        habitRows().filter { it.third == HabitMark.Skipped }.groupBy({ it.first }, { it.second }).mapValues { it.value.toSet() }
+
+    /** Marks a day as done or skipped; null clears it. */
+    fun setHabitMark(habitId: String, date: LocalDate, mark: HabitMark?) {
+        val rows = habitRows().filterNot { it.first == habitId && it.second == date }.toMutableList()
+        if (mark != null) rows += Triple(habitId, date, mark)
+        val out = listOf(listOf("habit", "date", "mark")) + rows.sortedWith(compareBy({ it.first }, { it.second })).map { listOf(it.first, it.second.toString(), if (it.third == HabitMark.Skipped) "skip" else "done") }
+        write(habitLogPath, Csv.format(out))
     }
 
-    // ---- money -----------------------------------------------------------------------------
-
-    private val accountsPath get() = root / "money" / "accounts.json"
-
-    fun accounts(): List<Account> = read(accountsPath)?.let { runCatching { json.decodeFromString(ListSerializer(Account.serializer()), it) }.getOrNull() }.orEmpty()
-
-    fun saveAccounts(accounts: List<Account>) = write(accountsPath, json.encodeToString(ListSerializer(Account.serializer()), accounts))
-
-    private fun txnPath(year: Int) = root / "money" / "$year.csv"
-
-    private fun txnYears(): List<Int> = fs.listOrNull(root / "money").orEmpty().mapNotNull { it.name.removeSuffix(".csv").toIntOrNull() }
-
-    fun transactions(year: Int): List<Txn> = Csv.parse(read(txnPath(year)) ?: "").drop(1).mapNotNull { r ->
-        runCatching { Txn(r[0], LocalDate.parse(r[1]), r[2].toLong(), r[3], r.getOrElse(4) { "" }, r.getOrElse(5) { "" }) }.getOrNull()
-    }
-
-    fun allTransactions(): List<Txn> = txnYears().sorted().flatMap { transactions(it) }.sortedByDescending { it.date }
-
-    /** Adds the transaction, or replaces the one with the same id. */
-    fun saveTransaction(txn: Txn): Txn {
-        val saved = if (txn.id.isEmpty()) txn.copy(id = newId()) else txn
-        allTransactions().firstOrNull { it.id == saved.id && it.date.year != saved.date.year }?.let { deleteTransaction(it.id) }
-        val year = saved.date.year
-        writeYear(year, transactions(year).filter { it.id != saved.id } + saved)
-        return saved
-    }
-
-    fun deleteTransaction(id: String) {
-        txnYears().forEach { y -> transactions(y).let { list -> if (list.any { it.id == id }) writeYear(y, list.filter { it.id != id }) } }
-    }
-
-    private fun writeYear(year: Int, list: List<Txn>) {
-        val rows = listOf(listOf("id", "date", "amount_minor", "account", "category", "note")) +
-            list.sortedBy { it.date }.map { listOf(it.id, it.date.toString(), it.amountMinor.toString(), it.accountId, it.category, it.note) }
-        write(txnPath(year), Csv.format(rows))
-    }
+    fun setHabitDone(habitId: String, date: LocalDate, done: Boolean) = setHabitMark(habitId, date, if (done) HabitMark.Done else null)
 
     // ---- search ----------------------------------------------------------------------------
 

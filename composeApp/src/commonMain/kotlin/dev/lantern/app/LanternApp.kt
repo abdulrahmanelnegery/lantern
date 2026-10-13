@@ -24,7 +24,6 @@ import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Loop
 import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material.icons.rounded.Savings
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Tag
@@ -64,7 +63,6 @@ enum class Section(val label: String, val icon: ImageVector) {
     Notes("Notes", Icons.Rounded.Description),
     Tasks("Tasks", Icons.Rounded.CheckCircle),
     Habits("Habits", Icons.Rounded.Loop),
-    Money("Money", Icons.Rounded.Savings),
 }
 
 /** Where the app is: one of the five sections (maybe filtered), or a screen opened from the side menu. */
@@ -135,7 +133,6 @@ fun LanternApp(store: LanternStore, start: Nav = remember { Nav() }) {
                                 Section.Notes -> NotesScreen(store, nav.noteTag)
                                 Section.Tasks -> TasksScreen(store, nav.taskList)
                                 Section.Habits -> HabitsScreen(store, nav.habitId, onOpen = { nav.habitId = it }, onClose = { nav.habitId = null })
-                                Section.Money -> MoneyScreen(store)
                             }
                         }
                         }
