@@ -16,7 +16,8 @@ actual fun PlatformBackHandler(enabled: Boolean, onBack: () -> Unit) {}
 fun main() = application {
     val dir = File(System.getProperty("user.home"), "Lantern").also { it.mkdirs() }
     val store = LanternStore(Vault(FileSystem.SYSTEM, dir.absolutePath.toPath()), dir.absolutePath)
-    Window(onCloseRequest = ::exitApplication, title = "Lantern", state = rememberWindowState(width = 460.dp, height = 820.dp)) {
+    val icon = androidx.compose.ui.res.painterResource("icon.png")
+    Window(onCloseRequest = ::exitApplication, title = "Lantern", icon = icon, state = rememberWindowState(width = 460.dp, height = 820.dp)) {
         LanternApp(store)
     }
 }

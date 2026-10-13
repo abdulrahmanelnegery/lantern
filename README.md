@@ -1,5 +1,7 @@
 # Lantern
 
+<img src="docs/icon.png" alt="Lantern icon" width="96" align="right">
+
 Notes, a journal, tasks, habits and a money tracker in one private app. Your data is plain files in a folder you own, so it works offline, opens in any editor and moves between your phone and laptop by copying the folder.
 
 Lantern runs on **Android** and **Linux** (Debian and Ubuntu) from one codebase.

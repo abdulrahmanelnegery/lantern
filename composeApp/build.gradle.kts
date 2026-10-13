@@ -41,8 +41,8 @@ android {
         applicationId = "dev.lantern.notes"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.1.1"
     }
     signingConfigs {
         create("release") {
@@ -84,10 +84,14 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Deb)
             packageName = "lantern-notes"
-            packageVersion = "0.1.0"
+            packageVersion = "0.1.1"
             description = "Private notes, journal, tasks, habits and money in plain files"
             vendor = "Abdulrahman Elnegery"
-            linux { menuGroup = "Office"; appCategory = "Office" }
+            linux {
+                menuGroup = "Office"
+                appCategory = "Office"
+                iconFile.set(project.file("src/desktopMain/resources/icon.png"))
+            }
         }
     }
 }
