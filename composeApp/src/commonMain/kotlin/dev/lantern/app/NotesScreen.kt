@@ -40,7 +40,7 @@ import dev.lantern.core.Note
 import kotlinx.coroutines.delay
 
 @Composable
-fun NotesScreen(store: LanternStore) {
+fun NotesScreen(store: LanternStore, tag: String? = null) {
     var openId by remember { mutableStateOf<String?>(null) }
     val open = store.notes.firstOrNull { it.id == openId }
     if (openId != null) {
@@ -48,7 +48,7 @@ fun NotesScreen(store: LanternStore) {
         return
     }
     var query by remember { mutableStateOf("") }
-    val shown = store.notes.filter { query.isBlank() || it.title.contains(query, true) || it.body.contains(query, true) || it.tags.any { t -> t.contains(query, true) } }
+    val shown = store.notes.filter { (tag == null || tag in it.tags) && (query.isBlank() || it.title.contains(query, true) || it.body.contains(query, true) || it.tags.any { t -> t.contains(query, true) }) }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = { FloatingActionButton(onClick = { openId = "" }) { Icon(Icons.Rounded.Add, "New note") } },
