@@ -55,7 +55,7 @@ data class Txn(
 @Serializable
 data class AppSettings(
     /** One of the palette ids the app knows; an unknown id falls back to the default. */
-    val palette: String = "amber",
+    val palette: String = "zimam",
     /** "system", "light" or "dark". */
     val mode: String = "system",
 )
