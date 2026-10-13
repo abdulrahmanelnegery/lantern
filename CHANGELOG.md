@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- A new icon: a glowing lantern on a night background, with a themed (monochrome) version for Android 13 and later.
+- The Linux window and package use the same icon.
+
 ## 0.1.0
 
 First release.
