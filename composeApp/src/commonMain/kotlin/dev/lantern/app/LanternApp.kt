@@ -94,7 +94,9 @@ fun LanternApp(store: LanternStore, start: Nav = remember { Nav() }) {
         val nav = start
         val drawer = rememberDrawerState(DrawerValue.Closed)
         val scope = rememberCoroutineScope()
-        // Back leaves a side screen first, then a filtered view, before anything else.
+        // Back goes to Today from any other section, then closes; it leaves a side screen, a filtered view or a habit's page first.
+        PlatformBackHandler(nav.screen == Screen.Main && nav.section != Section.Today) { nav.go(Section.Today) }
+        PlatformBackHandler(nav.screen == Screen.Main && nav.habitId != null) { nav.habitId = null }
         PlatformBackHandler(nav.screen != Screen.Main) { nav.screen = Screen.Main }
         PlatformBackHandler(nav.screen == Screen.Main && (nav.taskList != null || nav.noteTag != null)) { nav.taskList = null; nav.noteTag = null }
 

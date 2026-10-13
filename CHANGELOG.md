@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0
+
+- **Habits page.** Today view: swipe a habit right to mark it done, left to undo it, or hold it for skip, edit, analytics and archive. Skipped days do not break a streak. Week and Month views show every habit as a grid you can tap (hold a day to skip it), page back through time, and switch between all habits together or one habit at a time.
+- **Today page.** An affirmation and a tip (tap to change), a streaks card (best streak, habits done today, journal streak), habits, tasks and the journal. Settings has a "Today page" section to show, hide and reorder each card.
+- **Notes** open in a reading view with Markdown shown (headings, lists, checklists, quotes, code, bold and italic); the pencil switches to editing.
+- Back goes to Today from any other section, then closes.
+
 ## 0.5.2
 
 - **Money tracking is gone from Dawem.** It is becoming its own app, Hasad, so Dawem stays about notes, journal, tasks and habits. The Money section, the money card on Today and the "Spent" totals in Insights are removed.

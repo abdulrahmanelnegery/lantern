@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dev.lantern.core.Habit
+import dev.lantern.core.HabitMark
 import dev.lantern.core.JournalEntry
 import dev.lantern.core.Note
 import dev.lantern.core.Task
@@ -20,6 +21,8 @@ class LanternStore(val vault: Vault, val location: String) {
         private set
     var habitLog by mutableStateOf(vault.habitLog())
         private set
+    var habitSkips by mutableStateOf(vault.habitSkips())
+        private set
     var settings by mutableStateOf(vault.settings())
         private set
     var today by mutableStateOf(vault.today())
@@ -29,7 +32,7 @@ class LanternStore(val vault: Vault, val location: String) {
 
     /** Reads everything again (the vault may have changed on disk, or the date rolled over). */
     fun reload() {
-        notes = vault.notes(); tasks = vault.tasks(); habits = vault.habits(); habitLog = vault.habitLog()
+        notes = vault.notes(); tasks = vault.tasks(); habits = vault.habits(); habitLog = vault.habitLog(); habitSkips = vault.habitSkips()
         today = vault.today(); todayEntry = vault.journal(today); settings = vault.settings()
     }
 
@@ -61,6 +64,8 @@ class LanternStore(val vault: Vault, val location: String) {
 
     // habits
     fun saveHabits(list: List<Habit>) { vault.saveHabits(list); habits = list }
-    fun setHabitDone(id: String, date: LocalDate, done: Boolean) { vault.setHabitDone(id, date, done); habitLog = vault.habitLog() }
+    fun setHabitDone(id: String, date: LocalDate, done: Boolean) { vault.setHabitDone(id, date, done); habitLog = vault.habitLog(); habitSkips = vault.habitSkips() }
+    /** Marks a day done or skipped on purpose; null clears it. */
+    fun setHabitMark(id: String, date: LocalDate, mark: HabitMark?) { vault.setHabitMark(id, date, mark); habitLog = vault.habitLog(); habitSkips = vault.habitSkips() }
 
 }

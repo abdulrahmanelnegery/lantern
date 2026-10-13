@@ -47,8 +47,8 @@ android {
         applicationId = "dev.lantern.notes"
         minSdk = 26
         targetSdk = 35
-        versionCode = 9
-        versionName = "0.5.2"
+        versionCode = 10
+        versionName = "0.6.0"
     }
     signingConfigs {
         create("release") {
@@ -95,7 +95,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Deb)
             packageName = "dawem"
-            packageVersion = "0.5.2"
+            packageVersion = "0.6.0"
             description = "Private notes, journal, tasks and habits in plain files"
             vendor = "Zimam"
             linux {
