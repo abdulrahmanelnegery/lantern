@@ -70,7 +70,7 @@ fun Splash(onDone: () -> Unit) {
             measure.getSegment(0f, measure.length * draw.value, part, true)
             drawPath(part, Cream, style = Stroke(width = 44f * k, cap = StrokeCap.Round, join = StrokeJoin.Round))
             val s = 62f * k * pop.value
-            drawRoundRect(Orange, Offset(x(346f) - s / 2, x(256f) - s / 2), Size(s, s), CornerRadius(16f * k * pop.value))
+            zimamDot(Offset(x(346f), x(256f)), s * 1.13f, Orange)
         }
         Text(Brand.NAME, Modifier.alpha(byline.value), color = Cream, fontSize = 30.sp, fontWeight = FontWeight.SemiBold)
         Text("by ${Brand.MAKER}", Modifier.alpha(byline.value), color = Orange, fontSize = 14.sp, fontWeight = FontWeight.Medium, letterSpacing = 1.sp)
