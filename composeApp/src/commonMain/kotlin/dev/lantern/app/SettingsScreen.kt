@@ -37,7 +37,7 @@ fun SettingsScreen(store: LanternStore) {
         Header("Move your data")
         Action(Icons.Rounded.IosShare, "Export the vault as a zip", "Save a copy to share with your laptop or keep as a backup.") { platform.exportVault() }
         Header("About")
-        Text("Lantern 0.2.1", Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyLarge)
+        Text("Lantern 0.3.0", Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyLarge)
         Text("Private notes, journal, tasks, habits and money. MIT licence.", Modifier.padding(horizontal = 24.dp, vertical = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

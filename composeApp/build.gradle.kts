@@ -47,8 +47,8 @@ android {
         applicationId = "dev.lantern.notes"
         minSdk = 26
         targetSdk = 35
-        versionCode = 4
-        versionName = "0.2.1"
+        versionCode = 5
+        versionName = "0.3.0"
     }
     signingConfigs {
         create("release") {
@@ -90,7 +90,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Deb)
             packageName = "lantern-notes"
-            packageVersion = "0.2.1"
+            packageVersion = "0.3.0"
             description = "Private notes, journal, tasks, habits and money in plain files"
             vendor = "Abdulrahman Elnegery"
             linux {

@@ -71,7 +71,7 @@ fun TasksScreen(store: LanternStore, list: String? = null) {
             LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 items(shown, key = { it.id }) { t ->
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(t.done, { v -> store.saveTasks(store.tasks.map { x -> if (x.id == t.id) x.copy(done = v) else x }) })
+                        Checkbox(t.done, { v -> store.saveTasks(store.tasks.map { x -> if (x.id == t.id) x.copy(done = v, doneOn = if (v) store.today else null) else x }) })
                         Column(Modifier.weight(1f).clickable { editing = t }) {
                             Text(t.title, style = MaterialTheme.typography.bodyLarge, textDecoration = if (t.done) TextDecoration.LineThrough else null, color = if (t.done) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface)
                             val meta = listOfNotNull(t.due?.let { prettyDate(it) }, t.list.takeIf { it.isNotEmpty() && list == null }, priorityNames[t.priority.coerceIn(0, 3)].takeIf { t.priority > 0 }?.let { "$it priority" })

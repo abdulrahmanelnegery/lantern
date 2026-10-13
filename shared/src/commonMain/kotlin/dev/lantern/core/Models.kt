@@ -25,6 +25,8 @@ data class Task(
     /** 0 none, 1 low, 2 medium, 3 high. */
     val priority: Int = 0,
     val list: String = "",
+    /** The day it was ticked off, for history. */
+    val doneOn: LocalDate? = null,
 )
 
 @Serializable

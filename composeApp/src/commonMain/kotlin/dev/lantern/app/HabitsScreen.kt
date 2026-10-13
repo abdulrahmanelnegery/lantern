@@ -44,7 +44,8 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.minus
 
 @Composable
-fun HabitsScreen(store: LanternStore) {
+fun HabitsScreen(store: LanternStore, openId: String? = null, onOpen: (String) -> Unit = {}, onClose: () -> Unit = {}) {
+    store.habits.firstOrNull { it.id == openId }?.let { HabitDetailScreen(store, it, onClose); return }
     var adding by remember { mutableStateOf(false) }
     val today = store.today
     val active = store.habits.filter { !it.archived }
@@ -57,7 +58,7 @@ fun HabitsScreen(store: LanternStore) {
             LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 items(active, key = { it.id }) { h ->
                     val days = store.habitLog[h.id].orEmpty()
-                    Panel {
+                    Panel(onClick = { onOpen(h.id) }) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
                                 Text(h.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
