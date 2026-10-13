@@ -20,15 +20,18 @@ import java.io.File
 actual fun PlatformBackHandler(enabled: Boolean, onBack: () -> Unit) {}
 
 fun main() = application {
-    val dir = File(System.getProperty("user.home"), "Lantern").also { it.mkdirs() }
+    val home = System.getProperty("user.home")
+    // The app was called Lantern before Dawem: its vault folder is renamed once.
+    File(home, "Lantern").let { old -> if (old.isDirectory && !File(home, "Dawem").exists()) old.renameTo(File(home, "Dawem")) }
+    val dir = File(home, "Dawem").also { it.mkdirs() }
     val store = LanternStore(Vault(FileSystem.SYSTEM, dir.absolutePath.toPath()), dir.absolutePath)
     val actions = PlatformActions(exportVault = {
-        val dialog = FileDialog(null as Frame?, "Save the vault as a zip", FileDialog.SAVE).apply { file = "Lantern-vault.zip"; isVisible = true }
+        val dialog = FileDialog(null as Frame?, "Save the vault as a zip", FileDialog.SAVE).apply { file = "Dawem-vault.zip"; isVisible = true }
         val name = dialog.file
         if (name != null) File(dialog.directory, name).sink().buffer().use { zipVault(FileSystem.SYSTEM, store.vault.root, it) }
     })
     val icon = androidx.compose.ui.res.painterResource("icon.png")
-    Window(onCloseRequest = ::exitApplication, title = "Lantern", icon = icon, state = rememberWindowState(width = 1000.dp, height = 760.dp)) {
+    Window(onCloseRequest = ::exitApplication, title = "Dawem", icon = icon, state = rememberWindowState(width = 1000.dp, height = 760.dp)) {
         CompositionLocalProvider(LocalPlatform provides actions) { LanternApp(store) }
     }
 }

@@ -9,7 +9,7 @@ import java.util.zip.ZipOutputStream
 actual fun zipVault(fs: FileSystem, root: Path, out: BufferedSink) {
     ZipOutputStream(out.outputStream()).use { zip ->
         for (file in exportableFiles(fs, root)) {
-            zip.putNextEntry(ZipEntry("Lantern/" + file.relativeTo(root).toString()))
+            zip.putNextEntry(ZipEntry("Dawem/" + file.relativeTo(root).toString()))
             fs.read(file) { zip.write(readByteArray()) }
             zip.closeEntry()
         }

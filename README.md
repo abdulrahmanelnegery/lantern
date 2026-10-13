@@ -1,10 +1,12 @@
-# Lantern
+<p align="center"><img src="docs/icon.svg" width="120" alt="Dawem"></p>
 
-<img src="docs/icon.png" alt="Lantern icon" width="96" align="right">
+<h1 align="center">Dawem</h1>
+
+<p align="center">Private notes, journal, tasks, habits and money, by <a href="https://github.com/zimamlabs">Zimam</a>. Formerly Lantern.</p>
 
 Notes, a journal, tasks, habits and a money tracker in one private app. Your data is plain files in a folder you own, so it works offline, opens in any editor and moves between your phone and laptop by copying the folder.
 
-Lantern runs on **Android** and **Linux** (Debian and Ubuntu) from one codebase.
+Dawem (داوم, "keep at it") runs on **Android** and **Linux** (Debian and Ubuntu) from one codebase.
 
 ## What is in it
 
@@ -16,7 +18,7 @@ Lantern runs on **Android** and **Linux** (Debian and Ubuntu) from one codebase.
 
 ## Your data
 
-Everything lives in one vault folder (`~/Lantern` on Linux; `Lantern` on the phone):
+Everything lives in one vault folder (`~/Dawem` on Linux; `Dawem` on the phone):
 
 ```
 notes/<title>-<id>.md          Markdown with a small header (id, title, tags, dates)
@@ -27,9 +29,9 @@ money/accounts.json, <year>.csv  accounts and transactions in minor units (cents
 .lantern/                      settings and the trash
 ```
 
-Open the folder in Obsidian, a text editor or a spreadsheet; Lantern reads it back. To move to another device, copy the folder or sync it with any file-sync tool.
+Open the folder in Obsidian, a text editor or a spreadsheet; Dawem reads it back. To move to another device, copy the folder or sync it with any file-sync tool.
 
-On Android the vault is private to the app by default. In the app you can allow *All files access* to keep it in a visible `/Lantern` folder instead.
+On Android the vault is private to the app by default. In the app you can allow *All files access* to keep it in a visible `/Dawem` folder instead.
 
 ## Install
 
@@ -37,14 +39,14 @@ Get the files for your system from the [latest release](../../releases/latest). 
 
 | System | File |
 |---|---|
-| Android phone (64-bit, almost every phone since 2016) | `Lantern_<version>_Android_arm64-v8a.apk` |
-| Android, older 32-bit | `Lantern_<version>_Android_armeabi-v7a.apk` |
-| Android emulator, Chromebook | `Lantern_<version>_Android_x86_64.apk` |
-| Debian, Ubuntu, Mint | `Lantern_<version>_Linux_amd64.deb` |
+| Android phone (64-bit, almost every phone since 2016) | `Dawem_<version>_Android_arm64-v8a.apk` |
+| Android, older 32-bit | `Dawem_<version>_Android_armeabi-v7a.apk` |
+| Android emulator, Chromebook | `Dawem_<version>_Android_x86_64.apk` |
+| Debian, Ubuntu, Mint | `Dawem_<version>_Linux_amd64.deb` |
 
 ```
-sha256sum -c Lantern_<version>_Linux_amd64.deb.sha256
-sudo apt install ./Lantern_<version>_Linux_amd64.deb
+sha256sum -c Dawem_<version>_Linux_amd64.deb.sha256
+sudo apt install ./Dawem_<version>_Linux_amd64.deb
 ```
 
 ## Build

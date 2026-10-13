@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         store = openStore()
         val actions = PlatformActions(
-            exportVault = { exportZip.launch("Lantern-vault.zip") },
+            exportVault = { exportZip.launch("Dawem-vault.zip") },
             allowVisibleFolder = if (Build.VERSION.SDK_INT >= 30) ({ openAllFilesAccess() }) else null,
             visibleFolderOn = Build.VERSION.SDK_INT < 30 || Environment.isExternalStorageManager(),
         )
@@ -56,13 +56,15 @@ class MainActivity : ComponentActivity() {
     }
 
     /**
-     * The vault is /Lantern on the phone when All files access is allowed, else a private folder.
+     * The vault is /Dawem on the phone when All files access is allowed, else a private folder.
      * The first start after allowing it brings the private vault across.
      */
     private fun openStore(): LanternStore {
-        val private = File(filesDir, "Lantern")
+        // The app was called Lantern before Dawem: its vault folders move across once, by renaming, so nothing is copied twice.
+        fun moved(old: File, new: File): File { if (!new.exists() && old.isDirectory) old.renameTo(new); return new }
+        val private = moved(File(filesDir, "Lantern"), File(filesDir, "Dawem"))
         val shared = Build.VERSION.SDK_INT >= 30 && Environment.isExternalStorageManager()
-        val dir = if (shared) File(Environment.getExternalStorageDirectory(), "Lantern") else private
+        val dir = if (shared) moved(File(Environment.getExternalStorageDirectory(), "Lantern"), File(Environment.getExternalStorageDirectory(), "Dawem")) else private
         if (shared && !File(dir, "notes").exists() && private.exists()) runCatching { private.copyRecursively(dir, overwrite = false) }
         dir.mkdirs()
         return LanternStore(Vault(FileSystem.SYSTEM, dir.absolutePath.toPath()), dir.absolutePath)

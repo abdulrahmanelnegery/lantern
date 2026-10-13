@@ -1,5 +1,6 @@
 <resources>
-    <style name="Theme.Lantern" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.Dawem" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">#121214</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>

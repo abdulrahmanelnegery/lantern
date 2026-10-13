@@ -61,12 +61,12 @@ fun SettingsScreen(store: LanternStore) {
             Modifier.padding(horizontal = 24.dp, vertical = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (platform.allowVisibleFolder != null && !platform.visibleFolderOn) {
-            Action(Icons.Rounded.FolderSpecial, "Keep the vault in a visible folder", "Allow access to all files, then restart Lantern. The vault moves to /Lantern.") { platform.allowVisibleFolder.invoke() }
+            Action(Icons.Rounded.FolderSpecial, "Keep the vault in a visible folder", "Allow access to all files, then restart Dawem. The vault moves to /Dawem.") { platform.allowVisibleFolder.invoke() }
         }
         Header("Move your data")
         Action(Icons.Rounded.IosShare, "Export the vault as a zip", "Save a copy to share with your laptop or keep as a backup.") { platform.exportVault() }
         Header("About")
-        Text("Lantern 0.4.0", Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyLarge)
+        Text("${Brand.NAME} ${Brand.VERSION}  ·  by ${Brand.MAKER}", Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyLarge)
         Text("Private notes, journal, tasks, habits and money. MIT licence.", Modifier.padding(horizontal = 24.dp, vertical = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

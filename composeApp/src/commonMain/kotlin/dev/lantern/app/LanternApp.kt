@@ -18,6 +18,7 @@ import androidx.compose.material.icons.rounded.AutoStories
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.CreateNewFolder
 import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Insights
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.List
@@ -82,14 +83,16 @@ class Nav {
     }
 }
 
-enum class Screen { Main, Search, Journal, Insights, Settings }
+enum class Screen { Main, Search, Journal, Insights, Settings, About }
 
 private val WIDE = 840.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LanternApp(store: LanternStore, start: Nav = remember { Nav() }) {
+    var splash by remember { mutableStateOf(true) }
     LanternTheme(store.settings) {
+      Box {
         val nav = start
         val drawer = rememberDrawerState(DrawerValue.Closed)
         val scope = rememberCoroutineScope()
@@ -126,6 +129,7 @@ fun LanternApp(store: LanternStore, start: Nav = remember { Nav() }) {
                             Screen.Journal -> JournalScreen(store)
                             Screen.Insights -> InsightsScreen(store, onOpenHabit = { id -> nav.go(Section.Habits); nav.habitId = id })
                             Screen.Settings -> SettingsScreen(store)
+                            Screen.About -> AboutScreen()
                             Screen.Main -> when (nav.section) {
                                 Section.Today -> TodayScreen(store)
                                 Section.Notes -> NotesScreen(store, nav.noteTag)
@@ -144,6 +148,8 @@ fun LanternApp(store: LanternStore, start: Nav = remember { Nav() }) {
                 ModalNavigationDrawer(drawerState = drawer, drawerContent = { ModalDrawerSheet { MenuContent(store, nav) { scope.launch { drawer.close() } } } }) { content() }
             }
         }
+        androidx.compose.animation.AnimatedVisibility(splash, exit = androidx.compose.animation.fadeOut()) { Splash { splash = false } }
+      }
     }
 }
 
@@ -152,6 +158,7 @@ private fun title(nav: Nav): String = when (nav.screen) {
     Screen.Journal -> "Journal"
     Screen.Insights -> "Insights"
     Screen.Settings -> "Settings"
+    Screen.About -> "About"
     Screen.Main -> when {
         nav.section == Section.Tasks && nav.taskList != null -> nav.taskList!!
         nav.section == Section.Notes && nav.noteTag != null -> "#${nav.noteTag}"
@@ -164,7 +171,10 @@ private fun title(nav: Nav): String = when (nav.screen) {
 private fun MenuContent(store: LanternStore, nav: Nav, close: () -> Unit) {
     var newList by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxHeight().verticalScroll(rememberScrollState()).padding(bottom = 16.dp)) {
-        Text("Lantern", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(horizontal = 28.dp, vertical = 24.dp))
+        Column(Modifier.padding(horizontal = 28.dp, vertical = 24.dp)) {
+            Text(Brand.NAME, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
+            Text("by ${Brand.MAKER}", style = MaterialTheme.typography.labelMedium, color = androidx.compose.ui.graphics.Color(0xFFFF5A1F))
+        }
         Section.entries.forEach { s ->
             Entry(s.icon, s.label, null, nav.screen == Screen.Main && nav.section == s && nav.taskList == null && nav.noteTag == null) { nav.go(s); close() }
         }
@@ -190,6 +200,7 @@ private fun MenuContent(store: LanternStore, nav: Nav, close: () -> Unit) {
         HorizontalDivider(Modifier.padding(horizontal = 28.dp, vertical = 10.dp))
         Entry(Icons.Rounded.Search, "Search", null, nav.screen == Screen.Search) { nav.screen = Screen.Search; close() }
         Entry(Icons.Rounded.Settings, "Settings", null, nav.screen == Screen.Settings) { nav.screen = Screen.Settings; close() }
+        Entry(Icons.Rounded.Info, "About ${Brand.NAME}", null, nav.screen == Screen.About) { nav.screen = Screen.About; close() }
     }
     if (newList) NameDialog("New task list", "", "Create", onDismiss = { newList = false }) { name ->
         newList = false
