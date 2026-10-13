@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+- Themes: five palettes (Amber, Ocean, Forest, Rose, Slate), each with a light and a dark version, and a System / Light / Dark switch. Pick them in Settings. The choice is saved in the vault (`.lantern/settings.json`), so it follows the data to another device.
+
 ## 0.3.0
 
 - Insights (in the side menu): a day, a week or a month at a time, with journal days and words, average mood, notes written, tasks done and money spent, a chart of habits and mood by day, every habit's 30-day rate, and a history of each day.

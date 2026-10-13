@@ -26,6 +26,8 @@ class LanternStore(val vault: Vault, val location: String) {
         private set
     var txns by mutableStateOf(vault.allTransactions())
         private set
+    var settings by mutableStateOf(vault.settings())
+        private set
     var today by mutableStateOf(vault.today())
         private set
     var todayEntry by mutableStateOf(vault.journal(vault.today()))
@@ -34,7 +36,7 @@ class LanternStore(val vault: Vault, val location: String) {
     /** Reads everything again (the vault may have changed on disk, or the date rolled over). */
     fun reload() {
         notes = vault.notes(); tasks = vault.tasks(); habits = vault.habits(); habitLog = vault.habitLog()
-        accounts = vault.accounts(); txns = vault.allTransactions(); today = vault.today(); todayEntry = vault.journal(today)
+        accounts = vault.accounts(); txns = vault.allTransactions(); today = vault.today(); todayEntry = vault.journal(today); settings = vault.settings()
     }
 
     /** The names of the task lists in use, in order of first use; tasks with no list are the inbox. */
@@ -46,6 +48,8 @@ class LanternStore(val vault: Vault, val location: String) {
 
     /** Every note tag with how many notes carry it, most used first. */
     fun noteTags(): List<Pair<String, Int>> = notes.flatMap { it.tags }.groupingBy { it }.eachCount().toList().sortedByDescending { it.second }
+
+    fun saveSettings(value: dev.lantern.core.AppSettings) { vault.saveSettings(value); settings = value }
 
     // notes
     fun saveNote(note: Note): Note = vault.saveNote(note).also { notes = vault.notes() }
