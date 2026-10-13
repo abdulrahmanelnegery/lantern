@@ -33,7 +33,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.lantern.core.DaySummary
 import dev.lantern.core.daySummaries
-import dev.lantern.core.formatMoney
 import dev.lantern.core.habitStats
 import dev.lantern.core.totals
 import kotlinx.datetime.DateTimeUnit
@@ -45,7 +44,7 @@ private enum class Period(val label: String) { Day("Day"), Week("Week"), Month("
 
 private val moodFaces = listOf("😞", "😕", "😐", "🙂", "😄")
 
-/** The whole picture for a day, a week or a month: what you wrote, did, kept up and spent. */
+/** The whole picture for a day, a week or a month: what you wrote, did and kept up. */
 @Composable
 fun InsightsScreen(store: LanternStore, onOpenHabit: (String) -> Unit) {
     var period by remember { mutableStateOf(Period.Week) }
@@ -59,8 +58,8 @@ fun InsightsScreen(store: LanternStore, onOpenHabit: (String) -> Unit) {
             Period.Month -> today.minus(back, DateTimeUnit.MONTH).let { m -> LocalDate(m.year, m.monthNumber, 1) to LocalDate(m.year, m.monthNumber, 1).plus(1, DateTimeUnit.MONTH).minus(1, DateTimeUnit.DAY) }
         }.let { (a, b) -> a to minOf(b, today) }
     }
-    val days = remember(from, to, store.notes, store.tasks, store.habitLog, store.txns, store.todayEntry) {
-        daySummaries(from, to, store.vault::journal, store.notes, store.tasks, store.habitLog, store.txns)
+    val days = remember(from, to, store.notes, store.tasks, store.habitLog, store.todayEntry) {
+        daySummaries(from, to, store.vault::journal, store.notes, store.tasks, store.habitLog)
     }
     val sum = totals(days)
 
@@ -82,7 +81,7 @@ fun InsightsScreen(store: LanternStore, onOpenHabit: (String) -> Unit) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Tile2("Notes", "${sum.notes}", "written", Modifier.weight(1f))
             Tile2("Tasks", "${sum.tasks}", "done", Modifier.weight(1f))
-            Tile2("Spent", formatMoney(sum.spentMinor), "", Modifier.weight(1f))
+            Tile2("Habits", "${sum.habitChecks}", "kept", Modifier.weight(1f))
         }
 
         if (days.size > 1) Panel {
@@ -137,7 +136,6 @@ private fun DayRow(d: DaySummary) {
             d.notesCreated.takeIf { it > 0 }?.let { "$it ${if (it == 1) "note" else "notes"}" },
             d.tasksDone.takeIf { it > 0 }?.let { "$it ${if (it == 1) "task" else "tasks"} done" },
             d.habitsDone.takeIf { it > 0 }?.let { "$it ${if (it == 1) "habit" else "habits"} kept" },
-            d.spentMinor.takeIf { it > 0 }?.let { "${formatMoney(it)} spent" },
         )
         Text(parts.joinToString("  ·  "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }

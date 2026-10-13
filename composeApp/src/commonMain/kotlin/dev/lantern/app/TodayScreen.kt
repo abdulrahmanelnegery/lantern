@@ -32,14 +32,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.lantern.core.JournalEntry
-import dev.lantern.core.formatMoney
-import dev.lantern.core.monthSummary
 import dev.lantern.core.streak
 import kotlinx.coroutines.delay
 
 private val moods = listOf("😞" to "Low", "😕" to "Meh", "😐" to "Okay", "🙂" to "Good", "😄" to "Great")
 
-/** The day at a glance: mood and journal, today's habits and tasks, and the month's money. */
+/** The day at a glance: mood and journal, today's habits and tasks. */
 @Composable
 fun TodayScreen(store: LanternStore) {
     val today = store.today
@@ -86,16 +84,6 @@ fun TodayScreen(store: LanternStore) {
                         t.due?.let { if (it < today) Text("Overdue: ${prettyDate(it)}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error) }
                     }
                 }
-            }
-        }
-
-        val month = monthSummary(store.txns, today.year, today.monthNumber)
-        if (store.txns.isNotEmpty()) Panel {
-            Text("${monthName(today.monthNumber)} so far", style = MaterialTheme.typography.titleSmall)
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Column { Text("Income", style = MaterialTheme.typography.labelMedium); Text(formatMoney(month.incomeMinor), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.secondary) }
-                Column { Text("Spent", style = MaterialTheme.typography.labelMedium); Text(formatMoney(-month.expenseMinor), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.error) }
-                Column { Text("Left", style = MaterialTheme.typography.labelMedium); Text(formatMoney(month.netMinor), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold) }
             }
         }
     }

@@ -1,6 +1,6 @@
 package dev.lantern.core
 
-/** The small CSV dialect the money and habit files use: commas, double quotes, `\n` line ends. */
+/** The small CSV dialect the habit files use: commas, double quotes, `\n` line ends. */
 object Csv {
     fun parse(text: String): List<List<String>> {
         val rows = ArrayList<List<String>>()

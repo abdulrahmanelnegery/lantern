@@ -47,11 +47,16 @@ android {
         applicationId = "dev.lantern.notes"
         minSdk = 26
         targetSdk = 35
-        versionCode = 8
-        versionName = "0.5.1"
+        versionCode = 9
+        versionName = "0.5.2"
     }
     signingConfigs {
         create("release") {
+            // Every scheme: v1 for old Android, v2 and v3 (which lets the key be rotated later) and v4 for streamed installs.
+            enableV1Signing = true
+            enableV2Signing = true
+            enableV3Signing = true
+            enableV4Signing = true
             val store = System.getenv("LANTERN_KEYSTORE")
             if (store != null) {
                 storeFile = file(store)
@@ -90,7 +95,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Deb)
             packageName = "dawem"
-            packageVersion = "0.5.1"
+            packageVersion = "0.5.2"
             description = "Private notes, journal, tasks, habits and money in plain files"
             vendor = "Zimam"
             linux {

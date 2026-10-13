@@ -104,37 +104,6 @@ class VaultTest {
         assertEquals(setOf(LocalDate(2026, 10, 13)), v.habitLog()["h1"])
     }
 
-    @Test fun moneyTotalsBalancesAndYearFiles() {
-        val v = vault()
-        val acc = Account("a", "Cash", "USD", 10_000)
-        v.saveAccounts(listOf(acc))
-        v.saveTransaction(Txn("", LocalDate(2026, 10, 1), 250_000, "a", "Salary"))
-        v.saveTransaction(Txn("", LocalDate(2026, 10, 3), -4_550, "a", "Food", "lunch, with \"friends\""))
-        v.saveTransaction(Txn("", LocalDate(2026, 10, 9), -12_000, "a", "Rent"))
-        v.saveTransaction(Txn("", LocalDate(2025, 12, 30), -1_000, "a", "Food"))
-        val all = v.allTransactions()
-        assertEquals(4, all.size)
-        assertEquals("lunch, with \"friends\"", all.first { it.category == "Food" && it.date.year == 2026 }.note)
-        val m = monthSummary(all, 2026, 10)
-        assertEquals(250_000, m.incomeMinor)
-        assertEquals(-16_550, m.expenseMinor)
-        assertEquals("Rent", m.byCategory.first().first)
-        assertEquals(10_000 + 250_000 - 4_550 - 12_000 - 1_000, balance(acc, all))
-        assertEquals(2, v.fs.list("/v/money".toPath()).count { it.name.endsWith(".csv") })
-        v.deleteTransaction(all.first().id)
-        assertEquals(3, v.allTransactions().size)
-    }
-
-    @Test fun moneyParsingAndFormatting() {
-        assertEquals(1250L, parseMoney("12.5"))
-        assertEquals(1250L, parseMoney("12,50"))
-        assertEquals(-300L, parseMoney("-3"))
-        assertNull(parseMoney("abc"))
-        assertNull(parseMoney("1.2.3"))
-        assertEquals("12.05", formatMoney(1205))
-        assertEquals("-0.07", formatMoney(-7))
-    }
-
     @Test fun searchFindsNotesJournalAndTasks() {
         val v = vault()
         v.saveNote(Note("", "Garden plan", "plant tomatoes in spring", "", ""))
@@ -189,12 +158,11 @@ class InsightsTest {
             notes = listOf(Note("n", "t", "b", "2026-10-13T08:00:00", "2026-10-13T08:00:00")),
             tasks = listOf(Task("a", "x", done = true, doneOn = day), Task("b", "y", done = true)),
             habitLog = mapOf("h" to setOf(day, today)),
-            txns = listOf(Txn("t", day, -2_500, "acc"), Txn("u", day, 10_000, "acc")),
         )
         assertEquals(2, summary.size)
         val d = summary.first()
         assertEquals(3, d.journalWords); assertEquals(4, d.mood); assertEquals(1, d.notesCreated)
-        assertEquals(1, d.tasksDone); assertEquals(1, d.habitsDone); assertEquals(2_500L, d.spentMinor)
+        assertEquals(1, d.tasksDone); assertEquals(1, d.habitsDone)
         assertTrue(summary.last().journalWords == 0 && summary.last().habitsDone == 1)
         val t = totals(summary)
         assertEquals(1, t.journalDays); assertEquals(4.0, t.moodAverage); assertEquals(2, t.habitChecks)
@@ -204,5 +172,51 @@ class InsightsTest {
         val v = Vault(FakeFileSystem(), "/v".toPath())
         v.saveTasks(listOf(Task("a", "Ship it", done = true, doneOn = LocalDate(2026, 10, 12))))
         assertEquals(LocalDate(2026, 10, 12), v.tasks().single().doneOn)
+    }
+}
+
+
+class HabitMarksTest {
+    private val today = LocalDate(2026, 10, 14)
+
+    @Test fun skippedDaysDoNotBreakAStreak() {
+        val h = Habit("h", "Read")
+        val done = setOf(LocalDate(2026, 10, 13), LocalDate(2026, 10, 11), LocalDate(2026, 10, 10))
+        val skipped = setOf(LocalDate(2026, 10, 12))
+        assertEquals(1, streak(h, done, today))
+        assertEquals(3, streak(h, done, today, skipped))
+        val stats = habitStats(h, done, today, skipped)
+        assertEquals(3, stats.best)
+        assertEquals(1.0, stats.rate7, 0.0001, "a skipped day is not held against the rate")
+    }
+
+    @Test fun marksPersistAndOlderFilesStillRead() {
+        val fs = FakeFileSystem()
+        val v = Vault(fs, "/v".toPath())
+        // An older two-column log: every row is a day done.
+        fs.write("/v/habits/log.csv".toPath()) { writeUtf8("habit,date\nh1,2026-10-13\n") }
+        assertEquals(setOf(LocalDate(2026, 10, 13)), v.habitLog()["h1"])
+        v.setHabitMark("h1", LocalDate(2026, 10, 12), HabitMark.Skipped)
+        v.setHabitMark("h1", LocalDate(2026, 10, 14), HabitMark.Done)
+        assertEquals(setOf(LocalDate(2026, 10, 13), LocalDate(2026, 10, 14)), v.habitLog()["h1"])
+        assertEquals(setOf(LocalDate(2026, 10, 12)), v.habitSkips()["h1"])
+        v.setHabitMark("h1", LocalDate(2026, 10, 12), null)
+        assertTrue(v.habitSkips()["h1"].isNullOrEmpty())
+    }
+
+    @Test fun journalAndPerfectDayStreaks() {
+        val days = setOf(13, 12, 11, 9).map { LocalDate(2026, 10, it) }.toSet()
+        assertEquals(3, journalStreak(days, today), "today empty does not break it")
+        val habits = listOf(Habit("a", "A"), Habit("b", "B"))
+        val done = mapOf("a" to setOf(13, 12, 11).map { LocalDate(2026, 10, it) }.toSet(), "b" to setOf(13, 11).map { LocalDate(2026, 10, it) }.toSet())
+        val skipped = mapOf("b" to setOf(LocalDate(2026, 10, 12)))
+        assertEquals(3, perfectDays(habits, done, skipped, today))
+        assertEquals(0, perfectDays(habits, emptyMap(), emptyMap(), today))
+    }
+
+    @Test fun quotesRepeatPerDayAndShuffle() {
+        assertEquals(Quotes.affirmation(today), Quotes.affirmation(today))
+        assertTrue(Quotes.affirmation(today, 1) != Quotes.affirmation(today, 0))
+        assertTrue(Quotes.tip(today).isNotBlank())
     }
 }

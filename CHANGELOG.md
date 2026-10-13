@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.2
+
+- **Money tracking is gone from Dawem.** It is becoming its own app, Hasad, so Dawem stays about notes, journal, tasks and habits. The Money section, the money card on Today and the "Spent" totals in Insights are removed.
+- Files you already have in a vault's `money/` folder are left exactly where they are (Dawem simply no longer reads or writes them); delete the folder yourself when you no longer need it.
+- Under the hood: skipped days for habits, streak and stats functions that count them, and a bank of quotes and tips, ready for the habits page coming next. The release is signed with every APK signature scheme.
+
 ## 0.5.1
 
 - **Zimam** is the new default theme: warm paper in light, near-black in dark, with an orange accent. The five earlier palettes stay in Settings, and anyone who picked one keeps it.
