@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.KeyboardArrowUp
 import androidx.compose.material3.FilterChip
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -51,6 +53,18 @@ fun SettingsScreen(store: LanternStore) {
                     ) { if (on) Icon(Icons.Rounded.Check, null, tint = Color.Black.copy(alpha = 0.7f)) }
                     Text(p.label, style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 4.dp))
                 }
+            }
+        }
+        Header("Today page")
+        val order = todayOrder(store.settings)
+        order.forEachIndexed { i, id ->
+            val label = TodayCards.first { it.first == id }.second
+            val hidden = id in store.settings.homeHidden
+            Row(Modifier.fillMaxWidth().padding(horizontal = 24.dp), verticalAlignment = Alignment.CenterVertically) {
+                androidx.compose.material3.Switch(!hidden, { on -> store.saveSettings(store.settings.copy(homeOrder = order, homeHidden = if (on) store.settings.homeHidden - id else store.settings.homeHidden + id)) })
+                Text(label, Modifier.weight(1f).padding(start = 12.dp), style = MaterialTheme.typography.bodyLarge)
+                androidx.compose.material3.IconButton(enabled = i > 0, onClick = { store.saveSettings(store.settings.copy(homeOrder = order.toMutableList().also { it[i] = it[i - 1]; it[i - 1] = id })) }) { Icon(Icons.Rounded.KeyboardArrowUp, "Move up") }
+                androidx.compose.material3.IconButton(enabled = i < order.lastIndex, onClick = { store.saveSettings(store.settings.copy(homeOrder = order.toMutableList().also { it[i] = it[i + 1]; it[i + 1] = id })) }) { Icon(Icons.Rounded.KeyboardArrowDown, "Move down") }
             }
         }
         Header("Your vault")

@@ -28,6 +28,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material.icons.rounded.Visibility
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -83,6 +88,8 @@ fun NotesScreen(store: LanternStore, tag: String? = null) {
 private fun NoteEditor(store: LanternStore, start: Note, onClose: () -> Unit) {
     var note by remember(start.id) { mutableStateOf(start.copy(id = if (start.id.isEmpty() || store.notes.none { it.id == start.id }) "" else start.id)) }
     var tags by remember(start.id) { mutableStateOf(start.tags.joinToString(" ")) }
+    // A note you open is read first; a new one starts in edit mode. The pencil switches.
+    var reading by remember(start.id) { mutableStateOf(start.id.isNotEmpty() && store.notes.any { it.id == start.id }) }
     // Typing is saved shortly after it stops; a note that is still empty is never written.
     LaunchedEffect(note.title, note.body, note.pinned, tags) {
         if (note.title.isBlank() && note.body.isBlank()) return@LaunchedEffect
@@ -98,6 +105,7 @@ private fun NoteEditor(store: LanternStore, start: Note, onClose: () -> Unit) {
                 title = { Text(if (note.title.isBlank()) "New note" else note.title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                 navigationIcon = { IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back") } },
                 actions = {
+                    IconButton(onClick = { reading = !reading }) { Icon(if (reading) Icons.Rounded.Edit else Icons.Rounded.Visibility, if (reading) "Edit" else "Read") }
                     IconButton(onClick = { note = note.copy(pinned = !note.pinned) }) { Icon(Icons.Rounded.PushPin, "Pin", tint = if (note.pinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant) }
                     IconButton(onClick = { if (note.id.isNotEmpty()) store.trashNote(note.id); onClose() }) { Icon(Icons.Rounded.Delete, "Delete") }
                 },
@@ -105,7 +113,11 @@ private fun NoteEditor(store: LanternStore, start: Note, onClose: () -> Unit) {
             )
         },
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        if (reading) Column(Modifier.fillMaxSize().padding(padding).padding(horizontal = 20.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Text(note.title.ifBlank { "Untitled" }, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+            if (tags.isNotBlank()) Text(tags.split(' ', ',').filter { it.isNotBlank() }.joinToString("  ") { "#" + it.trimStart('#') }, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+            MarkdownText(note.body, Modifier.padding(bottom = 32.dp))
+        } else Column(Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             OutlinedTextField(note.title, { note = note.copy(title = it) }, singleLine = true, placeholder = { Text("Title") }, modifier = Modifier.fillMaxWidth(), textStyle = MaterialTheme.typography.titleLarge)
             OutlinedTextField(tags, { tags = it }, singleLine = true, placeholder = { Text("Tags, separated by spaces") }, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(note.body, { note = note.copy(body = it) }, placeholder = { Text("Write in Markdown…") }, modifier = Modifier.fillMaxWidth().weight(1f).padding(bottom = 12.dp))

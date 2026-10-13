@@ -10,11 +10,11 @@ Dawem (داوم, "keep at it") runs on **Android** and **Linux** (Debian and Ubu
 
 ## What is in it
 
-- **Today**: mood, a journal entry for the day, and today's habits and tasks at a glance.
-- **Notes**: Markdown notes with tags, pinning and search.
+- **Today**: an affirmation and tip, streaks, today's habits and tasks, and the journal, in an order you choose.
+- **Notes**: Markdown notes with tags, pinning and search; a reading view and an edit view.
 - **Journal**: one entry a day with a mood, and a look back through the days.
 - **Tasks**: lists and a checklist with due dates (today, tomorrow, next week) and priorities.
-- **Habits**: daily or chosen weekdays, a 14-day grid you can tap, streaks, and a page for each habit with its history.
+- **Habits**: daily or chosen weekdays; swipe to check or undo, hold to skip; week and month views, streaks that skip days you skip on purpose, and a page for each habit with its history.
 - **Insights**: a day, week or month in numbers: what you wrote, did and kept up, with mood and habits by day.
 - **Search** across notes, journal entries and tasks, from one place.
 - **Themes**: Zimam (warm paper and near-black with an orange accent) and five more palettes, each in light and dark, or follow the system.
@@ -80,7 +80,7 @@ The code is split in two: `shared` holds the vault format and the logic (plain K
 
 ## Roadmap
 
-A habits page you swipe through (right to check, left to undo, hold for skip, edit and analytics) with day, week and month views, a home screen of streaks and daily quotes, reminders, widgets, sync between devices and recurring tasks. Money tracking left Dawem and became its own app, Zimma.
+Reminders with sticky notifications, widgets, sync between devices, recurring tasks and charts. Money tracking left Dawem and became its own app, Zimma.
 
 ## Licence
 
