@@ -43,15 +43,6 @@ private val moods = listOf("😞" to "Low", "😕" to "Meh", "😐" to "Okay", "
 @Composable
 fun TodayScreen(store: LanternStore) {
     val today = store.today
-    val entry = store.todayEntry
-    var text by remember(today) { mutableStateOf(entry?.body.orEmpty()) }
-    var mood by remember(today) { mutableStateOf(entry?.mood) }
-    // Save a moment after typing stops, so every keystroke is not a file write.
-    LaunchedEffect(text, mood) {
-        if (text == entry?.body.orEmpty() && mood == entry?.mood) return@LaunchedEffect
-        delay(700)
-        store.saveJournal(JournalEntry(today, text, mood, entry?.tags.orEmpty()))
-    }
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Column {
@@ -59,31 +50,7 @@ fun TodayScreen(store: LanternStore) {
             Text(greeting(), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
-        Panel {
-            Text("How are you?", style = MaterialTheme.typography.titleSmall)
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                moods.forEachIndexed { i, (face, label) ->
-                    val value = i + 1
-                    Column(
-                        Modifier.clip(CircleShape).clickable { mood = if (mood == value) null else value }.padding(6.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Box(
-                            Modifier.size(48.dp).clip(CircleShape).background(if (mood == value) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh),
-                            contentAlignment = Alignment.Center,
-                        ) { Text(face, style = MaterialTheme.typography.headlineSmall) }
-                        Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-            }
-            OutlinedTextField(
-                text, { text = it },
-                placeholder = { Text("What happened today? What are you thankful for?") },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 4,
-                maxLines = 12,
-            )
-        }
+        JournalPanel(store, today)
 
         val todays = store.habits.filter { !it.archived && (it.days.isEmpty() || today.dayOfWeek.ordinal + 1 in it.days) }
         if (todays.isNotEmpty()) Panel {
@@ -137,3 +104,41 @@ fun TodayScreen(store: LanternStore) {
 private val RoundedCornerShape10 = androidx.compose.foundation.shape.RoundedCornerShape(10.dp)
 
 private fun greeting(): String = "Write it down, so you can let it go."
+
+/** Mood and the journal text for one day, saved a moment after you stop typing. */
+@Composable
+fun JournalPanel(store: LanternStore, date: kotlinx.datetime.LocalDate, modifier: Modifier = Modifier) {
+    val entry = if (date == store.today) store.todayEntry else remember(date) { store.journal(date) }
+    var text by remember(date) { mutableStateOf(entry?.body.orEmpty()) }
+    var mood by remember(date) { mutableStateOf(entry?.mood) }
+    LaunchedEffect(text, mood) {
+        if (text == entry?.body.orEmpty() && mood == entry?.mood) return@LaunchedEffect
+        delay(700)
+        store.saveJournal(JournalEntry(date, text, mood, entry?.tags.orEmpty()))
+    }
+    Panel(modifier) {
+        Text("How are you?", style = MaterialTheme.typography.titleSmall)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            moods.forEachIndexed { i, (face, label) ->
+                val value = i + 1
+                Column(
+                    Modifier.clip(CircleShape).clickable { mood = if (mood == value) null else value }.padding(6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Box(
+                        Modifier.size(48.dp).clip(CircleShape).background(if (mood == value) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh),
+                        contentAlignment = Alignment.Center,
+                    ) { Text(face, style = MaterialTheme.typography.headlineSmall) }
+                    Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+        OutlinedTextField(
+            text, { text = it },
+            placeholder = { Text("What happened? What are you thankful for?") },
+            modifier = Modifier.fillMaxWidth(),
+            minLines = 4,
+            maxLines = 12,
+        )
+    }
+}

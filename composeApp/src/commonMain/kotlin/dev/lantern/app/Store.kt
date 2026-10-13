@@ -37,6 +37,16 @@ class LanternStore(val vault: Vault, val location: String) {
         accounts = vault.accounts(); txns = vault.allTransactions(); today = vault.today(); todayEntry = vault.journal(today)
     }
 
+    /** The names of the task lists in use, in order of first use; tasks with no list are the inbox. */
+    fun taskLists(): List<String> = (tasks.map { it.list } + extraLists).filter { it.isNotEmpty() }.distinct()
+
+    /** Lists created in the menu that have no task yet; they last until the app closes unless a task is added. */
+    private val extraLists = mutableListOf<String>()
+    fun rememberTaskList(name: String) { if (name.isNotBlank() && name !in extraLists) extraLists += name }
+
+    /** Every note tag with how many notes carry it, most used first. */
+    fun noteTags(): List<Pair<String, Int>> = notes.flatMap { it.tags }.groupingBy { it }.eachCount().toList().sortedByDescending { it.second }
+
     // notes
     fun saveNote(note: Note): Note = vault.saveNote(note).also { notes = vault.notes() }
     fun trashNote(id: String) { vault.trashNote(id); notes = vault.notes() }
