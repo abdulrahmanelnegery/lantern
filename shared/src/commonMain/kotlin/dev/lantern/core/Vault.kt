@@ -49,6 +49,14 @@ class Vault(
         fs.atomicMove(tmp, path)
     }
 
+    // ---- settings --------------------------------------------------------------------------
+
+    private val settingsPath get() = root / ".lantern" / "settings.json"
+
+    fun settings(): AppSettings = read(settingsPath)?.let { runCatching { json.decodeFromString(AppSettings.serializer(), it) }.getOrNull() } ?: AppSettings()
+
+    fun saveSettings(settings: AppSettings) = write(settingsPath, json.encodeToString(AppSettings.serializer(), settings))
+
     // ---- notes -----------------------------------------------------------------------------
 
     private fun noteFiles(): List<Path> = fs.listOrNull(root / "notes").orEmpty().filter { it.name.endsWith(".md") }

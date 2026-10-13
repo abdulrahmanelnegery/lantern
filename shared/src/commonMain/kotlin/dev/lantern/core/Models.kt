@@ -50,3 +50,12 @@ data class Txn(
     val category: String = "",
     val note: String = "",
 )
+
+/** How the app looks; stored in the vault's `.lantern/settings.json` so it travels with the data. */
+@Serializable
+data class AppSettings(
+    /** One of the palette ids the app knows; an unknown id falls back to the default. */
+    val palette: String = "amber",
+    /** "system", "light" or "dark". */
+    val mode: String = "system",
+)

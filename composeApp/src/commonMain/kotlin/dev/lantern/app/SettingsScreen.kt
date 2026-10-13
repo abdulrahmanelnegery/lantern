@@ -1,6 +1,16 @@
 package dev.lantern.app
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material3.FilterChip
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +34,25 @@ import androidx.compose.ui.unit.dp
 fun SettingsScreen(store: LanternStore) {
     val platform = LocalPlatform.current
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = 32.dp)) {
+        Header("Appearance")
+        Row(Modifier.padding(horizontal = 24.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf("system" to "System", "light" to "Light", "dark" to "Dark").forEach { (id, label) ->
+                FilterChip(store.settings.mode == id, { store.saveSettings(store.settings.copy(mode = id)) }, { Text(label) })
+            }
+        }
+        Row(Modifier.padding(start = 24.dp, end = 24.dp, top = 12.dp), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+            Palettes.forEach { p ->
+                val on = store.settings.palette == p.id
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { store.saveSettings(store.settings.copy(palette = p.id)) }) {
+                    Box(
+                        Modifier.size(44.dp).clip(CircleShape).background(Color(0xFF000000 or p.swatch))
+                            .then(if (on) Modifier.border(3.dp, MaterialTheme.colorScheme.onSurface, CircleShape) else Modifier),
+                        contentAlignment = Alignment.Center,
+                    ) { if (on) Icon(Icons.Rounded.Check, null, tint = Color.Black.copy(alpha = 0.7f)) }
+                    Text(p.label, style = MaterialTheme.typography.labelSmall, modifier = Modifier.padding(top = 4.dp))
+                }
+            }
+        }
         Header("Your vault")
         Text(store.location, Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyLarge)
         Text(
@@ -37,7 +66,7 @@ fun SettingsScreen(store: LanternStore) {
         Header("Move your data")
         Action(Icons.Rounded.IosShare, "Export the vault as a zip", "Save a copy to share with your laptop or keep as a backup.") { platform.exportVault() }
         Header("About")
-        Text("Lantern 0.3.0", Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyLarge)
+        Text("Lantern 0.4.0", Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyLarge)
         Text("Private notes, journal, tasks, habits and money. MIT licence.", Modifier.padding(horizontal = 24.dp, vertical = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

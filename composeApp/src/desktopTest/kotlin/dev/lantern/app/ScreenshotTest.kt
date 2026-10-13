@@ -51,8 +51,9 @@ class ScreenshotTest {
         return LanternStore(vault, "/v")
     }
 
-    private fun shot(name: String, width: Int, height: Int, nav: (Nav) -> Unit) {
+    private fun shot(name: String, width: Int, height: Int, settings: dev.lantern.core.AppSettings? = null, nav: (Nav) -> Unit) {
         val store = sampleStore()
+        settings?.let { store.saveSettings(it) }
         val scene = ImageComposeScene(width * 2, height * 2, Density(2f)) { LanternApp(store, Nav().also(nav)) }
         try {
             scene.render(0)
@@ -72,6 +73,15 @@ class ScreenshotTest {
         shot("phone-habit", 412, 860) { it.go(Section.Habits); it.habitId = "h1" }
         shot("phone-settings", 412, 860) { it.screen = Screen.Settings }
         shot("phone-search", 412, 860) { it.screen = Screen.Search }
+    }
+
+    @Test fun themes() {
+        val s = { palette: String, mode: String -> dev.lantern.core.AppSettings(palette, mode) }
+        shot("theme-forest-light-today", 412, 860, s("forest", "light")) { it.go(Section.Today) }
+        shot("theme-rose-dark-money", 412, 860, s("rose", "dark")) { it.go(Section.Money) }
+        shot("theme-ocean-light-habits", 412, 860, s("ocean", "light")) { it.go(Section.Habits) }
+        shot("theme-slate-dark-insights", 412, 860, s("slate", "dark")) { it.screen = Screen.Insights }
+        shot("theme-settings", 412, 860, s("amber", "light")) { it.screen = Screen.Settings }
     }
 
     @Test fun laptop() {

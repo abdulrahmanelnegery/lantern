@@ -89,7 +89,7 @@ private val WIDE = 840.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LanternApp(store: LanternStore, start: Nav = remember { Nav() }) {
-    LanternTheme {
+    LanternTheme(store.settings) {
         val nav = start
         val drawer = rememberDrawerState(DrawerValue.Closed)
         val scope = rememberCoroutineScope()
