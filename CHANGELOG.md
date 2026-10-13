@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- A new icon: a page with a check mark, text lines and a small chart, for notes, tasks, the journal and the numbers in one mark (and a themed version for Android 13 and later).
+
 ## 0.2.0
 
 - A side menu with the sections, your task lists, note tags, journal history, search and settings. On a wide screen it stays open on the left.
