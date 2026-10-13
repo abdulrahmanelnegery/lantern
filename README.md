@@ -80,7 +80,7 @@ The code is split in two: `shared` holds the vault format and the logic (plain K
 
 ## Roadmap
 
-A habits page you swipe through (right to check, left to undo, hold for skip, edit and analytics) with day, week and month views, a home screen of streaks and daily quotes, reminders, widgets, sync between devices and recurring tasks. Money tracking left Dawem and became its own app, Zemma.
+A habits page you swipe through (right to check, left to undo, hold for skip, edit and analytics) with day, week and month views, a home screen of streaks and daily quotes, reminders, widgets, sync between devices and recurring tasks. Money tracking left Dawem and became its own app, Zimma.
 
 ## Licence
 
