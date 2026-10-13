@@ -1,0 +1,8 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- a lantern: a ring on top, a cap, a glowing glass body, a base -->
+    <path android:strokeColor="#F6C65B" android:strokeWidth="3" android:pathData="M48,30 a6,6 0 0 1 12,0" />
+    <path android:fillColor="#F6C65B" android:pathData="M42,36h24l3,6h-30z" />
+    <path android:fillColor="#FFD97A" android:pathData="M40,44h28l-3,26h-22z" />
+    <path android:fillColor="#FFF1BF" android:pathData="M49,50h10l-1.5,14h-7z" />
+    <path android:fillColor="#F6C65B" android:pathData="M39,70h30l2,5h-34z" />
+</vector>
