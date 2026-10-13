@@ -68,6 +68,8 @@ class ScreenshotTest {
     @Test fun phone() {
         for (s in Section.entries) shot("phone-${s.name.lowercase()}", 412, 860) { it.go(s) }
         shot("phone-journal", 412, 860) { it.screen = Screen.Journal }
+        shot("phone-insights", 412, 860) { it.screen = Screen.Insights }
+        shot("phone-habit", 412, 860) { it.go(Section.Habits); it.habitId = "h1" }
         shot("phone-settings", 412, 860) { it.screen = Screen.Settings }
         shot("phone-search", 412, 860) { it.screen = Screen.Search }
     }

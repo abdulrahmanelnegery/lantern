@@ -18,6 +18,7 @@ import androidx.compose.material.icons.rounded.AutoStories
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.CreateNewFolder
 import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.Insights
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Loop
@@ -73,13 +74,15 @@ class Nav {
     /** A tag the Notes section is filtered to; null shows all. */
     var noteTag by mutableStateOf<String?>(null)
     var screen by mutableStateOf(Screen.Main)
+    /** The habit whose page is open, when one is. */
+    var habitId by mutableStateOf<String?>(null)
 
     fun go(s: Section, taskList: String? = null, noteTag: String? = null) {
-        section = s; this.taskList = taskList; this.noteTag = noteTag; screen = Screen.Main
+        section = s; this.taskList = taskList; this.noteTag = noteTag; screen = Screen.Main; habitId = null
     }
 }
 
-enum class Screen { Main, Search, Journal, Settings }
+enum class Screen { Main, Search, Journal, Insights, Settings }
 
 private val WIDE = 840.dp
 
@@ -121,12 +124,13 @@ fun LanternApp(store: LanternStore, start: Nav = remember { Nav() }) {
                         when (nav.screen) {
                             Screen.Search -> SearchScreen(store, nav)
                             Screen.Journal -> JournalScreen(store)
+                            Screen.Insights -> InsightsScreen(store, onOpenHabit = { id -> nav.go(Section.Habits); nav.habitId = id })
                             Screen.Settings -> SettingsScreen(store)
                             Screen.Main -> when (nav.section) {
                                 Section.Today -> TodayScreen(store)
                                 Section.Notes -> NotesScreen(store, nav.noteTag)
                                 Section.Tasks -> TasksScreen(store, nav.taskList)
-                                Section.Habits -> HabitsScreen(store)
+                                Section.Habits -> HabitsScreen(store, nav.habitId, onOpen = { nav.habitId = it }, onClose = { nav.habitId = null })
                                 Section.Money -> MoneyScreen(store)
                             }
                         }
@@ -146,6 +150,7 @@ fun LanternApp(store: LanternStore, start: Nav = remember { Nav() }) {
 private fun title(nav: Nav): String = when (nav.screen) {
     Screen.Search -> "Search"
     Screen.Journal -> "Journal"
+    Screen.Insights -> "Insights"
     Screen.Settings -> "Settings"
     Screen.Main -> when {
         nav.section == Section.Tasks && nav.taskList != null -> nav.taskList!!
@@ -164,6 +169,7 @@ private fun MenuContent(store: LanternStore, nav: Nav, close: () -> Unit) {
             Entry(s.icon, s.label, null, nav.screen == Screen.Main && nav.section == s && nav.taskList == null && nav.noteTag == null) { nav.go(s); close() }
         }
         Entry(Icons.Rounded.AutoStories, "Journal", null, nav.screen == Screen.Journal) { nav.screen = Screen.Journal; close() }
+        Entry(Icons.Rounded.Insights, "Insights", null, nav.screen == Screen.Insights) { nav.screen = Screen.Insights; close() }
 
         val lists = store.taskLists()
         HorizontalDivider(Modifier.padding(horizontal = 28.dp, vertical = 10.dp))

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0
+
+- Insights (in the side menu): a day, a week or a month at a time, with journal days and words, average mood, notes written, tasks done and money spent, a chart of habits and mood by day, every habit's 30-day rate, and a history of each day.
+- Habits open: tap a habit for its streak, best streak, total, how often you keep it over 7, 30 and 90 days, the days of the week you do it, and a calendar month you can edit by tapping days.
+- Tasks remember the day they were done (`done:` in Tasks.md), so history can count them.
+
 ## 0.2.1
 
 - A new icon: a page with a check mark, text lines and a small chart, for notes, tasks, the journal and the numbers in one mark (and a themed version for Android 13 and later).

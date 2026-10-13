@@ -151,3 +151,58 @@ class VaultTest {
         assertEquals(8, newId().length)
     }
 }
+
+class InsightsTest {
+    private val today = LocalDate(2026, 10, 14) // a Wednesday
+
+    @Test fun habitStatsCountStreaksAndRates() {
+        val h = Habit("h", "Read")
+        val done = setOf(11, 12, 13).map { LocalDate(2026, 10, it) }.toSet() + setOf(5, 6, 7, 8).map { LocalDate(2026, 10, it) }
+        val s = habitStats(h, done, today)
+        assertEquals(3, s.current, "today not done yet does not break it")
+        assertEquals(4, s.best)
+        assertEquals(7, s.total)
+        assertEquals(LocalDate(2026, 10, 5), s.firstDay)
+        // since the first day: Oct 5..13 is 9 scheduled days (today is skipped while undone), 7 done
+        assertEquals(7.0 / 9, s.rate30, 0.0001)
+    }
+
+    @Test fun neverDoneHasEmptyStats() {
+        val s = habitStats(Habit("h", "x"), emptySet(), today)
+        assertEquals(0, s.current); assertEquals(0, s.best); assertEquals(0.0, s.rate90)
+    }
+
+    @Test fun weeklyHabitsOnlyCountTheirDays() {
+        val h = Habit("h", "Gym", days = listOf(1, 3, 5)) // Mon, Wed, Fri
+        val done = setOf(LocalDate(2026, 10, 9), LocalDate(2026, 10, 12), LocalDate(2026, 10, 14)) // Fri, Mon, Wed
+        val s = habitStats(h, done, today)
+        assertEquals(3, s.best)
+        assertEquals(1, s.byWeekday[0]); assertEquals(1, s.byWeekday[2]); assertEquals(1, s.byWeekday[4])
+        assertEquals(1.0, s.rate7, 0.0001)
+    }
+
+    @Test fun daySummariesGatherEverythingForEachDay() {
+        val day = LocalDate(2026, 10, 13)
+        val summary = daySummaries(
+            day, today,
+            journal = { if (it == day) JournalEntry(it, "one two three", 4) else null },
+            notes = listOf(Note("n", "t", "b", "2026-10-13T08:00:00", "2026-10-13T08:00:00")),
+            tasks = listOf(Task("a", "x", done = true, doneOn = day), Task("b", "y", done = true)),
+            habitLog = mapOf("h" to setOf(day, today)),
+            txns = listOf(Txn("t", day, -2_500, "acc"), Txn("u", day, 10_000, "acc")),
+        )
+        assertEquals(2, summary.size)
+        val d = summary.first()
+        assertEquals(3, d.journalWords); assertEquals(4, d.mood); assertEquals(1, d.notesCreated)
+        assertEquals(1, d.tasksDone); assertEquals(1, d.habitsDone); assertEquals(2_500L, d.spentMinor)
+        assertTrue(summary.last().journalWords == 0 && summary.last().habitsDone == 1)
+        val t = totals(summary)
+        assertEquals(1, t.journalDays); assertEquals(4.0, t.moodAverage); assertEquals(2, t.habitChecks)
+    }
+
+    @Test fun aTaskKeepsItsDoneDayInTheFile() {
+        val v = Vault(FakeFileSystem(), "/v".toPath())
+        v.saveTasks(listOf(Task("a", "Ship it", done = true, doneOn = LocalDate(2026, 10, 12))))
+        assertEquals(LocalDate(2026, 10, 12), v.tasks().single().doneOn)
+    }
+}

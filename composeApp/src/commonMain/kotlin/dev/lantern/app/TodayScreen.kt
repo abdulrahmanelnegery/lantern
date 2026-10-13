@@ -80,7 +80,7 @@ fun TodayScreen(store: LanternStore) {
             Text("Tasks for today", style = MaterialTheme.typography.titleSmall)
             open.forEach { t ->
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(false, { store.saveTasks(store.tasks.map { x -> if (x.id == t.id) x.copy(done = true) else x }) })
+                    Checkbox(false, { store.saveTasks(store.tasks.map { x -> if (x.id == t.id) x.copy(done = true, doneOn = store.today) else x }) })
                     Column(Modifier.weight(1f)) {
                         Text(t.title, style = MaterialTheme.typography.bodyLarge)
                         t.due?.let { if (it < today) Text("Overdue: ${prettyDate(it)}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error) }
