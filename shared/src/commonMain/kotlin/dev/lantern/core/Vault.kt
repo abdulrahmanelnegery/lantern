@@ -13,7 +13,7 @@ import okio.Path
 import okio.Path.Companion.toPath
 
 /**
- * A Lantern vault: one folder of plain files, readable in any editor.
+ * A Dawem vault: one folder of plain files, readable in any editor.
  *
  * ```
  * notes/<title>-<id>.md            Markdown with a small header (id, title, tags, dates)

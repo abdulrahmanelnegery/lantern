@@ -22,8 +22,8 @@ class VaultZipTest {
         val names = ArrayList<String>()
         ZipInputStream(buffer.inputStream()).use { zip -> generateSequence { zip.nextEntry }.forEach { names += it.name } }
 
-        assertTrue(names.any { it.startsWith("Lantern/notes/keep-me-") }, names.toString())
-        assertTrue("Lantern/tasks/Tasks.md" in names, names.toString())
+        assertTrue(names.any { it.startsWith("Dawem/notes/keep-me-") }, names.toString())
+        assertTrue("Dawem/tasks/Tasks.md" in names, names.toString())
         assertEquals(0, names.count { it.contains("bin-me") }, "the trash stays out of an export")
     }
 }

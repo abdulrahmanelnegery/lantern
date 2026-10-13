@@ -18,15 +18,15 @@ VERSION="$(sed -n 's/.*versionName = "\(.*\)".*/\1/p' composeApp/build.gradle.kt
 OUT="dist/$VERSION"
 rm -rf "$OUT"; mkdir -p "$OUT"
 for abi in arm64-v8a armeabi-v7a x86_64; do
-  cp "composeApp/build/outputs/apk/release/composeApp-$abi-release.apk" "$OUT/Lantern_${VERSION}_Android_$abi.apk" 2>/dev/null || true
+  cp "composeApp/build/outputs/apk/release/composeApp-$abi-release.apk" "$OUT/Dawem_${VERSION}_Android_$abi.apk" 2>/dev/null || true
 done
-cp composeApp/build/compose/binaries/main/deb/lantern-notes_*_amd64.deb "$OUT/Lantern_${VERSION}_Linux_amd64.deb"
+cp composeApp/build/compose/binaries/main/deb/dawem_*_amd64.deb "$OUT/Dawem_${VERSION}_Linux_amd64.deb"
 
 # One checksum file per release file, named after it, so `sha256sum -c <file>.sha256` works.
-(cd "$OUT" && for f in Lantern_*; do case "$f" in *.sha256) ;; *) sha256sum -- "$f" > "$f.sha256" ;; esac; done)
+(cd "$OUT" && for f in Dawem_*; do case "$f" in *.sha256) ;; *) sha256sum -- "$f" > "$f.sha256" ;; esac; done)
 ls -l "$OUT"
 
 if [ "${1:-}" = "--publish" ]; then
   NOTES="$(awk -v v="## $VERSION" '$0==v{p=1;next} /^## /{p=0} p' CHANGELOG.md)"
-  gh release create "v$VERSION" "$OUT"/* --title "Lantern $VERSION" --notes "${NOTES:-Lantern $VERSION}"
+  gh release create "v$VERSION" "$OUT"/* --title "Dawem $VERSION" --notes "${NOTES:-Dawem $VERSION}"
 fi

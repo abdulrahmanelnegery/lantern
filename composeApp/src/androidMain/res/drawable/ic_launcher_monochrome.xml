@@ -1,11 +1,6 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
-    <path android:strokeColor="#FF000000" android:strokeWidth="3.0" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M34,26 L66,26 Q74,26 74,34 L74,74 Q74,82 66,82 L34,82 Q26,82 26,74 L26,34 Q26,26 34,26 Z" />
-    <path android:strokeColor="#FF000000" android:strokeWidth="3.4" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M33,43 L38,48.5 L47,37.5" />
-    <path android:strokeColor="#FF000000" android:strokeWidth="2.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M52,42 L66,42" />
-    <path android:strokeColor="#FF000000" android:strokeWidth="2.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M33,56 L58,56" />
-    <path android:strokeColor="#FF000000" android:strokeWidth="2.8" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M33,65 L52,65" />
-    <path android:fillColor="#FF000000" android:pathData="M58,74 L61,74 L61,70 L58,70 Z" />
-    <path android:fillColor="#FF000000" android:pathData="M63,74 L66,74 L66,66 L63,66 Z" />
-    <path android:fillColor="#FF000000" android:pathData="M68,74 L71,74 L71,61 L68,61 Z" />
-    <path android:fillColor="#FF000000" android:pathData="M62.1,33.5 a3.4,3.4 0 1 0 6.8,0 a3.4,3.4 0 1 0 -6.8,0 Z" />
+    <group android:scaleX="0.16" android:scaleY="0.16" android:translateX="13" android:translateY="13">
+        <path android:strokeColor="#000000" android:strokeWidth="44" android:strokeLineJoin="round" android:pathData="M256,256C256,190 210,150 166,150C122,150 96,196 96,256C96,316 122,362 166,362C210,362 256,322 256,256C256,190 302,150 346,150C390,150 416,196 416,256C416,316 390,362 346,362C302,362 256,322 256,256Z" />
+        <path android:fillColor="#000000" android:pathData="M344.58 291.00L329.30 276.43Q322.90 270.39 318.82 267.37Q314.73 264.35 311.89 262.22V258.66Q314.38 254.76 318.99 249.07Q323.61 243.39 329.12 237.52Q334.63 231.66 339.25 227.04Q343.87 222.42 346.00 221.00H349.55Q364.12 230.24 372.12 237.70Q380.11 245.16 380.11 253.69Q380.11 262.57 369.98 272.52Q359.86 282.47 347.42 291.00Z" />
+    </group>
 </vector>

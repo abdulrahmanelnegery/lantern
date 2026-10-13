@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0
+
+- **Lantern is now Dawem** (داوم, "keep at it"), made by [Zimam](https://github.com/zimamlabs): a new name, a new icon (a loop and a semi-square), a short splash screen, "by Zimam" in the side menu and an **About** page.
+- The vault folder is now `Dawem` (`~/Dawem` on Linux, `/Dawem` on the phone). On first start the old `Lantern` folder is renamed, so nothing is copied or lost. Inside the vault, the hidden `.lantern` settings folder keeps its name, so a vault opens the same in older versions.
+- Release files start with `Dawem_`. The Linux package is now called `dawem`; remove the old `lantern-notes` package after installing it.
+- The Android package id is unchanged, so installed copies update in place.
+
 ## 0.4.0
 
 - Themes: five palettes (Amber, Ocean, Forest, Rose, Slate), each with a light and a dark version, and a System / Light / Dark switch. Pick them in Settings. The choice is saved in the vault (`.lantern/settings.json`), so it follows the data to another device.
