@@ -4,5 +4,5 @@ package dev.lantern.app
 object Brand {
     const val NAME = "Dawem"
     const val MAKER = "Zimam"
-    const val VERSION = "0.5.0"
+    const val VERSION = "0.5.1"
 }

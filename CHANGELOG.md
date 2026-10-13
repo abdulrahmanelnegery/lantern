@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1
+
+- **Zimam** is the new default theme: warm paper in light, near-black in dark, with an orange accent. The five earlier palettes stay in Settings, and anyone who picked one keeps it.
+
 ## 0.5.0
 
 - **Lantern is now Dawem** (داوم, "keep at it"), made by [Zimam](https://github.com/zimamlabs): a new name, a new icon (a loop and a semi-square), a short splash screen, "by Zimam" in the side menu and an **About** page.
