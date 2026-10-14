@@ -86,6 +86,7 @@ fun SettingsScreen(store: DawemStore) {
         OldFolders(platform)
         Header("Move your data")
         Action(Icons.Rounded.IosShare, "Export the vault as a zip", "Save a copy to share with your laptop or keep as a backup.") { platform.exportVault() }
+        Action(Icons.Rounded.FolderSpecial, "Show the tour again", "The short introduction from the first start.") { store.tourOpen = true }
         Header("About")
         Text("${Brand.NAME} ${Brand.VERSION}  ·  by ${Brand.MAKER}", Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyLarge)
         Text("Private notes, journal, tasks and habits. MIT licence.", Modifier.padding(horizontal = 24.dp, vertical = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
