@@ -9,6 +9,8 @@ data class Habit(
     /** Days of the week it applies to, 1 = Monday .. 7 = Sunday; empty means every day. */
     val days: List<Int> = emptyList(),
     val archived: Boolean = false,
+    /** A reminder time on the days it applies, "HH:MM", or "" for none. */
+    val remindAt: String = "",
 )
 
 /** What a habit's day was marked as. A day with no mark is simply not done (yet). */

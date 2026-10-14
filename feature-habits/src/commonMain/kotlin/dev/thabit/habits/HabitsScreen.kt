@@ -94,13 +94,13 @@ fun HabitsScreen(habitsState: HabitsState, today: kotlinx.datetime.LocalDate, op
             }
         }
     }
-    if (adding) NewHabitDialog("New habit", "", emptyList(), "Create", onDismiss = { adding = false }) { name, days ->
-        habitsState.save(habitsState.habits + Habit(newId(), name.trim(), days))
+    if (adding) NewHabitDialog("New habit", "", emptyList(), "", "Create", onDismiss = { adding = false }) { name, days, remind ->
+        habitsState.save(habitsState.habits + Habit(newId(), name.trim(), days, remindAt = remind))
         adding = false
     }
     editing?.let { h ->
-        NewHabitDialog("Edit habit", h.name, h.days, "Save", onDismiss = { editing = null }) { name, days ->
-            habitsState.save(habitsState.habits.map { if (it.id == h.id) it.copy(name = name.trim(), days = days) else it })
+        NewHabitDialog("Edit habit", h.name, h.days, h.remindAt, "Save", onDismiss = { editing = null }) { name, days, remind ->
+            habitsState.save(habitsState.habits.map { if (it.id == h.id) it.copy(name = name.trim(), days = days, remindAt = remind) else it })
             editing = null
         }
     }
@@ -225,9 +225,10 @@ private fun PeriodHabits(habitsState: HabitsState, today: kotlinx.datetime.Local
 }
 
 @Composable
-private fun NewHabitDialog(title: String, startName: String, startDays: List<Int>, action: String, onDismiss: () -> Unit, onCreate: (String, List<Int>) -> Unit) {
+private fun NewHabitDialog(title: String, startName: String, startDays: List<Int>, startRemind: String, action: String, onDismiss: () -> Unit, onCreate: (String, List<Int>, String) -> Unit) {
     var name by remember { mutableStateOf(startName) }
     var days by remember { mutableStateOf(startDays.toSet()) }
+    var remind by remember { mutableStateOf(startRemind) }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },
@@ -240,9 +241,15 @@ private fun NewHabitDialog(title: String, startName: String, startDays: List<Int
                         FilterChip(i + 1 in days, { days = if (i + 1 in days) days - (i + 1) else days + (i + 1) }, { Text(label) })
                     }
                 }
+                Text("Reminder", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    FilterChip(remind.isEmpty(), { remind = "" }, { Text("None") })
+                    listOf("07:00", "12:00", "18:00", "21:00").forEach { t -> FilterChip(remind == t, { remind = t }, { Text(t) }) }
+                }
+                OutlinedTextField(remind, { remind = it }, singleLine = true, label = { Text("Other time, HH:MM") }, isError = remind.isNotEmpty() && !Regex("^([01]\\d|2[0-3]):[0-5]\\d$").matches(remind), modifier = Modifier.fillMaxWidth())
             }
         },
-        confirmButton = { TextButton(onClick = { onCreate(name, days.sorted()) }, enabled = name.isNotBlank()) { Text(action) } },
+        confirmButton = { TextButton(onClick = { onCreate(name, days.sorted(), remind) }, enabled = name.isNotBlank() && (remind.isEmpty() || Regex("^([01]\\\\d|2[0-3]):[0-5]\\\\d$").matches(remind))) { Text(action) } },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
     )
 }

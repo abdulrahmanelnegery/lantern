@@ -40,11 +40,17 @@ class MainActivity : ComponentActivity() {
             removeOldFolder = { removeOld(it) },
             migrationMessage = migrationMessage,
         )
+        // Reminders open the same vault from their receivers, so remember where it is.
+        getSharedPreferences("thabit", MODE_PRIVATE).edit().putString("vault", store.location).apply()
         setContent { CompositionLocalProvider(LocalPlatform provides actions) { ThabitApp(store) } }
     }
 
     override fun onResume() {
         super.onResume()
+        ReminderAlarms.schedule(this)
+        if (Build.VERSION.SDK_INT >= 33 && ReminderAlarms.anyReminder(this) && checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 7)
+        }
         // Files may have changed under us (a sync, a copy from the laptop), or the day rolled over.
         if (::store.isInitialized) store.reload()
     }
@@ -60,6 +66,12 @@ class MainActivity : ComponentActivity() {
             file.sink().buffer().use { zipVault(FileSystem.SYSTEM, store.vault.root, it) }
             android.widget.Toast.makeText(this, "Saved to ${file.absolutePath}", android.widget.Toast.LENGTH_LONG).show()
         }.onFailure { android.widget.Toast.makeText(this, "Could not save the export: ${it.message}", android.widget.Toast.LENGTH_LONG).show() }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Reminders were maybe added or changed on this screen: set the next alarm from the saved files.
+        ReminderAlarms.schedule(this)
     }
 
     private fun writeZip(uri: Uri) {
