@@ -1,50 +1,69 @@
 package dev.dawem.app
 
 import dev.dawem.ui.*
+import dev.dawem.core.ReleaseNotes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
-/** What the app is, who makes it, where its code lives and how it is licensed. */
+private const val REPO = "https://github.com/zimamlabs/dawem"
+
+/** The mark on a glow, what the app is, the tour and the notes, a privacy card and the links. */
 @Composable
 fun AboutScreen(store: DawemStore) {
-    val links = LocalUriHandler.current
-    Column(
-        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 28.dp, vertical = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        BrandMark(Modifier.size(96.dp))
-        Text(Brand.NAME, style = MaterialTheme.typography.headlineMedium)
-        Text("داوم  ·  keep at it", color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text("Version ${Brand.VERSION}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(
-            "Private notes, journal, tasks and habits in plain files you own. No account, no tracking, nothing leaves your device.",
-            Modifier.padding(top = 8.dp), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium,
-        )
-        Text("by ${Brand.MAKER}", Modifier.padding(top = 12.dp), style = MaterialTheme.typography.titleMedium, color = Color(0xFFFF5A1F))
-        OutlinedButton(onClick = { store.tourOpen = true }, Modifier.fillMaxWidth()) { Text("Show the tour again") }
-        OutlinedButton(onClick = { links.openUri("https://github.com/zimamlabs") }, Modifier.fillMaxWidth()) { Text("Zimam on GitHub") }
-        OutlinedButton(onClick = { links.openUri("https://github.com/zimamlabs/dawem") }, Modifier.fillMaxWidth()) { Text("Source code") }
-        OutlinedButton(onClick = { links.openUri("https://github.com/zimamlabs/dawem/issues") }, Modifier.fillMaxWidth()) { Text("Report a problem") }
-        Text(
-            "© 2026 Zimam. Free software under the MIT licence.",
-            Modifier.padding(top = 16.dp), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center,
-        )
+    val uri = LocalUriHandler.current
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Glow(Modifier.fillMaxWidth().clip(RoundedCornerShape(28.dp))) {
+            Column(Modifier.fillMaxWidth().padding(vertical = 28.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                BrandMark(Modifier.size(112.dp))
+                Text(Brand.NAME, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
+                Text("داوم", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+                Text("Notes, journal, tasks and habits, kept in plain files", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+                Text("Version ${Brand.VERSION}", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+        Text("Dawem (\"keep at it\") is one private place for your notes, a daily journal, tasks and habits. Everything is plain files in a folder you own, so it works offline, opens in any editor and moves between your phone and laptop by copying the folder.", style = MaterialTheme.typography.bodyLarge)
+        Panel {
+            Text("Show the tour again", style = MaterialTheme.typography.titleSmall)
+            Text("A quick walk through what Dawem does and where your data lives.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            OutlinedButton(onClick = { store.tourOpen = true }) { Text("Start the tour") }
+        }
+        Panel {
+            Text("What's new in ${Brand.VERSION}", style = MaterialTheme.typography.titleSmall)
+            ReleaseNotes.forVersion(Brand.VERSION).forEach { Text("•  $it", style = MaterialTheme.typography.bodyMedium) }
+        }
+        Panel {
+            Text("Private by design", style = MaterialTheme.typography.titleSmall)
+            Text("No account, no tracking. Your data stays in ${store.location}.", style = MaterialTheme.typography.bodyMedium)
+        }
+        Panel {
+            Text("Links", style = MaterialTheme.typography.titleSmall)
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                TextButton(onClick = { uri.openUri(REPO) }) { Text("Repository") }
+                TextButton(onClick = { uri.openUri("$REPO/releases") }) { Text("Releases") }
+                TextButton(onClick = { uri.openUri("$REPO/issues") }) { Text("Issues") }
+                TextButton(onClick = { uri.openUri("$REPO/blob/main/LICENSE") }) { Text("Licence") }
+            }
+        }
+        Text("by Zimam Labs  ·  MIT licence", Modifier.fillMaxWidth().padding(vertical = 8.dp), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
     }
 }

@@ -129,48 +129,39 @@ fun HomeScreen(store: DawemStore, nav: Nav) {
     }
 }
 
-/** A rounded card with an icon and a title; every Home card uses it so they read as one set. */
+/** A Panel with an icon and a title; every Home card uses it so they read as one set. */
 @Composable
 fun HomeCard(title: String, icon: ImageVector, onClick: (() -> Unit)? = null, content: @Composable () -> Unit) {
-    Card(
-        modifier = Modifier.fillMaxWidth().let { if (onClick != null) it.clickable(onClick = onClick) else it },
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-        elevation = CardDefaults.cardElevation(2.dp),
-    ) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Box(Modifier.size(30.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)), contentAlignment = Alignment.Center) {
-                    Icon(icon, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
-                }
-                Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+    Panel(onClick = onClick) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Box(Modifier.size(30.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)), contentAlignment = Alignment.Center) {
+                Icon(icon, null, Modifier.size(18.dp), tint = MaterialTheme.colorScheme.primary)
             }
-            content()
+            Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
         }
+        content()
     }
 }
 
 @Composable
 private fun Hero(store: DawemStore, progress: Progress) {
     val hour = store.hour
-    Card(
-        Modifier.fillMaxWidth(), shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
-        elevation = CardDefaults.cardElevation(3.dp),
-    ) {
-        Row(Modifier.padding(20.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(greetingFor(hour), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
-                Text(prettyDate(store.today), style = MaterialTheme.typography.titleMedium)
-                Text(
-                    if (progress.total == 0) "Nothing planned yet. Add a habit or a task."
-                    else if (progress.done == progress.total) "All done for today. Well kept."
-                    else "${progress.total - progress.done} left for today",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-            ProgressRing(progress.fraction ?: 0f, 88.dp, MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f)) {
-                Text(if (progress.total == 0) "-" else "${progress.done}/${progress.total}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+    Glow(Modifier.fillMaxWidth().clip(RoundedCornerShape(28.dp))) {
+        Panel(Modifier.padding(0.dp)) {
+            Row(Modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(greetingFor(hour), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.SemiBold)
+                    Text(prettyDate(store.today), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+                    Text(
+                        if (progress.total == 0) "Nothing planned yet. Add a habit or a task."
+                        else if (progress.done == progress.total) "All done for today. Well kept."
+                        else "${progress.total - progress.done} left for today",
+                        style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                ProgressRing(progress.fraction ?: 0f, 88.dp, MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.outlineVariant) {
+                    Text(if (progress.total == 0) "-" else "${progress.done}/${progress.total}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                }
             }
         }
     }

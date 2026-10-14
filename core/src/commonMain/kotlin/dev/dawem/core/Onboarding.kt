@@ -30,6 +30,10 @@ object Onboarding {
 /** Short notes per version, taken from the changelog; shown once after an update. */
 object ReleaseNotes {
     private val notes: Map<String, List<String>> = mapOf(
+        "0.7.1" to listOf(
+            "A new look: warm dark and ivory surfaces, an orange glow on the Home hero, rounded cards with a small diamond accent.",
+            "A new About page, and exports now go to Zimam/Dawem/exports.",
+        ),
         "0.7.0" to listOf(
             "A new Home page: today's progress, your week, mood, quick add, tasks, notes and a look back.",
             "Your vault now lives in one Zimam folder (Zimam/Dawem). Old folders are copied and checked, never deleted.",
