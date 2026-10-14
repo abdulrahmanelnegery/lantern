@@ -15,6 +15,7 @@ Dawem (داوم, "keep at it") runs on **Android** and **Linux** (Debian and Ubu
 - **Journal**: one entry a day with a mood, and a look back through the days.
 - **Tasks**: lists and a checklist with due dates (today, tomorrow, next week) and priorities.
 - **Habits**: daily or chosen weekdays; swipe to check or undo, hold to skip; week and month views, streaks that skip days you skip on purpose, and a page for each habit with its history.
+- **The Zimam look**: a splash screen, an About page and the Zimam icon.
 - **Insights**: a day, week or month in numbers: what you wrote, did and kept up, with mood and habits by day.
 - **Search** across notes, journal entries and tasks, from one place.
 - **Themes**: Zimam (warm paper and near-black with an orange accent) and five more palettes, each in light and dark, or follow the system.
@@ -29,7 +30,7 @@ notes/<title>-<id>.md          Markdown with a small header (id, title, tags, da
 journal/<year>/<date>.md       one file a day: mood in the header, text below
 tasks/Tasks.md                 a Markdown checklist
 habits/habits.json, log.csv    what you track, and the days you did it
-.lantern/                      settings and the trash
+.lantern/                      settings and the trash (the folder keeps its old name so existing vaults keep working)
 ```
 
 Open the folder in Obsidian, a text editor or a spreadsheet; Dawem reads it back. To move to another device, copy the folder or sync it with any file-sync tool.
@@ -80,7 +81,7 @@ The code is split in two: `shared` holds the vault format and the logic (plain K
 
 ## Roadmap
 
-Reminders with sticky notifications, widgets, sync between devices, recurring tasks and charts. Money tracking left Dawem and became its own app, Zimma.
+Reminders with sticky notifications, widgets, sync between devices, recurring tasks and charts. Money tracking left Dawem and became its own app, [Zimma](https://github.com/zimamlabs/zimma).
 
 ## Licence
 
