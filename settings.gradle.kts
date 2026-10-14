@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "dawem"
-include(":core", ":ui", ":shared", ":composeApp")
+include(":core", ":ui", ":feature-notes", ":feature-journal", ":feature-tasks", ":feature-habits", ":shared", ":composeApp")

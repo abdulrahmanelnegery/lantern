@@ -7,6 +7,8 @@ import java.util.zip.ZipInputStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import dev.dawem.notes.Note
+import dev.dawem.tasks.Task
 
 class VaultZipTest {
     @Test fun exportHasTheVaultFilesButNotTheTrash() {

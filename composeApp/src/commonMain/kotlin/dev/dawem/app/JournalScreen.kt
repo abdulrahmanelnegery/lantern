@@ -19,8 +19,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dev.dawem.core.JournalEntry
 import kotlinx.datetime.LocalDate
+import dev.dawem.journal.JournalEntry
 
 private val faces = listOf("😞", "😕", "😐", "🙂", "😄")
 

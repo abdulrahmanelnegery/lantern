@@ -58,6 +58,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import dev.dawem.tasks.Task
 
 enum class Section(val label: String, val icon: ImageVector) {
     Today("Today", Icons.Rounded.LightMode),

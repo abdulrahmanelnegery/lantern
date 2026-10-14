@@ -32,9 +32,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.dawem.core.JournalEntry
-import dev.dawem.core.streak
 import kotlinx.coroutines.delay
+import dev.dawem.habits.streak
+import dev.dawem.journal.JournalEntry
 
 private val moods = listOf("😞" to "Low", "😕" to "Meh", "😐" to "Okay", "🙂" to "Good", "😄" to "Great")
 
@@ -122,7 +122,7 @@ private fun StreaksCard(store: DawemStore) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Column { Text("Best streak", style = MaterialTheme.typography.labelMedium); Text("$best ${if (best == 1) "day" else "days"}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary) }
             Column { Text("Habits today", style = MaterialTheme.typography.labelMedium); Text("$doneToday of ${todays.size}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold) }
-            Column { Text("Journal", style = MaterialTheme.typography.labelMedium); val j = dev.dawem.core.journalStreak(journalDays, today); Text("$j ${if (j == 1) "day" else "days"}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold) }
+            Column { Text("Journal", style = MaterialTheme.typography.labelMedium); val j = dev.dawem.journal.journalStreak(journalDays, today); Text("$j ${if (j == 1) "day" else "days"}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold) }
         }
     }
 }

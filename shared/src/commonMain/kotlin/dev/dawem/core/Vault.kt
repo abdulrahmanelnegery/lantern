@@ -1,16 +1,19 @@
 package dev.dawem.core
 
 import kotlinx.datetime.Clock
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.minus
-import kotlinx.datetime.toLocalDateTime
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
+import dev.dawem.habits.Habit
+import dev.dawem.habits.HabitMark
+import dev.dawem.habits.HabitsRepository
+import dev.dawem.journal.JournalEntry
+import dev.dawem.journal.JournalRepository
+import dev.dawem.notes.Note
+import dev.dawem.notes.NotesRepository
+import dev.dawem.tasks.Task
+import dev.dawem.tasks.TasksRepository
 import okio.FileSystem
 import okio.Path
-import okio.Path.Companion.toPath
 
 /**
  * A Dawem vault: one folder of plain files, readable in any editor.
@@ -26,171 +29,47 @@ import okio.Path.Companion.toPath
 class Vault(
     val fs: FileSystem,
     val root: Path,
-    private val clock: Clock = Clock.System,
-    private val zone: TimeZone = TimeZone.currentSystemDefault(),
+    clock: Clock = Clock.System,
+    zone: TimeZone = TimeZone.currentSystemDefault(),
 ) {
-    private val json = Json { prettyPrint = true; ignoreUnknownKeys = true; encodeDefaults = true }
+    val files = VaultFiles(fs, root, clock, zone)
+    val notesRepo = NotesRepository(files)
+    val journalRepo = JournalRepository(files)
+    val tasksRepo = TasksRepository(files)
+    val habitsRepo = HabitsRepository(files)
 
-    init {
-        listOf("notes", "journal", "tasks", "habits", ".lantern/trash").forEach { fs.createDirectories(root / it) }
-    }
+    init { files.trash.let { fs.createDirectories(it) } }
 
-    fun today(): LocalDate = clock.now().toLocalDateTime(zone).date
-
-    private fun stamp(): String = clock.now().toLocalDateTime(zone).toString().take(19)
-
-    private fun read(path: Path): String? = if (fs.exists(path)) fs.read(path) { readUtf8() } else null
-
-    private fun write(path: Path, text: String) {
-        path.parent?.let { fs.createDirectories(it) }
-        val tmp = path.parent!! / (path.name + ".tmp")
-        fs.write(tmp) { writeUtf8(text) }
-        fs.atomicMove(tmp, path)
-    }
+    fun today(): LocalDate = files.today()
 
     // ---- settings --------------------------------------------------------------------------
 
     private val settingsPath get() = root / ".lantern" / "settings.json"
 
-    fun settings(): AppSettings = read(settingsPath)?.let { runCatching { json.decodeFromString(AppSettings.serializer(), it) }.getOrNull() } ?: AppSettings()
+    fun settings(): AppSettings = files.read(settingsPath)?.let { runCatching { files.json.decodeFromString(AppSettings.serializer(), it) }.getOrNull() } ?: AppSettings()
 
-    fun saveSettings(settings: AppSettings) = write(settingsPath, json.encodeToString(AppSettings.serializer(), settings))
+    fun saveSettings(settings: AppSettings) = files.write(settingsPath, files.json.encodeToString(AppSettings.serializer(), settings))
 
-    // ---- notes -----------------------------------------------------------------------------
+    // ---- the features, kept under their old names so callers do not change ------------------
 
-    private fun noteFiles(): List<Path> = fs.listOrNull(root / "notes").orEmpty().filter { it.name.endsWith(".md") }
+    fun notes(): List<Note> = notesRepo.notes()
+    fun saveNote(note: Note): Note = notesRepo.save(note)
+    fun trashNote(id: String) = notesRepo.trash(id)
 
-    fun notes(): List<Note> = noteFiles().mapNotNull { parseNote(it) }.sortedWith(compareByDescending<Note> { it.pinned }.thenByDescending { it.updated })
+    fun journal(date: LocalDate): JournalEntry? = journalRepo.entry(date)
+    fun saveJournal(entry: JournalEntry) = journalRepo.save(entry)
+    fun journalDates(): List<LocalDate> = journalRepo.dates()
+    fun journalEntries(days: Int): List<JournalEntry> = journalRepo.entries(days)
 
-    private fun parseNote(path: Path): Note? {
-        val doc = Frontmatter.parse(read(path) ?: return null)
-        val id = doc.meta["id"] ?: path.name.removeSuffix(".md").substringAfterLast('-')
-        val title = doc.meta["title"] ?: doc.body.lineSequence().firstOrNull { it.isNotBlank() }?.trimStart('#', ' ') ?: path.name.removeSuffix(".md")
-        return Note(id, title, doc.body, doc.meta["created"].orEmpty(), doc.meta["updated"].orEmpty(), doc.list("tags"), doc.meta["pinned"] == "true")
-    }
+    fun tasks(): List<Task> = tasksRepo.tasks()
+    fun saveTasks(tasks: List<Task>) = tasksRepo.save(tasks)
 
-    /** Creates or updates a note, renaming its file when the title changes. */
-    fun saveNote(note: Note): Note {
-        val id = note.id.ifEmpty { newId() }
-        val created = note.created.ifEmpty { stamp() }
-        val saved = note.copy(id = id, created = created, updated = stamp())
-        val meta = linkedMapOf("id" to id, "title" to saved.title, "created" to created, "updated" to saved.updated, "tags" to Frontmatter.formatList(saved.tags))
-        if (saved.pinned) meta["pinned"] = "true"
-        val target = root / "notes" / "${slugOf(saved.title)}-$id.md"
-        noteFiles().filter { it.name.endsWith("-$id.md") && it != target }.forEach { fs.delete(it) }
-        write(target, Frontmatter.write(Document(meta, saved.body)))
-        return saved
-    }
-
-    /** Moves a note to the vault's trash instead of deleting it. */
-    fun trashNote(id: String) {
-        noteFiles().filter { it.name.endsWith("-$id.md") }.forEach { fs.atomicMove(it, root / ".lantern" / "trash" / it.name) }
-    }
-
-    // ---- journal ---------------------------------------------------------------------------
-
-    private fun journalPath(date: LocalDate) = root / "journal" / date.year.toString() / "$date.md"
-
-    fun journal(date: LocalDate): JournalEntry? {
-        val doc = Frontmatter.parse(read(journalPath(date)) ?: return null)
-        return JournalEntry(date, doc.body.trimEnd('\n'), doc.meta["mood"]?.toIntOrNull(), doc.list("tags"))
-    }
-
-    /** Saves the day's entry; an empty entry with no mood removes the file. */
-    fun saveJournal(entry: JournalEntry) {
-        val path = journalPath(entry.date)
-        if (entry.body.isBlank() && entry.mood == null && entry.tags.isEmpty()) { fs.delete(path); return }
-        val meta = linkedMapOf("date" to entry.date.toString())
-        entry.mood?.let { meta["mood"] = it.coerceIn(1, 5).toString() }
-        if (entry.tags.isNotEmpty()) meta["tags"] = Frontmatter.formatList(entry.tags)
-        write(path, Frontmatter.write(Document(meta, entry.body)))
-    }
-
-    /** Every day that has an entry, newest first. */
-    fun journalDates(): List<LocalDate> = fs.listOrNull(root / "journal").orEmpty().flatMap { year ->
-        fs.listOrNull(year).orEmpty().mapNotNull { runCatching { LocalDate.parse(it.name.removeSuffix(".md")) }.getOrNull() }
-    }.sortedDescending()
-
-    fun journalEntries(days: Int): List<JournalEntry> {
-        val from = today().minus(days, DateTimeUnit.DAY)
-        return journalDates().filter { it >= from }.mapNotNull { journal(it) }
-    }
-
-    // ---- tasks -----------------------------------------------------------------------------
-
-    private val tasksPath get() = root / "tasks" / "Tasks.md"
-
-    fun tasks(): List<Task> = (read(tasksPath) ?: "").lineSequence().mapNotNull(::parseTask).toList()
-
-    fun saveTasks(tasks: List<Task>) = write(tasksPath, "# Tasks\n\n" + tasks.joinToString("\n") { formatTask(it) } + "\n")
-
-    private fun formatTask(t: Task): String = buildString {
-        append(if (t.done) "- [x] " else "- [ ] ").append(t.title)
-        t.due?.let { append(" due:").append(it) }
-        if (t.priority > 0) append(" p:").append(t.priority)
-        if (t.list.isNotEmpty()) append(" list:").append(t.list.replace(' ', '_'))
-        t.doneOn?.let { append(" done:").append(it) }
-        append(" id:").append(t.id)
-    }
-
-    private fun parseTask(line: String): Task? {
-        val m = Regex("^\\s*- \\[( |x|X)] (.*)$").find(line) ?: return null
-        val tokens = m.groupValues[2].split(' ').toMutableList()
-        var due: LocalDate? = null
-        var priority = 0
-        var list = ""
-        var id = ""
-        var doneOn: LocalDate? = null
-        while (tokens.isNotEmpty()) {
-            val t = tokens.last()
-            when {
-                t.startsWith("due:") -> due = runCatching { LocalDate.parse(t.removePrefix("due:")) }.getOrNull()
-                t.startsWith("p:") -> priority = t.removePrefix("p:").toIntOrNull() ?: 0
-                t.startsWith("list:") -> list = t.removePrefix("list:").replace('_', ' ')
-                t.startsWith("id:") -> id = t.removePrefix("id:")
-                t.startsWith("done:") -> doneOn = runCatching { LocalDate.parse(t.removePrefix("done:")) }.getOrNull()
-                else -> break
-            }
-            tokens.removeAt(tokens.lastIndex)
-        }
-        val title = tokens.joinToString(" ").trim()
-        if (title.isEmpty()) return null
-        return Task(id.ifEmpty { newId() }, title, m.groupValues[1] != " ", due, priority, list, doneOn)
-    }
-
-    // ---- habits ----------------------------------------------------------------------------
-
-    private val habitsPath get() = root / "habits" / "habits.json"
-    private val habitLogPath get() = root / "habits" / "log.csv"
-
-    fun habits(): List<Habit> = read(habitsPath)?.let { runCatching { json.decodeFromString(ListSerializer(Habit.serializer()), it) }.getOrNull() }.orEmpty()
-
-    fun saveHabits(habits: List<Habit>) = write(habitsPath, json.encodeToString(ListSerializer(Habit.serializer()), habits))
-
-    private fun habitRows(): List<Triple<String, LocalDate, HabitMark>> =
-        Csv.parse(read(habitLogPath) ?: "").drop(1).mapNotNull { r ->
-            val date = runCatching { LocalDate.parse(r.getOrElse(1) { "" }) }.getOrNull() ?: return@mapNotNull null
-            // Older files have two columns, and every row there is a day that was done.
-            Triple(r[0], date, if (r.getOrElse(2) { "" } == "skip") HabitMark.Skipped else HabitMark.Done)
-        }
-
-    /** The days each habit was done, by habit id. */
-    fun habitLog(): Map<String, Set<LocalDate>> =
-        habitRows().filter { it.third == HabitMark.Done }.groupBy({ it.first }, { it.second }).mapValues { it.value.toSet() }
-
-    /** The days each habit was skipped on purpose (a sick day, a trip): they neither break a streak nor count against it. */
-    fun habitSkips(): Map<String, Set<LocalDate>> =
-        habitRows().filter { it.third == HabitMark.Skipped }.groupBy({ it.first }, { it.second }).mapValues { it.value.toSet() }
-
-    /** Marks a day as done or skipped; null clears it. */
-    fun setHabitMark(habitId: String, date: LocalDate, mark: HabitMark?) {
-        val rows = habitRows().filterNot { it.first == habitId && it.second == date }.toMutableList()
-        if (mark != null) rows += Triple(habitId, date, mark)
-        val out = listOf(listOf("habit", "date", "mark")) + rows.sortedWith(compareBy({ it.first }, { it.second })).map { listOf(it.first, it.second.toString(), if (it.third == HabitMark.Skipped) "skip" else "done") }
-        write(habitLogPath, Csv.format(out))
-    }
-
-    fun setHabitDone(habitId: String, date: LocalDate, done: Boolean) = setHabitMark(habitId, date, if (done) HabitMark.Done else null)
+    fun habits(): List<Habit> = habitsRepo.habits()
+    fun saveHabits(habits: List<Habit>) = habitsRepo.save(habits)
+    fun habitLog(): Map<String, Set<LocalDate>> = habitsRepo.log()
+    fun habitSkips(): Map<String, Set<LocalDate>> = habitsRepo.skips()
+    fun setHabitMark(habitId: String, date: LocalDate, mark: HabitMark?) = habitsRepo.setMark(habitId, date, mark)
+    fun setHabitDone(habitId: String, date: LocalDate, done: Boolean) = habitsRepo.setDone(habitId, date, done)
 
     // ---- search ----------------------------------------------------------------------------
 
