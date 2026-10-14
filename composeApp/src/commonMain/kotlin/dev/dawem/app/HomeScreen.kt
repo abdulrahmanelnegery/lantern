@@ -250,7 +250,7 @@ private fun TasksCard(store: DawemStore, nav: Nav) {
     HomeCard("Upcoming and overdue", Icons.Rounded.CheckCircle, onClick = { nav.go(Section.Tasks) }) {
         list.forEach { t ->
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(false, { store.tasksState.save(store.tasksState.tasks.map { x -> if (x.id == t.id) x.copy(done = true, doneOn = today) else x }) })
+                Checkbox(false, { store.tasksState.complete(t.id, true, today) })
                 Column(Modifier.weight(1f)) {
                     Text(t.title, style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     t.due?.let { d ->
