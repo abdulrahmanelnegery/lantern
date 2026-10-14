@@ -13,6 +13,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.CompositionLocalProvider
 import dev.dawem.core.Vault
+import dev.dawem.core.VaultLocation
 import dev.dawem.core.zipVault
 import okio.FileSystem
 import okio.Path.Companion.toPath
@@ -35,6 +36,9 @@ class MainActivity : ComponentActivity() {
             exportVault = { exportZip.launch("Dawem-vault.zip") },
             allowVisibleFolder = if (Build.VERSION.SDK_INT >= 30) ({ openAllFilesAccess() }) else null,
             visibleFolderOn = Build.VERSION.SDK_INT < 30 || Environment.isExternalStorageManager(),
+            removableOldFolders = { removable() },
+            removeOldFolder = { removeOld(it) },
+            migrationMessage = migrationMessage,
         )
         setContent { CompositionLocalProvider(LocalPlatform provides actions) { DawemApp(store) } }
     }
@@ -56,18 +60,29 @@ class MainActivity : ComponentActivity() {
         runCatching { startActivity(intent) }.onFailure { startActivity(Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)) }
     }
 
+    private var removable: () -> List<String> = { emptyList() }
+    private var removeOld: (String) -> Boolean = { false }
+    private var migrationMessage: String? = null
+
     /**
-     * The vault is /Dawem on the phone when All files access is allowed, else a private folder.
-     * The first start after allowing it brings the private vault across.
+     * The vault is `Zimam/Dawem` on the phone when All files access is allowed, else a private folder. Older folders
+     * (`Dawem`, `Lantern`, and the private vault when no visible one exists) are copied in and checked, then left where
+     * they are as a backup; if a copy cannot be verified the old folder stays in use. Nothing is deleted here.
      */
     private fun openStore(): DawemStore {
-        // The app was called Lantern before Dawem: its vault folders move across once, by renaming, so nothing is copied twice.
-        fun moved(old: File, new: File): File { if (!new.exists() && old.isDirectory) old.renameTo(new); return new }
-        val private = moved(File(filesDir, "Lantern"), File(filesDir, "Dawem"))
-        val shared = Build.VERSION.SDK_INT >= 30 && Environment.isExternalStorageManager()
-        val dir = if (shared) moved(File(Environment.getExternalStorageDirectory(), "Lantern"), File(Environment.getExternalStorageDirectory(), "Dawem")) else private
-        if (shared && !File(dir, "notes").exists() && private.exists()) runCatching { private.copyRecursively(dir, overwrite = false) }
-        dir.mkdirs()
-        return DawemStore(Vault(FileSystem.SYSTEM, dir.absolutePath.toPath()), dir.absolutePath)
+        // The app was called Lantern before Dawem: the private vault folder moves across once, by renaming.
+        val private = File(filesDir, "Dawem").also { new -> File(filesDir, "Lantern").let { old -> if (!new.exists() && old.isDirectory) old.renameTo(new) } }
+        val sd = Environment.getExternalStorageDirectory()
+        val fs = FileSystem.SYSTEM
+        val shared = (File(sd, "Zimam/Dawem")).absolutePath.toPath()
+        val olds = listOf("Dawem", "Lantern").map { File(sd, it).absolutePath.toPath() }
+        val canShare = Build.VERSION.SDK_INT >= 30 && Environment.isExternalStorageManager()
+        val choice = VaultLocation.choose(fs, canShare, shared, olds, private.absolutePath.toPath())
+        migrationMessage = choice.message
+        val all = olds + private.absolutePath.toPath()
+        removable = { VaultLocation.removable(fs, choice.dir, shared, all).map { it.toString() } }
+        removeOld = { p -> VaultLocation.remove(fs, p.toPath(), shared) }
+        File(choice.dir.toString()).mkdirs()
+        return DawemStore(Vault(fs, choice.dir), choice.dir.toString())
     }
 }
