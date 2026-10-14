@@ -28,6 +28,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -76,13 +80,36 @@ fun SettingsScreen(store: DawemStore) {
             Modifier.padding(horizontal = 24.dp, vertical = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (platform.allowVisibleFolder != null && !platform.visibleFolderOn) {
-            Action(Icons.Rounded.FolderSpecial, "Keep the vault in a visible folder", "Allow access to all files, then restart Dawem. The vault moves to /Dawem.") { platform.allowVisibleFolder.invoke() }
+            Action(Icons.Rounded.FolderSpecial, "Keep the vault in a visible folder", "Allow access to all files, then restart Dawem. The vault is copied to Zimam/Dawem; the old folder stays as a backup.") { platform.allowVisibleFolder.invoke() }
         }
+        platform.migrationMessage?.let { Text(it, Modifier.padding(horizontal = 24.dp, vertical = 8.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error) }
+        OldFolders(platform)
         Header("Move your data")
         Action(Icons.Rounded.IosShare, "Export the vault as a zip", "Save a copy to share with your laptop or keep as a backup.") { platform.exportVault() }
         Header("About")
         Text("${Brand.NAME} ${Brand.VERSION}  ·  by ${Brand.MAKER}", Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyLarge)
         Text("Private notes, journal, tasks and habits. MIT licence.", Modifier.padding(horizontal = 24.dp, vertical = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+/** Old vault folders that are fully copied into the Zimam folder and checked; removing one is the user's choice, and checked again first. */
+@Composable
+private fun OldFolders(platform: PlatformActions) {
+    var tick by remember { mutableStateOf(0) }
+    val olds = remember(tick) { platform.removableOldFolders() }
+    var asking by remember { mutableStateOf<String?>(null) }
+    if (olds.isEmpty()) return
+    Header("Old folders")
+    Text("These were copied into your Zimam folder and checked. They are kept as a backup until you remove them.", Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    olds.forEach { path -> Action(Icons.Rounded.FolderSpecial, "Remove $path", "Checks again that everything in it is in the Zimam folder, then removes it.") { asking = path } }
+    asking?.let { path ->
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { asking = null },
+            title = { Text("Remove the old folder?") },
+            text = { Text("$path will be deleted after Dawem checks once more that every file in it is also in your Zimam folder. This cannot be undone.") },
+            confirmButton = { androidx.compose.material3.TextButton(onClick = { platform.removeOldFolder(path); asking = null; tick++ }) { Text("Remove") } },
+            dismissButton = { androidx.compose.material3.TextButton(onClick = { asking = null }) { Text("Keep it") } },
+        )
     }
 }
 

@@ -13,4 +13,8 @@ data class AppSettings(
     val homeOrder: List<String> = emptyList(),
     /** Cards hidden from the Today page. */
     val homeHidden: List<String> = emptyList(),
+    /** The version whose "what's new" notes were closed last; empty when never. */
+    val lastSeenVersion: String = "",
+    /** True once the first-install tour was finished or skipped. */
+    val tourDone: Boolean = false,
 )
