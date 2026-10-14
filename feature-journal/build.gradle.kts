@@ -27,7 +27,7 @@ kotlin {
 }
 
 android {
-    namespace = "dev.dawem.journal"
+    namespace = "dev.thabit.journal"
     compileSdk = 36
     defaultConfig { minSdk = 26 }
     compileOptions {

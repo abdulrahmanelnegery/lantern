@@ -27,7 +27,7 @@ kotlin {
 }
 
 android {
-    namespace = "dev.dawem.notes"
+    namespace = "dev.thabit.notes"
     compileSdk = 36
     defaultConfig { minSdk = 26 }
     compileOptions {

@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "dawem"
+rootProject.name = "thabit"
 include(":core", ":ui", ":feature-notes", ":feature-journal", ":feature-tasks", ":feature-habits", ":shared", ":composeApp")

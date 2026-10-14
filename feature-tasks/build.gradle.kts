@@ -27,7 +27,7 @@ kotlin {
 }
 
 android {
-    namespace = "dev.dawem.tasks"
+    namespace = "dev.thabit.tasks"
     compileSdk = 36
     defaultConfig { minSdk = 26 }
     compileOptions {

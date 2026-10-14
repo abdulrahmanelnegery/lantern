@@ -1,18 +1,18 @@
-<p align="center"><img src="docs/icon.png" width="120" alt="Dawem"></p>
+<p align="center"><img src="docs/icon.png" width="120" alt="Thabit"></p>
 
-<h1 align="center">Dawem</h1>
+<h1 align="center">Thabit</h1>
 
-<p align="center">Private notes, journal, tasks and habits in plain files, by <a href="https://github.com/zimamlabs">Zimam Labs</a>. Formerly Lantern.</p>
+<p align="center">Private notes, journal, tasks and habits in plain files, by <a href="https://github.com/zimamlabs">Zimam Labs</a>. Thabit, formerly Dawem and Lantern.</p>
 
 <p align="center">
-  <a href="../../releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/zimamlabs/dawem?color=FF5A1F&labelColor=1A1613"></a>
-  <a href="../../releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/zimamlabs/dawem/total?color=FF5A1F&labelColor=1A1613"></a>
-  <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/zimamlabs/dawem?color=FF5A1F&labelColor=1A1613"></a>
+  <a href="../../releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/zimamlabs/thabit?color=FF5A1F&labelColor=1A1613"></a>
+  <a href="../../releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/zimamlabs/thabit/total?color=FF5A1F&labelColor=1A1613"></a>
+  <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/zimamlabs/thabit?color=FF5A1F&labelColor=1A1613"></a>
 </p>
 
 Notes, a journal, tasks and habits in one private app. Your data is plain files in a folder you own, so it works offline, opens in any editor and moves between your phone and laptop by copying the folder.
 
-Dawem (داوم, "keep at it") runs on **Android** and **Linux** (Debian and Ubuntu) from one codebase.
+Thabit (ثابت, "steady") runs on **Android** and **Linux** (Debian and Ubuntu) from one codebase.
 
 ## Screenshots
 
@@ -34,7 +34,7 @@ Screenshots will be added here once the app has been run and captured on a phone
 
 ## Your data
 
-Everything lives in one vault folder inside a `Zimam` folder (`~/Zimam/Dawem` on Linux; `Zimam/Dawem` on the phone):
+Everything lives in one vault folder inside a `Zimam` folder (`~/Zimam/Thabit` on Linux; `Zimam/Thabit` on the phone):
 
 ```
 notes/<title>-<id>.md          Markdown with a small header (id, title, tags, dates)
@@ -44,9 +44,9 @@ habits/habits.json, log.csv    what you track, and the days you did it
 .lantern/                      settings and the trash (the folder keeps its old name so existing vaults keep working)
 ```
 
-Open the folder in Obsidian, a text editor or a spreadsheet; Dawem reads it back. To move to another device, copy the folder or sync it with any file-sync tool.
+Open the folder in Obsidian, a text editor or a spreadsheet; Thabit reads it back. To move to another device, copy the folder or sync it with any file-sync tool.
 
-On Android the vault is private to the app by default. In the app you can allow *All files access* to keep it in the visible `Zimam/Dawem` folder instead. Older folders (`Dawem`, `Lantern`, the private vault) are copied in, every file is checked by count, size and SHA-256, and the old folder is kept as a backup: nothing is deleted, a file that already exists is never overwritten (both are kept), and if a check fails Dawem keeps using the old folder. *Settings* has a button to remove an old folder once it has been checked again. Vault exports are saved in an `exports` folder inside the vault (and are left out of the next export), so every visible file stays under `Zimam/Dawem`.
+On Android the vault is private to the app by default. In the app you can allow *All files access* to keep it in the visible `Zimam/Thabit` folder instead. Older folders (`Thabit`, `Lantern`, the private vault) are copied in, every file is checked by count, size and SHA-256, and the old folder is kept as a backup: nothing is deleted, a file that already exists is never overwritten (both are kept), and if a check fails Thabit keeps using the old folder. *Settings* has a button to remove an old folder once it has been checked again. Vault exports are saved in an `exports` folder inside the vault (and are left out of the next export), so every visible file stays under `Zimam/Thabit`.
 
 ## Install
 
@@ -54,27 +54,27 @@ Get the files for your system from the [latest release](../../releases/latest). 
 
 | System | File |
 |---|---|
-| Android phone (64-bit, almost every phone since 2016) | `Dawem_<version>_Android_arm64-v8a.apk` |
-| Android, older 32-bit | `Dawem_<version>_Android_armeabi-v7a.apk` |
-| Android emulator, Chromebook | `Dawem_<version>_Android_x86_64.apk` |
-| Debian, Ubuntu, Mint | `Dawem_<version>_Linux_amd64.deb` |
+| Android phone (64-bit, almost every phone since 2016) | `Thabit_<version>_Android_arm64-v8a.apk` |
+| Android, older 32-bit | `Thabit_<version>_Android_armeabi-v7a.apk` |
+| Android emulator, Chromebook | `Thabit_<version>_Android_x86_64.apk` |
+| Debian, Ubuntu, Mint | `Thabit_<version>_Linux_amd64.deb` |
 
 ```
-sha256sum -c Dawem_<version>_Linux_amd64.deb.sha256
-sudo apt install ./Dawem_<version>_Linux_amd64.deb
+sha256sum -c Thabit_<version>_Linux_amd64.deb.sha256
+sudo apt install ./Thabit_<version>_Linux_amd64.deb
 ```
 
 ### Verify the Android download
 
-Every APK is signed with Dawem's own key. Android installs it without a store because the signature is valid, and shows its usual "unknown source" notice for anything that did not come from Google Play. To check a file is really ours, compare its signing certificate with this fingerprint:
+Every APK is signed with Thabit's own key. Android installs it without a store because the signature is valid, and shows its usual "unknown source" notice for anything that did not come from Google Play. To check a file is really ours, compare its signing certificate with this fingerprint:
 
 ```
 SHA-256: 09:7A:B4:82:7A:35:AF:FB:5A:0D:D5:AB:01:26:EA:77:10:6B:29:4A:83:B4:E6:A8:B8:32:91:33:64:F0:EB:EA
 ```
 
 ```
-apksigner verify --print-certs Dawem_<version>_Android_arm64-v8a.apk
-sha256sum -c Dawem_<version>_Android_arm64-v8a.apk.sha256
+apksigner verify --print-certs Thabit_<version>_Android_arm64-v8a.apk
+sha256sum -c Thabit_<version>_Android_arm64-v8a.apk.sha256
 ```
 
 ## Build
@@ -102,7 +102,7 @@ A feature depends only on `core` and `ui`, never on another feature; `scripts/ch
 
 ## Roadmap
 
-Reminders with sticky notifications, widgets, sync between devices, recurring tasks and charts. Money tracking left Dawem and became its own app, [Zimma](https://github.com/zimamlabs/zimma).
+Reminders with sticky notifications, widgets, sync between devices, recurring tasks and charts. Money tracking left Thabit and became its own app, [Zimma](https://github.com/zimamlabs/zimma).
 
 ## Licence
 

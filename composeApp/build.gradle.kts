@@ -46,14 +46,14 @@ kotlin {
 }
 
 android {
-    namespace = "dev.dawem.app"
+    namespace = "dev.thabit.app"
     compileSdk = 36
     defaultConfig {
         applicationId = "dev.lantern.notes"
         minSdk = 26
         targetSdk = 35
-        versionCode = 13
-        versionName = "0.7.1"
+        versionCode = 14
+        versionName = "0.7.0"
     }
     signingConfigs {
         create("release") {
@@ -62,12 +62,12 @@ android {
             enableV2Signing = true
             enableV3Signing = true
             enableV4Signing = true
-            val store = System.getenv("LANTERN_KEYSTORE")
+            val store = System.getenv("THABIT_KEYSTORE")
             if (store != null) {
                 storeFile = file(store)
-                storePassword = System.getenv("LANTERN_KEYSTORE_PASSWORD")
-                keyAlias = System.getenv("LANTERN_KEY_ALIAS") ?: "lantern"
-                keyPassword = System.getenv("LANTERN_KEYSTORE_PASSWORD")
+                storePassword = System.getenv("THABIT_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("THABIT_KEY_ALIAS") ?: "lantern"
+                keyPassword = System.getenv("THABIT_KEYSTORE_PASSWORD")
             }
         }
     }
@@ -76,7 +76,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            if (System.getenv("LANTERN_KEYSTORE") != null) signingConfig = signingConfigs.getByName("release")
+            if (System.getenv("THABIT_KEYSTORE") != null) signingConfig = signingConfigs.getByName("release")
         }
     }
     splits {
@@ -96,10 +96,10 @@ android {
 
 compose.desktop {
     application {
-        mainClass = "dev.dawem.app.MainKt"
+        mainClass = "dev.thabit.app.MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Deb)
-            packageName = "dawem"
+            packageName = "thabit"
             packageVersion = "0.6.1"
             description = "Private notes, journal, tasks and habits in plain files"
             vendor = "Zimam"

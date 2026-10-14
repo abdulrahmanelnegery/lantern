@@ -27,7 +27,7 @@ kotlin {
 }
 
 android {
-    namespace = "dev.dawem.habits"
+    namespace = "dev.thabit.habits"
     compileSdk = 36
     defaultConfig { minSdk = 26 }
     compileOptions {

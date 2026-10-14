@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Optional: lets Dawem keep the vault in a visible /Dawem folder, so a file manager or a sync tool can reach it. -->
+    <!-- Optional: lets Thabit keep the vault in a visible /Thabit folder, so a file manager or a sync tool can reach it. -->
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher"
-        android:label="Dawem"
+        android:label="Thabit"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Dawem">
+        android:theme="@style/Theme.Thabit">
         <activity
-            android:name="dev.dawem.app.MainActivity"
+            android:name="dev.thabit.app.MainActivity"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize|uiMode"
             android:windowSoftInputMode="adjustResize">
