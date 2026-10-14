@@ -6,5 +6,5 @@ import dev.dawem.ui.*
 object Brand {
     const val NAME = "Dawem"
     const val MAKER = "Zimam"
-    const val VERSION = "0.6.0"
+    const val VERSION = "0.6.1"
 }

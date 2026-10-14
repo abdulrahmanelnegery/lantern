@@ -1,4 +1,4 @@
-package dev.dawem.app
+package dev.dawem.habits
 
 import dev.dawem.ui.*
 import androidx.compose.foundation.background
@@ -68,15 +68,15 @@ import dev.dawem.habits.streak
 private enum class HabitView(val label: String) { Today("Today"), Week("Week"), Month("Month") }
 
 @Composable
-fun HabitsScreen(store: DawemStore, openId: String? = null, onOpen: (String) -> Unit = {}, onClose: () -> Unit = {}) {
-    store.habits.firstOrNull { it.id == openId }?.let { HabitDetailScreen(store, it, onClose); return }
+fun HabitsScreen(habitsState: HabitsState, today: kotlinx.datetime.LocalDate, openId: String? = null, onOpen: (String) -> Unit = {}, onClose: () -> Unit = {}) {
+    habitsState.habits.firstOrNull { it.id == openId }?.let { HabitDetailScreen(habitsState, today, it, onClose); return }
     var adding by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<Habit?>(null) }
     var view by remember { mutableStateOf(HabitView.Today) }
     // How many weeks or months back from now the Week and Month views are showing (0 is this week or month).
     var back by remember { mutableStateOf(0) }
     var paged by remember { mutableStateOf(false) }
-    val active = store.habits.filter { !it.archived }
+    val active = habitsState.habits.filter { !it.archived }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = { FloatingActionButton(onClick = { adding = true }) { Icon(Icons.Rounded.Add, "New habit") } },
@@ -89,18 +89,18 @@ fun HabitsScreen(store: DawemStore, openId: String? = null, onOpen: (String) -> 
             }
             if (active.isEmpty()) EmptyHint("No habits yet", "Tap + to start one: reading, water, a walk. Swipe it right each day to build a streak.")
             when (view) {
-                HabitView.Today -> TodayHabits(store, active, onOpen, onEdit = { editing = it })
-                else -> PeriodHabits(store, active, month = view == HabitView.Month, back = back, onBack = { back = it }, paged = paged, onPaged = { paged = it }, onOpen = onOpen)
+                HabitView.Today -> TodayHabits(habitsState, today, active, onOpen, onEdit = { editing = it })
+                else -> PeriodHabits(habitsState, today, active, month = view == HabitView.Month, back = back, onBack = { back = it }, paged = paged, onPaged = { paged = it }, onOpen = onOpen)
             }
         }
     }
     if (adding) NewHabitDialog("New habit", "", emptyList(), "Create", onDismiss = { adding = false }) { name, days ->
-        store.saveHabits(store.habits + Habit(newId(), name.trim(), days))
+        habitsState.save(habitsState.habits + Habit(newId(), name.trim(), days))
         adding = false
     }
     editing?.let { h ->
         NewHabitDialog("Edit habit", h.name, h.days, "Save", onDismiss = { editing = null }) { name, days ->
-            store.saveHabits(store.habits.map { if (it.id == h.id) it.copy(name = name.trim(), days = days) else it })
+            habitsState.save(habitsState.habits.map { if (it.id == h.id) it.copy(name = name.trim(), days = days) else it })
             editing = null
         }
     }
@@ -109,19 +109,18 @@ fun HabitsScreen(store: DawemStore, openId: String? = null, onOpen: (String) -> 
 /** The habits that apply today: swipe right to mark one done, left to undo it, hold for skip, edit, archive and analytics. */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-private fun TodayHabits(store: DawemStore, active: List<Habit>, onOpen: (String) -> Unit, onEdit: (Habit) -> Unit) {
-    val today = store.today
+private fun TodayHabits(habitsState: HabitsState, today: kotlinx.datetime.LocalDate, active: List<Habit>, onOpen: (String) -> Unit, onEdit: (Habit) -> Unit) {
     val todays = active.filter { it.days.isEmpty() || today.dayOfWeek.ordinal + 1 in it.days }
     val rest = active - todays.toSet()
     LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 96.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         items(todays, key = { it.id }) { h ->
-            val done = today in store.habitLog[h.id].orEmpty()
-            val skipped = today in store.habitSkips[h.id].orEmpty()
+            val done = today in habitsState.log[h.id].orEmpty()
+            val skipped = today in habitsState.skips[h.id].orEmpty()
             var menu by remember { mutableStateOf(false) }
             val state = rememberSwipeToDismissBoxState(confirmValueChange = { v ->
                 when (v) {
-                    SwipeToDismissBoxValue.StartToEnd -> store.setHabitMark(h.id, today, HabitMark.Done)
-                    SwipeToDismissBoxValue.EndToStart -> store.setHabitMark(h.id, today, null)
+                    SwipeToDismissBoxValue.StartToEnd -> habitsState.setMark(h.id, today, HabitMark.Done)
+                    SwipeToDismissBoxValue.EndToStart -> habitsState.setMark(h.id, today, null)
                     else -> {}
                 }
                 false
@@ -145,16 +144,16 @@ private fun TodayHabits(store: DawemStore, active: List<Habit>, onOpen: (String)
                             }
                             Column(Modifier.weight(1f).padding(start = 14.dp)) {
                                 Text(h.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                                val s = streak(h, store.habitLog[h.id].orEmpty(), today, store.habitSkips[h.id].orEmpty())
+                                val s = streak(h, habitsState.log[h.id].orEmpty(), today, habitsState.skips[h.id].orEmpty())
                                 Text(if (skipped) "Skipped today" else if (s > 0) "$s day streak" else "Swipe right when it is done", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
                             }
                         }
                     }
                     DropdownMenu(menu, { menu = false }) {
-                        DropdownMenuItem(text = { Text(if (skipped) "Clear the skip" else "Skip today") }, onClick = { menu = false; store.setHabitMark(h.id, today, if (skipped) null else HabitMark.Skipped) })
+                        DropdownMenuItem(text = { Text(if (skipped) "Clear the skip" else "Skip today") }, onClick = { menu = false; habitsState.setMark(h.id, today, if (skipped) null else HabitMark.Skipped) })
                         DropdownMenuItem(text = { Text("Edit") }, onClick = { menu = false; onEdit(h) })
                         DropdownMenuItem(text = { Text("Analytics") }, onClick = { menu = false; onOpen(h.id) })
-                        DropdownMenuItem(text = { Text("Archive") }, onClick = { menu = false; store.saveHabits(store.habits.map { if (it.id == h.id) it.copy(archived = true) else it }) })
+                        DropdownMenuItem(text = { Text("Archive") }, onClick = { menu = false; habitsState.save(habitsState.habits.map { if (it.id == h.id) it.copy(archived = true) else it }) })
                     }
                 }
             }
@@ -170,8 +169,7 @@ private fun TodayHabits(store: DawemStore, active: List<Habit>, onOpen: (String)
 
 /** A week or a month of every habit, as a grid you can tap; page back through time, stacked or one habit at a time. */
 @Composable
-private fun PeriodHabits(store: DawemStore, active: List<Habit>, month: Boolean, back: Int, onBack: (Int) -> Unit, paged: Boolean, onPaged: (Boolean) -> Unit, onOpen: (String) -> Unit) {
-    val today = store.today
+private fun PeriodHabits(habitsState: HabitsState, today: kotlinx.datetime.LocalDate, active: List<Habit>, month: Boolean, back: Int, onBack: (Int) -> Unit, paged: Boolean, onPaged: (Boolean) -> Unit, onOpen: (String) -> Unit) {
     val first = if (month) {
         val m = today.monthNumber - 1 - back
         LocalDate(today.year + Math.floorDiv(m, 12), Math.floorMod(m, 12) + 1, 1)
@@ -189,7 +187,7 @@ private fun PeriodHabits(store: DawemStore, active: List<Habit>, month: Boolean,
     @Composable fun grid(h: Habit) {
         Panel(onClick = { onOpen(h.id) }) {
             Text(h.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            val days = store.habitLog[h.id].orEmpty(); val skips = store.habitSkips[h.id].orEmpty()
+            val days = habitsState.log[h.id].orEmpty(); val skips = habitsState.skips[h.id].orEmpty()
             val lead = if (month) first.dayOfWeek.ordinal else 0
             val cells = (0 until lead).map<Int, LocalDate?> { null } + (0 until length).map { first.plus(it, DateTimeUnit.DAY) }
             Row(Modifier.fillMaxWidth()) { listOf("M", "T", "W", "T", "F", "S", "S").forEach { Text(it, Modifier.weight(1f), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = androidx.compose.ui.text.style.TextAlign.Center) } }
@@ -206,8 +204,8 @@ private fun PeriodHabits(store: DawemStore, active: List<Habit>, month: Boolean,
                                         .background(if (done) MaterialTheme.colorScheme.primary else if (skip) MaterialTheme.colorScheme.tertiary.copy(alpha = 0.5f) else if (applies) MaterialTheme.colorScheme.surfaceContainerHigh else MaterialTheme.colorScheme.background)
                                         .combinedClickable(
                                             enabled = d <= today,
-                                            onClick = { store.setHabitMark(h.id, d, if (done) null else HabitMark.Done) },
-                                            onLongClick = { store.setHabitMark(h.id, d, if (skip) null else HabitMark.Skipped) },
+                                            onClick = { habitsState.setMark(h.id, d, if (done) null else HabitMark.Done) },
+                                            onLongClick = { habitsState.setMark(h.id, d, if (skip) null else HabitMark.Skipped) },
                                         ),
                                     contentAlignment = Alignment.Center,
                                 ) { Text("${d.dayOfMonth}", style = MaterialTheme.typography.labelSmall, color = if (done) MaterialTheme.colorScheme.onPrimary else if (d == today) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant) }

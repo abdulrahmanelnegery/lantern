@@ -60,8 +60,8 @@ fun InsightsScreen(store: DawemStore, onOpenHabit: (String) -> Unit) {
             Period.Month -> today.minus(back, DateTimeUnit.MONTH).let { m -> LocalDate(m.year, m.monthNumber, 1) to LocalDate(m.year, m.monthNumber, 1).plus(1, DateTimeUnit.MONTH).minus(1, DateTimeUnit.DAY) }
         }.let { (a, b) -> a to minOf(b, today) }
     }
-    val days = remember(from, to, store.notes, store.tasks, store.habitLog, store.todayEntry) {
-        daySummaries(from, to, store.vault::journal, store.notes, store.tasks, store.habitLog)
+    val days = remember(from, to, store.notesState.notes, store.tasksState.tasks, store.habitsState.log, store.journalState.entry(store.today)) {
+        daySummaries(from, to, store.journalState::entry, store.notesState.notes, store.tasksState.tasks, store.habitsState.log)
     }
     val sum = totals(days)
 
@@ -101,11 +101,11 @@ fun InsightsScreen(store: DawemStore, onOpenHabit: (String) -> Unit) {
             Text("Bars are habits done; faces are the day's mood.", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
-        val habits = store.habits.filter { !it.archived }
+        val habits = store.habitsState.habits.filter { !it.archived }
         if (habits.isNotEmpty()) Panel {
             Text("Habits", style = MaterialTheme.typography.titleSmall)
             habits.forEach { h ->
-                val s = habitStats(h, store.habitLog[h.id].orEmpty(), today)
+                val s = habitStats(h, store.habitsState.log[h.id].orEmpty(), today)
                 Column(Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).androidClick { onOpenHabit(h.id) }.padding(vertical = 6.dp)) {
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(h.name, style = MaterialTheme.typography.bodyLarge)

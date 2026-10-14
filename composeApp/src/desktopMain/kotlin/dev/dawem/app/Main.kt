@@ -17,9 +17,6 @@ import java.awt.FileDialog
 import java.awt.Frame
 import java.io.File
 
-@Composable
-actual fun PlatformBackHandler(enabled: Boolean, onBack: () -> Unit) {}
-
 fun main() = application {
     val home = System.getProperty("user.home")
     // The app was called Lantern before Dawem: its vault folder is renamed once.

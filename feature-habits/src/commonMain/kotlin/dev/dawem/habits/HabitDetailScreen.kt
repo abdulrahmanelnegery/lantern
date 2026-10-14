@@ -1,4 +1,4 @@
-package dev.dawem.app
+package dev.dawem.habits
 
 import dev.dawem.ui.*
 import androidx.compose.foundation.background
@@ -46,10 +46,9 @@ import dev.dawem.habits.habitStats
 
 /** One habit: streaks, how often you keep it, the days of the week you do it, and a month you can edit. */
 @Composable
-fun HabitDetailScreen(store: DawemStore, habit: Habit, onBack: () -> Unit) {
+fun HabitDetailScreen(habitsState: HabitsState, today: kotlinx.datetime.LocalDate, habit: Habit, onBack: () -> Unit) {
     PlatformBackHandler(true, onBack)
-    val today = store.today
-    val done = store.habitLog[habit.id].orEmpty()
+    val done = habitsState.log[habit.id].orEmpty()
     val stats = habitStats(habit, done, today)
     var month by remember { mutableStateOf(LocalDate(today.year, today.monthNumber, 1)) }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -90,7 +89,7 @@ fun HabitDetailScreen(store: DawemStore, habit: Habit, onBack: () -> Unit) {
                 Text("${monthName(month.monthNumber)} ${month.year}", Modifier.weight(1f), style = MaterialTheme.typography.titleSmall, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
                 IconButton(onClick = { month = month.plus(1, DateTimeUnit.MONTH) }, enabled = month < LocalDate(today.year, today.monthNumber, 1)) { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, "Later month") }
             }
-            MonthGrid(month, today, done, habit) { d -> store.setHabitDone(habit.id, d, d !in done) }
+            MonthGrid(month, today, done, habit) { d -> habitsState.setDone(habit.id, d, d !in done) }
             Text("Tap a day to mark or unmark it.", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Spacer(Modifier.height(16.dp))

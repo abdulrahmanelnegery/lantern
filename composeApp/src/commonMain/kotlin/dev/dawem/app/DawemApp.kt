@@ -1,6 +1,10 @@
 package dev.dawem.app
 
 import dev.dawem.ui.*
+import dev.dawem.journal.JournalScreen
+import dev.dawem.notes.NotesScreen
+import dev.dawem.tasks.TasksScreen
+import dev.dawem.habits.HabitsScreen
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -128,15 +132,15 @@ fun DawemApp(store: DawemStore, start: Nav = remember { Nav() }) {
                         Box(Modifier.fillMaxHeight().widthIn(max = 880.dp)) {
                         when (nav.screen) {
                             Screen.Search -> SearchScreen(store, nav)
-                            Screen.Journal -> JournalScreen(store)
+                            Screen.Journal -> JournalScreen(store.journalState, store.today)
                             Screen.Insights -> InsightsScreen(store, onOpenHabit = { id -> nav.go(Section.Habits); nav.habitId = id })
                             Screen.Settings -> SettingsScreen(store)
                             Screen.About -> AboutScreen()
                             Screen.Main -> when (nav.section) {
                                 Section.Today -> TodayScreen(store)
-                                Section.Notes -> NotesScreen(store, nav.noteTag)
-                                Section.Tasks -> TasksScreen(store, nav.taskList)
-                                Section.Habits -> HabitsScreen(store, nav.habitId, onOpen = { nav.habitId = it }, onClose = { nav.habitId = null })
+                                Section.Notes -> NotesScreen(store.notesState, nav.noteTag)
+                                Section.Tasks -> TasksScreen(store.tasksState, store.today, nav.taskList)
+                                Section.Habits -> HabitsScreen(store.habitsState, store.today, nav.habitId, onOpen = { nav.habitId = it }, onClose = { nav.habitId = null })
                             }
                         }
                         }
@@ -182,16 +186,16 @@ private fun MenuContent(store: DawemStore, nav: Nav, close: () -> Unit) {
         Entry(Icons.Rounded.AutoStories, "Journal", null, nav.screen == Screen.Journal) { nav.screen = Screen.Journal; close() }
         Entry(Icons.Rounded.Insights, "Insights", null, nav.screen == Screen.Insights) { nav.screen = Screen.Insights; close() }
 
-        val lists = store.taskLists()
+        val lists = store.tasksState.lists()
         HorizontalDivider(Modifier.padding(horizontal = 28.dp, vertical = 10.dp))
         Label("Task lists")
-        Entry(Icons.Rounded.List, "Inbox", store.tasks.count { !it.done && it.list.isEmpty() }, nav.screen == Screen.Main && nav.section == Section.Tasks && nav.taskList == "") { nav.go(Section.Tasks, taskList = ""); close() }
+        Entry(Icons.Rounded.List, "Inbox", store.tasksState.tasks.count { !it.done && it.list.isEmpty() }, nav.screen == Screen.Main && nav.section == Section.Tasks && nav.taskList == "") { nav.go(Section.Tasks, taskList = ""); close() }
         lists.forEach { l ->
-            Entry(Icons.Rounded.List, l, store.tasks.count { !it.done && it.list == l }, nav.screen == Screen.Main && nav.section == Section.Tasks && nav.taskList == l) { nav.go(Section.Tasks, taskList = l); close() }
+            Entry(Icons.Rounded.List, l, store.tasksState.tasks.count { !it.done && it.list == l }, nav.screen == Screen.Main && nav.section == Section.Tasks && nav.taskList == l) { nav.go(Section.Tasks, taskList = l); close() }
         }
         Entry(Icons.Rounded.CreateNewFolder, "New list", null, false) { newList = true }
 
-        val tags = store.noteTags()
+        val tags = store.notesState.tags()
         if (tags.isNotEmpty()) {
             HorizontalDivider(Modifier.padding(horizontal = 28.dp, vertical = 10.dp))
             Label("Tags")
@@ -205,7 +209,7 @@ private fun MenuContent(store: DawemStore, nav: Nav, close: () -> Unit) {
     }
     if (newList) NameDialog("New task list", "", "Create", onDismiss = { newList = false }) { name ->
         newList = false
-        store.rememberTaskList(name.trim())
+        store.tasksState.rememberList(name.trim())
         nav.go(Section.Tasks, taskList = name.trim())
         close()
     }

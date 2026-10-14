@@ -4,10 +4,6 @@ import dev.dawem.ui.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 
-/** The system back gesture on Android; Escape on the desktop. */
-@Composable
-expect fun PlatformBackHandler(enabled: Boolean, onBack: () -> Unit)
-
 /** What only the platform can do; each app provides its own. */
 class PlatformActions(
     /** Saves the vault as a zip the user chooses a place for. */

@@ -71,7 +71,7 @@ fun SettingsScreen(store: DawemStore) {
         Header("Your vault")
         Text(store.location, Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyLarge)
         Text(
-            "${store.notes.size} notes, ${store.tasks.size} tasks, ${store.habits.count { !it.archived }} habits. " +
+            "${store.notesState.notes.size} notes, ${store.tasksState.tasks.size} tasks, ${store.habitsState.habits.count { !it.archived }} habits. " +
                 "Everything is plain files in this folder, so any editor, Obsidian or a sync tool can read it.",
             Modifier.padding(horizontal = 24.dp, vertical = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

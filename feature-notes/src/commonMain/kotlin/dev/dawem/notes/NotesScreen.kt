@@ -1,4 +1,4 @@
-package dev.dawem.app
+package dev.dawem.notes
 
 import dev.dawem.ui.*
 import androidx.compose.foundation.clickable
@@ -46,15 +46,15 @@ import kotlinx.coroutines.delay
 import dev.dawem.notes.Note
 
 @Composable
-fun NotesScreen(store: DawemStore, tag: String? = null) {
+fun NotesScreen(state: NotesState, tag: String? = null) {
     var openId by remember { mutableStateOf<String?>(null) }
-    val open = store.notes.firstOrNull { it.id == openId }
+    val open = state.notes.firstOrNull { it.id == openId }
     if (openId != null) {
-        NoteEditor(store, open ?: Note(openId!!, "", "", "", ""), onClose = { openId = null })
+        NoteEditor(state, open ?: Note(openId!!, "", "", "", ""), onClose = { openId = null })
         return
     }
     var query by remember { mutableStateOf("") }
-    val shown = store.notes.filter { (tag == null || tag in it.tags) && (query.isBlank() || it.title.contains(query, true) || it.body.contains(query, true) || it.tags.any { t -> t.contains(query, true) }) }
+    val shown = state.notes.filter { (tag == null || tag in it.tags) && (query.isBlank() || it.title.contains(query, true) || it.body.contains(query, true) || it.tags.any { t -> t.contains(query, true) }) }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         floatingActionButton = { FloatingActionButton(onClick = { openId = "" }) { Icon(Icons.Rounded.Add, "New note") } },
@@ -66,7 +66,7 @@ fun NotesScreen(store: DawemStore, tag: String? = null) {
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
             )
-            if (shown.isEmpty()) EmptyHint(if (store.notes.isEmpty()) "No notes yet" else "Nothing found", "Tap + to write one. Notes are Markdown files in your vault.")
+            if (shown.isEmpty()) EmptyHint(if (state.notes.isEmpty()) "No notes yet" else "Nothing found", "Tap + to write one. Notes are Markdown files in your vault.")
             LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 items(shown, key = { it.id }) { n ->
                     Panel(onClick = { openId = n.id }) {
@@ -86,16 +86,16 @@ fun NotesScreen(store: DawemStore, tag: String? = null) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NoteEditor(store: DawemStore, start: Note, onClose: () -> Unit) {
-    var note by remember(start.id) { mutableStateOf(start.copy(id = if (start.id.isEmpty() || store.notes.none { it.id == start.id }) "" else start.id)) }
+private fun NoteEditor(state: NotesState, start: Note, onClose: () -> Unit) {
+    var note by remember(start.id) { mutableStateOf(start.copy(id = if (start.id.isEmpty() || state.notes.none { it.id == start.id }) "" else start.id)) }
     var tags by remember(start.id) { mutableStateOf(start.tags.joinToString(" ")) }
     // A note you open is read first; a new one starts in edit mode. The pencil switches.
-    var reading by remember(start.id) { mutableStateOf(start.id.isNotEmpty() && store.notes.any { it.id == start.id }) }
+    var reading by remember(start.id) { mutableStateOf(start.id.isNotEmpty() && state.notes.any { it.id == start.id }) }
     // Typing is saved shortly after it stops; a note that is still empty is never written.
     LaunchedEffect(note.title, note.body, note.pinned, tags) {
         if (note.title.isBlank() && note.body.isBlank()) return@LaunchedEffect
         delay(600)
-        val saved = store.saveNote(note.copy(tags = tags.split(' ', ',').map { it.trim().trimStart('#') }.filter { it.isNotEmpty() }))
+        val saved = state.save(note.copy(tags = tags.split(' ', ',').map { it.trim().trimStart('#') }.filter { it.isNotEmpty() }))
         if (note.id.isEmpty()) note = note.copy(id = saved.id, created = saved.created)
     }
     PlatformBackHandler(true, onClose)
@@ -108,7 +108,7 @@ private fun NoteEditor(store: DawemStore, start: Note, onClose: () -> Unit) {
                 actions = {
                     IconButton(onClick = { reading = !reading }) { Icon(if (reading) Icons.Rounded.Edit else Icons.Rounded.Visibility, if (reading) "Edit" else "Read") }
                     IconButton(onClick = { note = note.copy(pinned = !note.pinned) }) { Icon(Icons.Rounded.PushPin, "Pin", tint = if (note.pinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant) }
-                    IconButton(onClick = { if (note.id.isNotEmpty()) store.trashNote(note.id); onClose() }) { Icon(Icons.Rounded.Delete, "Delete") }
+                    IconButton(onClick = { if (note.id.isNotEmpty()) state.trash(note.id); onClose() }) { Icon(Icons.Rounded.Delete, "Delete") }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
             )

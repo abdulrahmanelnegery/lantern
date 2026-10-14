@@ -71,13 +71,23 @@ sha256sum -c Dawem_<version>_Android_arm64-v8a.apk.sha256
 You need JDK 17 or newer and, for Android, the Android SDK (platform 36).
 
 ```
-./gradlew :shared:desktopTest            # the vault tests
+./gradlew :shared:desktopTest :feature-notes:desktopTest :feature-journal:desktopTest :feature-tasks:desktopTest :feature-habits:desktopTest   # the vault and feature tests
 ./gradlew :composeApp:run                # run the desktop app
 ./gradlew :composeApp:assembleDebug      # Android debug APKs
 ./gradlew :composeApp:packageDeb         # Linux .deb
 ```
 
-The code is split in two: `shared` holds the vault format and the logic (plain Kotlin, tested without a screen), and `composeApp` holds the screens for both platforms.
+The code is split into modules, each with one job:
+
+| Module | What it holds |
+|---|---|
+| `core` | Plain-file helpers every feature shares: reading and atomic writing, front matter, CSV, ids, settings, the zip export |
+| `ui` | The theme, shared components, the Markdown view and the back handler |
+| `feature-notes`, `feature-journal`, `feature-tasks`, `feature-habits` | One feature each: its model, its files in the vault, its state and its screens |
+| `shared` | The `Vault` facade that joins the features, and the cross-feature numbers for Insights |
+| `composeApp` | The app: Today, Search, Insights, Settings, About, navigation and the Android and desktop entry points |
+
+A feature depends only on `core` and `ui`, never on another feature; `scripts/check-modules.sh` checks this in CI. The vault format is plain files and does not depend on the module layout.
 
 ## Roadmap
 
