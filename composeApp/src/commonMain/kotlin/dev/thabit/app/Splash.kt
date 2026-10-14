@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-private val Ink = Color(0xFF0E0E0C)
+private val Ink = Color(0xFF2B1910)
 private val Cream = Color(0xFFF5F1E8)
 private val Orange = Color(0xFFFF5A1F)
 
