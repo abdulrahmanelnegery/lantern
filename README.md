@@ -7,18 +7,17 @@
 <p align="center">
   <a href="../../releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/zimamlabs/thabit?color=FF5A1F&labelColor=1A1613"></a>
   <a href="../../releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/zimamlabs/thabit/total?color=FF5A1F&labelColor=1A1613"></a>
-  <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/zimamlabs/thabit?color=FF5A1F&labelColor=1A1613"></a>
+  <a href="LICENSE"><img alt="Licence: MIT" src="https://img.shields.io/badge/licence-MIT-FF5A1F?labelColor=1A1613"></a>
+  <img alt="Android" src="https://img.shields.io/badge/Android-8.0%2B-FF5A1F?labelColor=1A1613">
 </p>
+
+## What it is
 
 Notes, a journal, tasks and habits in one private app. Your data is plain files in a folder you own, so it works offline, opens in any editor and moves between your phone and laptop by copying the folder.
 
 Thabit (ثابت, "steady") runs on **Android** and **Linux** (Debian and Ubuntu) from one codebase.
 
-## Screenshots
-
-Screenshots will be added here once the app has been run and captured on a phone.
-
-## What is in it
+## Features
 
 - **Home**: a hero with today's progress ring, a quick-add row, your week at a glance, today's habits, upcoming and overdue tasks, a mood line for the last 14 days, recent and pinned notes, "on this day" from earlier years, a weekly summary, an affirmation and tip, streaks and what's new; the cards are in an order you choose and can be hidden. The sections (Notes, Journal, Tasks, Habits, Insights, Search) are one tap away.
 - **First start**: a short tour (reopen it from Settings or About) and a one-time "what's new" after each update.
@@ -32,23 +31,15 @@ Screenshots will be added here once the app has been run and captured on a phone
 - **Themes**: Zimam (warm paper and near-black with an orange accent) and five more palettes, each in light and dark, or follow the system.
 - **Export** the whole vault as a zip from Settings.
 
-## Your data
+## Languages
 
-Everything lives in one vault folder inside a `Zimam` folder (`~/Zimam/Thabit` on Linux; `Zimam/Thabit` on the phone):
+English today. Arabic and right-to-left screens are being added; this line will say when they are in.
 
-```
-notes/<title>-<id>.md          Markdown with a small header (id, title, tags, dates)
-journal/<year>/<date>.md       one file a day: mood in the header, text below
-tasks/Tasks.md                 a Markdown checklist
-habits/habits.json, log.csv    what you track, and the days you did it
-.lantern/                      settings and the trash (the folder keeps its old name so existing vaults keep working)
-```
+## Screenshots
 
-Open the folder in Obsidian, a text editor or a spreadsheet; Thabit reads it back. To move to another device, copy the folder or sync it with any file-sync tool.
+Screenshots: coming with the next release.
 
-On Android the vault is private to the app by default. In the app you can allow *All files access* to keep it in the visible `Zimam/Thabit` folder instead. Older folders (`Thabit`, `Lantern`, the private vault) are copied in, every file is checked by count, size and SHA-256, and the old folder is kept as a backup: nothing is deleted, a file that already exists is never overwritten (both are kept), and if a check fails Thabit keeps using the old folder. *Settings* has a button to remove an old folder once it has been checked again. Vault exports are saved in an `exports` folder inside the vault (and are left out of the next export), so every visible file stays under `Zimam/Thabit`.
-
-## Install
+## Download
 
 Get the files for your system from the [latest release](../../releases/latest). Each file has a matching `.sha256` checksum.
 
@@ -64,7 +55,7 @@ sha256sum -c Thabit_<version>_Linux_amd64.deb.sha256
 sudo apt install ./Thabit_<version>_Linux_amd64.deb
 ```
 
-### Verify the Android download
+## Verify
 
 Every APK is signed with Thabit's own key. Android installs it without a store because the signature is valid, and shows its usual "unknown source" notice for anything that did not come from Google Play. To check a file is really ours, compare its signing certificate with this fingerprint:
 
@@ -76,6 +67,26 @@ SHA-256: 09:7A:B4:82:7A:35:AF:FB:5A:0D:D5:AB:01:26:EA:77:10:6B:29:4A:83:B4:E6:A8
 apksigner verify --print-certs Thabit_<version>_Android_arm64-v8a.apk
 sha256sum -c Thabit_<version>_Android_arm64-v8a.apk.sha256
 ```
+
+## Where your data lives
+
+Everything lives in one vault folder inside a `Zimam` folder (`~/Zimam/Thabit` on Linux; `Zimam/Thabit` on the phone):
+
+```
+notes/<title>-<id>.md          Markdown with a small header (id, title, tags, dates)
+journal/<year>/<date>.md       one file a day: mood in the header, text below
+tasks/Tasks.md                 a Markdown checklist
+habits/habits.json, log.csv    what you track, and the days you did it
+.lantern/                      settings and the trash (the folder keeps its old name so existing vaults keep working)
+```
+
+Open the folder in Obsidian, a text editor or a spreadsheet; Thabit reads it back. To move to another device, copy the folder or sync it with any file-sync tool.
+
+On Android the vault is private to the app by default. In the app you can allow *All files access* to keep it in the visible `Zimam/Thabit` folder instead. Older folders (`Thabit`, `Lantern`, the private vault) are copied in, every file is checked by count, size and SHA-256, and the old folder is kept as a backup: nothing is deleted, a file that already exists is never overwritten (both are kept), and if a check fails Thabit keeps using the old folder. *Settings* has a button to remove an old folder once it has been checked again. Vault exports are saved in an `exports` folder inside the vault (and are left out of the next export), so every visible file stays under `Zimam/Thabit`.
+
+## Privacy
+
+No account, no ads, no tracking. Thabit keeps your data on your phone in plain files you can open anywhere, and sends nothing over the network.
 
 ## Build
 
