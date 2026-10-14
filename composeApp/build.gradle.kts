@@ -41,7 +41,7 @@ kotlin {
 }
 
 android {
-    namespace = "dev.lantern.notes"
+    namespace = "dev.dawem.app"
     compileSdk = 36
     defaultConfig {
         applicationId = "dev.lantern.notes"
@@ -91,7 +91,7 @@ android {
 
 compose.desktop {
     application {
-        mainClass = "dev.lantern.app.MainKt"
+        mainClass = "dev.dawem.app.MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Deb)
             packageName = "dawem"
