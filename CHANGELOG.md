@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.0
+
+- **A new Home page.** A hero with today's progress ring, a quick-add row, your week, today's habits, upcoming and overdue tasks, a 14-day mood line, recent and pinned notes, on this day, a weekly summary, the affirmation, streaks and what's new. Order and visibility are set in Settings (Home page).
+- **One Zimam folder.** The vault is `Zimam/Dawem` (and `~/Zimam/Dawem` on Linux). Old folders are copied and verified by count, size and SHA-256, never deleted and never overwritten; the old folder stays as a backup and Settings can remove it after another check. If a check fails the old folder stays in use.
+- **The final icon** (the loop with a check), on the launcher, the splash, About and the README.
+- **A better opening screen** with the name clearly apart from the mark, a first-run tour you can reopen, and a one-time "what's new" after each update.
+
 ## 0.6.1
 
 - Internal: package rename (`dev.lantern` to `dev.dawem`) and a split into modules (`:core`, `:ui`, one module each for notes, journal, tasks and habits, and the app). No change in behaviour; your vault, settings and the app's identity on the phone are unchanged.

@@ -25,7 +25,7 @@ import androidx.compose.material.icons.rounded.CreateNewFolder
 import androidx.compose.material.icons.rounded.Description
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Insights
-import androidx.compose.material.icons.rounded.LightMode
+import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Loop
 import androidx.compose.material.icons.rounded.Menu
@@ -65,7 +65,7 @@ import kotlinx.coroutines.launch
 import dev.dawem.tasks.Task
 
 enum class Section(val label: String, val icon: ImageVector) {
-    Today("Today", Icons.Rounded.LightMode),
+    Today("Home", Icons.Rounded.Home),
     Notes("Notes", Icons.Rounded.Description),
     Tasks("Tasks", Icons.Rounded.CheckCircle),
     Habits("Habits", Icons.Rounded.Loop),
@@ -139,7 +139,7 @@ fun DawemApp(store: DawemStore, start: Nav = remember { Nav() }) {
                             Screen.Settings -> SettingsScreen(store)
                             Screen.About -> AboutScreen(store)
                             Screen.Main -> when (nav.section) {
-                                Section.Today -> TodayScreen(store)
+                                Section.Today -> HomeScreen(store, nav)
                                 Section.Notes -> NotesScreen(store.notesState, nav.noteTag)
                                 Section.Tasks -> TasksScreen(store.tasksState, store.today, nav.taskList)
                                 Section.Habits -> HabitsScreen(store.habitsState, store.today, nav.habitId, onOpen = { nav.habitId = it }, onClose = { nav.habitId = null })
