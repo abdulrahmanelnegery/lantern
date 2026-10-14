@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Dawem">
         <activity
-            android:name="dev.lantern.app.MainActivity"
+            android:name="dev.dawem.app.MainActivity"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize|uiMode"
             android:windowSoftInputMode="adjustResize">

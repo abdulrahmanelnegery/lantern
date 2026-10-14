@@ -23,7 +23,7 @@ kotlin {
 }
 
 android {
-    namespace = "dev.lantern.core"
+    namespace = "dev.dawem.core"
     compileSdk = 36
     defaultConfig { minSdk = 26 }
     compileOptions {

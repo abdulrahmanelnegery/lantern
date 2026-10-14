@@ -1,4 +1,4 @@
 -keepattributes *Annotation*, InnerClasses
 -dontwarn org.slf4j.**
--keep,includedescriptorclasses class dev.lantern.core.**$$serializer { *; }
--keepclassmembers class dev.lantern.core.** { *** Companion; }
+-keep,includedescriptorclasses class dev.dawem.core.**$$serializer { *; }
+-keepclassmembers class dev.dawem.core.** { *** Companion; }

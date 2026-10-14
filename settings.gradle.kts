@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "lantern"
+rootProject.name = "dawem"
 include(":shared", ":composeApp")
