@@ -10,8 +10,6 @@
   <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/zimamlabs/dawem?color=FF5A1F&labelColor=1A1613"></a>
 </p>
 
-<p align="center"><img src="branding/boards/Dawem%20Continuity%20Loop%20Icon%20System.png" alt="The Dawem icon" width="720"></p>
-
 Notes, a journal, tasks and habits in one private app. Your data is plain files in a folder you own, so it works offline, opens in any editor and moves between your phone and laptop by copying the folder.
 
 Dawem (داوم, "keep at it") runs on **Android** and **Linux** (Debian and Ubuntu) from one codebase.
