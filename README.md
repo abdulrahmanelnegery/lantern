@@ -2,11 +2,23 @@
 
 <h1 align="center">Dawem</h1>
 
-<p align="center">Private notes, journal, tasks and habits, by <a href="https://github.com/zimamlabs">Zimam</a>. Formerly Lantern.</p>
+<p align="center">Private notes, journal, tasks and habits in plain files, by <a href="https://github.com/zimamlabs">Zimam Labs</a>. Formerly Lantern.</p>
+
+<p align="center">
+  <a href="../../releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/zimamlabs/dawem?color=FF5A1F&labelColor=1A1613"></a>
+  <a href="../../releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/zimamlabs/dawem/total?color=FF5A1F&labelColor=1A1613"></a>
+  <a href="LICENSE"><img alt="Licence" src="https://img.shields.io/github/license/zimamlabs/dawem?color=FF5A1F&labelColor=1A1613"></a>
+</p>
+
+<p align="center"><img src="branding/boards/Dawem%20Continuity%20Loop%20Icon%20System.png" alt="The Dawem icon" width="720"></p>
 
 Notes, a journal, tasks and habits in one private app. Your data is plain files in a folder you own, so it works offline, opens in any editor and moves between your phone and laptop by copying the folder.
 
 Dawem (داوم, "keep at it") runs on **Android** and **Linux** (Debian and Ubuntu) from one codebase.
+
+## Screenshots
+
+Screenshots will be added here once the app has been run and captured on a phone.
 
 ## What is in it
 

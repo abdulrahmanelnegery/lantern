@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.1
+
+- **A new look.** Warm dark (near-black with warm cards) and ivory surfaces, the orange accent, a soft glow behind the Home hero, large rounded cards with a hairline border and a small diamond accent, on every screen. The other palettes still work.
+- **A new About page**: the mark on a glow, what Dawem is, the tour, what's new, a privacy card and links.
+- **Exports stay in the Zimam folder.** The vault zip is saved in `Zimam/Dawem/exports` and is left out of the next export.
+
 ## 0.7.0
 
 - **A new Home page.** A hero with today's progress ring, a quick-add row, your week, today's habits, upcoming and overdue tasks, a 14-day mood line, recent and pinned notes, on this day, a weekly summary, the affirmation, streaks and what's new. Order and visibility are set in Settings (Home page).

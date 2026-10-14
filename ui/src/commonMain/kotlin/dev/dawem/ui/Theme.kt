@@ -35,8 +35,8 @@ class Palette(val id: String, val label: String, val swatch: Long, private val l
 val Palettes = listOf(
     Palette(
         "zimam", "Zimam", 0xFF5A1F,
-        longArrayOf(0xE5481A, 0xFFFFFF, 0xFFDDD0, 0x3A0E00, 0x6B5B4B, 0x4F5F7A, 0xF5F1E8, 0xFFFBF3, 0xEDE6D8, 0x121214, 0x5E5A52, 0xD8D0C0),
-        longArrayOf(0xFF5A1F, 0x1A0A02, 0x4A1D0B, 0xFFDDD0, 0xD9CDB8, 0xA9B8D0, 0x121214, 0x1B1B1E, 0x26262A, 0xF5F1E8, 0xA9A59B, 0x3A3A40),
+        longArrayOf(0xE5481A, 0xFFFFFF, 0xFFDDD0, 0x3A0E00, 0x6B5B4B, 0x4F5F7A, 0xFFF8F0, 0xFFFFFF, 0xF6ECDF, 0x1A1613, 0x5E5A52, 0xE2D6C4),
+        longArrayOf(0xFF5A1F, 0x1A0A02, 0x4A1D0B, 0xFFDDD0, 0xD9CDB8, 0xA9B8D0, 0x0F0F0F, 0x1A1613, 0x241E19, 0xF5F1E8, 0xA9A59B, 0x3A332D),
     ),
     Palette(
         "amber", "Amber", 0xFFB84D,
@@ -72,7 +72,7 @@ fun DawemTheme(settings: AppSettings = AppSettings(), content: @Composable () ->
     val dark = when (settings.mode) { "dark" -> true; "light" -> false; else -> isSystemInDarkTheme() }
     MaterialTheme(
         colorScheme = paletteOf(settings.palette).scheme(dark),
-        shapes = Shapes(small = RoundedCornerShape(10.dp), medium = RoundedCornerShape(16.dp), large = RoundedCornerShape(24.dp)),
+        shapes = Shapes(small = RoundedCornerShape(10.dp), medium = RoundedCornerShape(16.dp), large = RoundedCornerShape(28.dp)),
         content = content,
     )
 }
