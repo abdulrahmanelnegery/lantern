@@ -21,6 +21,8 @@ class DawemStore(val vault: Vault, val location: String) {
         private set
     var today by mutableStateOf(vault.today())
         private set
+    /** The hour of the day (0..23), for the greeting. */
+    val hour: Int get() = vault.files.stamp().substring(11, 13).toInt()
 
     /** Reads everything again (the vault may have changed on disk, or the date rolled over). */
     fun reload() {

@@ -10,7 +10,8 @@ Dawem (داوم, "keep at it") runs on **Android** and **Linux** (Debian and Ubu
 
 ## What is in it
 
-- **Today**: an affirmation and tip, streaks, today's habits and tasks, and the journal, in an order you choose.
+- **Home**: a hero with today's progress ring, a quick-add row, your week at a glance, today's habits, upcoming and overdue tasks, a mood line for the last 14 days, recent and pinned notes, "on this day" from earlier years, a weekly summary, an affirmation and tip, streaks and what's new; the cards are in an order you choose and can be hidden. The sections (Notes, Journal, Tasks, Habits, Insights, Search) are one tap away.
+- **First start**: a short tour (reopen it from Settings or About) and a one-time "what's new" after each update.
 - **Notes**: Markdown notes with tags, pinning and search; a reading view and an edit view.
 - **Journal**: one entry a day with a mood, and a look back through the days.
 - **Tasks**: lists and a checklist with due dates (today, tomorrow, next week) and priorities.
@@ -23,7 +24,7 @@ Dawem (داوم, "keep at it") runs on **Android** and **Linux** (Debian and Ubu
 
 ## Your data
 
-Everything lives in one vault folder (`~/Dawem` on Linux; `Dawem` on the phone):
+Everything lives in one vault folder inside a `Zimam` folder (`~/Zimam/Dawem` on Linux; `Zimam/Dawem` on the phone):
 
 ```
 notes/<title>-<id>.md          Markdown with a small header (id, title, tags, dates)
@@ -35,7 +36,7 @@ habits/habits.json, log.csv    what you track, and the days you did it
 
 Open the folder in Obsidian, a text editor or a spreadsheet; Dawem reads it back. To move to another device, copy the folder or sync it with any file-sync tool.
 
-On Android the vault is private to the app by default. In the app you can allow *All files access* to keep it in a visible `/Dawem` folder instead.
+On Android the vault is private to the app by default. In the app you can allow *All files access* to keep it in the visible `Zimam/Dawem` folder instead. Older folders (`Dawem`, `Lantern`, the private vault) are copied in, every file is checked by count, size and SHA-256, and the old folder is kept as a backup: nothing is deleted, a file that already exists is never overwritten (both are kept), and if a check fails Dawem keeps using the old folder. *Settings* has a button to remove an old folder once it has been checked again.
 
 ## Install
 
@@ -85,7 +86,7 @@ The code is split into modules, each with one job:
 | `ui` | The theme, shared components, the Markdown view and the back handler |
 | `feature-notes`, `feature-journal`, `feature-tasks`, `feature-habits` | One feature each: its model, its files in the vault, its state and its screens |
 | `shared` | The `Vault` facade that joins the features, and the cross-feature numbers for Insights |
-| `composeApp` | The app: Today, Search, Insights, Settings, About, navigation and the Android and desktop entry points |
+| `composeApp` | The app: Home, Search, Insights, Settings, About, navigation and the Android and desktop entry points |
 
 A feature depends only on `core` and `ui`, never on another feature; `scripts/check-modules.sh` checks this in CI. The vault format is plain files and does not depend on the module layout.
 

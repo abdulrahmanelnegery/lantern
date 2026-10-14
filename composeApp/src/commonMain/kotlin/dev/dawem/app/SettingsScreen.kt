@@ -60,7 +60,7 @@ fun SettingsScreen(store: DawemStore) {
                 }
             }
         }
-        Header("Today page")
+        Header("Home page")
         val order = todayOrder(store.settings)
         order.forEachIndexed { i, id ->
             val label = TodayCards.first { it.first == id }.second
