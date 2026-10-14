@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -21,13 +22,14 @@ import androidx.compose.ui.unit.dp
 
 /** What the app is, who makes it, where its code lives and how it is licensed. */
 @Composable
-fun AboutScreen() {
+fun AboutScreen(store: DawemStore) {
     val links = LocalUriHandler.current
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 28.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
+        BrandMark(Modifier.size(96.dp))
         Text(Brand.NAME, style = MaterialTheme.typography.headlineMedium)
         Text("داوم  ·  keep at it", color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text("Version ${Brand.VERSION}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -36,6 +38,7 @@ fun AboutScreen() {
             Modifier.padding(top = 8.dp), textAlign = TextAlign.Center, style = MaterialTheme.typography.bodyMedium,
         )
         Text("by ${Brand.MAKER}", Modifier.padding(top = 12.dp), style = MaterialTheme.typography.titleMedium, color = Color(0xFFFF5A1F))
+        OutlinedButton(onClick = { store.tourOpen = true }, Modifier.fillMaxWidth()) { Text("Show the tour again") }
         OutlinedButton(onClick = { links.openUri("https://github.com/zimamlabs") }, Modifier.fillMaxWidth()) { Text("Zimam on GitHub") }
         OutlinedButton(onClick = { links.openUri("https://github.com/zimamlabs/dawem") }, Modifier.fillMaxWidth()) { Text("Source code") }
         OutlinedButton(onClick = { links.openUri("https://github.com/zimamlabs/dawem/issues") }, Modifier.fillMaxWidth()) { Text("Report a problem") }

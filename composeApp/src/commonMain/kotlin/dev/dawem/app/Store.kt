@@ -28,5 +28,11 @@ class DawemStore(val vault: Vault, val location: String) {
         today = vault.today(); settings = vault.settings()
     }
 
+    /** True when the vault already holds anything, so an update from a version without the tour flags is not treated as a fresh install. */
+    val hasData: Boolean get() = notesState.notes.isNotEmpty() || tasksState.tasks.isNotEmpty() || habitsState.habits.isNotEmpty() || journalState.dates().isNotEmpty()
+
+    /** Set to open the first-install tour again from Settings or About. */
+    var tourOpen by mutableStateOf(false)
+
     fun saveSettings(value: AppSettings) { vault.saveSettings(value); settings = value }
 }

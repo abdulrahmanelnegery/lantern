@@ -95,6 +95,8 @@ private val WIDE = 840.dp
 @Composable
 fun DawemApp(store: DawemStore, start: Nav = remember { Nav() }) {
     var splash by remember { mutableStateOf(true) }
+    // Decided once when the app opens: the tour on a fresh install, the notes once after an update, else nothing.
+    var welcome by remember { mutableStateOf(dev.dawem.core.Onboarding.decide(store.settings.lastSeenVersion, store.settings.tourDone, store.hasData, Brand.VERSION)) }
     DawemTheme(store.settings) {
       Box {
         val nav = start
@@ -135,7 +137,7 @@ fun DawemApp(store: DawemStore, start: Nav = remember { Nav() }) {
                             Screen.Journal -> JournalScreen(store.journalState, store.today)
                             Screen.Insights -> InsightsScreen(store, onOpenHabit = { id -> nav.go(Section.Habits); nav.habitId = id })
                             Screen.Settings -> SettingsScreen(store)
-                            Screen.About -> AboutScreen()
+                            Screen.About -> AboutScreen(store)
                             Screen.Main -> when (nav.section) {
                                 Section.Today -> TodayScreen(store)
                                 Section.Notes -> NotesScreen(store.notesState, nav.noteTag)
@@ -153,6 +155,9 @@ fun DawemApp(store: DawemStore, start: Nav = remember { Nav() }) {
                 ModalNavigationDrawer(drawerState = drawer, drawerContent = { ModalDrawerSheet { MenuContent(store, nav) { scope.launch { drawer.close() } } } }) { content() }
             }
         }
+        val seen = { store.saveSettings(store.settings.copy(tourDone = true, lastSeenVersion = Brand.VERSION)) }
+        if (!splash && (welcome == dev.dawem.core.Welcome.Tour || store.tourOpen)) TourScreen(store) { seen(); welcome = dev.dawem.core.Welcome.Nothing; store.tourOpen = false }
+        if (!splash && welcome == dev.dawem.core.Welcome.WhatsNew) WhatsNewDialog(Brand.VERSION) { seen(); welcome = dev.dawem.core.Welcome.Nothing }
         androidx.compose.animation.AnimatedVisibility(splash, exit = androidx.compose.animation.fadeOut()) { Splash { splash = false } }
       }
     }
