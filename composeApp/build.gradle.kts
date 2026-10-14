@@ -29,6 +29,7 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.androidx.activity.compose)
+            implementation("androidx.core:core-ktx:1.15.0")
         }
         val desktopMain by getting {
             dependencies {
