@@ -4,7 +4,7 @@
 
 - **Dawem is now Thabit** (ثابت, "steady"), by Zimam Labs. Same app, same data: the Android app id is unchanged, so it updates in place, and the signing key is the same. The vault now lives in `Zimam/Thabit` (and `~/Zimam/Thabit` on Linux); `Zimam/Dawem`, `Dawem` and `Lantern` folders are copied in and checked, never deleted or overwritten, and stay as a backup. Settings can remove an old folder after a further check. The `.lantern` folder inside a vault keeps its name.
 - **A new Home page.** A hero with today's progress ring, a quick-add row, your week, today's habits, upcoming and overdue tasks, a 14-day mood line, recent and pinned notes, on this day, a weekly summary, the affirmation, streaks and what's new. Order and visibility are set in Settings (Home page).
-- **The final icon** (the loop with a check) on the launcher, the splash, About and the README.
+- **The final icon** (the infinity mark with the diamond) on the launcher, the splash, About and the README.
 - **A new look.** Warm dark and ivory surfaces, the orange accent, a glow behind the Home hero, large rounded cards with a hairline border and a small diamond accent on every screen. The other palettes still work.
 - **A new About page**, a better opening screen with the name clearly apart from the mark, a first-run tour you can reopen, and a one-time "what's new" after each update.
 - **Exports stay in the Zimam folder:** the vault zip is saved in `Zimam/Thabit/exports` and is left out of the next export.
