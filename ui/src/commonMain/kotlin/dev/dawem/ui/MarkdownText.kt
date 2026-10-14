@@ -1,4 +1,4 @@
-package dev.dawem.app
+package dev.dawem.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

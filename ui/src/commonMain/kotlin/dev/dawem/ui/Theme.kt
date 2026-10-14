@@ -1,4 +1,4 @@
-package dev.dawem.app
+package dev.dawem.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape

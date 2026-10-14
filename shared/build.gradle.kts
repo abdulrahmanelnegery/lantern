@@ -10,6 +10,7 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
+            api(project(":core"))
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)
@@ -23,7 +24,7 @@ kotlin {
 }
 
 android {
-    namespace = "dev.dawem.core"
+    namespace = "dev.dawem.shared"
     compileSdk = 36
     defaultConfig { minSdk = 26 }
     compileOptions {
