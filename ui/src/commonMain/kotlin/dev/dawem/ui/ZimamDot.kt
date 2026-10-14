@@ -1,4 +1,4 @@
-package dev.dawem.app
+package dev.dawem.ui
 
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
