@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         store = openStore()
         val actions = PlatformActions(
-            exportVault = { exportZip.launch("Dawem-vault.zip") },
+            exportVault = { if (inVisibleFolder()) exportHere() else exportZip.launch("Dawem-vault.zip") },
             allowVisibleFolder = if (Build.VERSION.SDK_INT >= 30) ({ openAllFilesAccess() }) else null,
             visibleFolderOn = Build.VERSION.SDK_INT < 30 || Environment.isExternalStorageManager(),
             removableOldFolders = { removable() },
@@ -47,6 +47,19 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         // Files may have changed under us (a sync, a copy from the laptop), or the day rolled over.
         if (::store.isInitialized) store.reload()
+    }
+
+    /** True when the vault is in the phone's visible storage (the Zimam folder), so exports can go beside it instead of asking where. */
+    private fun inVisibleFolder() = store.location.startsWith(Environment.getExternalStorageDirectory().absolutePath)
+
+    /** Saves the zip into the vault's own `exports` folder, so every visible file stays under Zimam/Dawem. */
+    private fun exportHere() {
+        runCatching {
+            val dir = File(store.location, "exports").also { it.mkdirs() }
+            val file = File(dir, "Dawem-vault-${store.today}.zip")
+            file.sink().buffer().use { zipVault(FileSystem.SYSTEM, store.vault.root, it) }
+            android.widget.Toast.makeText(this, "Saved to ${file.absolutePath}", android.widget.Toast.LENGTH_LONG).show()
+        }.onFailure { android.widget.Toast.makeText(this, "Could not save the export: ${it.message}", android.widget.Toast.LENGTH_LONG).show() }
     }
 
     private fun writeZip(uri: Uri) {

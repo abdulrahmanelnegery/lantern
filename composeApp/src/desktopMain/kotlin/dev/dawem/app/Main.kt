@@ -29,7 +29,7 @@ fun main() = application {
     val dir = File(choice.dir.toString()).also { it.mkdirs() }
     val store = DawemStore(Vault(fs, dir.absolutePath.toPath()), dir.absolutePath)
     val actions = PlatformActions(removableOldFolders = { VaultLocation.removable(fs, choice.dir, shared, olds).map { it.toString() } }, removeOldFolder = { VaultLocation.remove(fs, it.toPath(), shared) }, migrationMessage = choice.message, exportVault = {
-        val dialog = FileDialog(null as Frame?, "Save the vault as a zip", FileDialog.SAVE).apply { file = "Dawem-vault.zip"; isVisible = true }
+        val dialog = FileDialog(null as Frame?, "Save the vault as a zip", FileDialog.SAVE).apply { directory = File(dir, "exports").also { it.mkdirs() }.absolutePath; file = "Dawem-vault.zip"; isVisible = true }
         val name = dialog.file
         if (name != null) File(dialog.directory, name).sink().buffer().use { zipVault(FileSystem.SYSTEM, store.vault.root, it) }
     })
