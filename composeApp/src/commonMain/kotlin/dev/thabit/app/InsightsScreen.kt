@@ -34,6 +34,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.thabit.core.DaySummary
 import dev.thabit.core.daySummaries
+import dev.thabit.core.heatmap
+import dev.thabit.core.weeklyRates
 import dev.thabit.core.totals
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
@@ -102,6 +104,7 @@ fun InsightsScreen(store: ThabitStore, onOpenHabit: (String) -> Unit) {
         }
 
         val habits = store.habitsState.habits.filter { !it.archived }
+        if (habits.isNotEmpty()) HabitCharts(store)
         if (habits.isNotEmpty()) Panel {
             Text("Habits", style = MaterialTheme.typography.titleSmall)
             habits.forEach { h ->
@@ -159,3 +162,37 @@ private fun rangeLabel(p: Period, from: LocalDate, to: LocalDate): String = when
 }
 
 private fun Modifier.androidClick(onClick: () -> Unit): Modifier = this.then(Modifier.clickable(onClick = onClick))
+
+/** A twelve-week heatmap of how much of each day's habits you kept, and the average for each week as bars. */
+@Composable
+private fun HabitCharts(store: ThabitStore) {
+    val map = remember(store.habitsState.habits, store.habitsState.log, store.habitsState.skips, store.today) {
+        heatmap(store.habitsState.habits.filter { !it.archived }, store.habitsState.log, store.habitsState.skips, store.today)
+    }
+    val rates = remember(map) { weeklyRates(map) }
+    val on = MaterialTheme.colorScheme.primary
+    val off = MaterialTheme.colorScheme.outlineVariant
+    Panel {
+        Text("Habit heatmap", style = MaterialTheme.typography.titleSmall)
+        androidx.compose.foundation.Canvas(Modifier.fillMaxWidth().height(132.dp)) {
+            val cols = map.size
+            val gap = 4.dp.toPx()
+            val cell = minOf((size.width - gap * (cols - 1)) / cols, (size.height - gap * 6) / 7)
+            val left = (size.width - (cell * cols + gap * (cols - 1))) / 2
+            map.forEachIndexed { c, week ->
+                week.forEachIndexed { r, (_, p) ->
+                    val color = if (p == null) off.copy(alpha = 0.25f) else if (p.fraction == 0f) off else on.copy(alpha = 0.25f + 0.75f * (p.fraction ?: 0f))
+                    drawRoundRect(color, androidx.compose.ui.geometry.Offset(left + c * (cell + gap), r * (cell + gap)), androidx.compose.ui.geometry.Size(cell, cell), androidx.compose.ui.geometry.CornerRadius(cell * 0.28f))
+                }
+            }
+        }
+        Text("Each square is a day, newest week on the right; a stronger colour means more of that day's habits kept.", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Weekly completion", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 6.dp))
+        Row(Modifier.fillMaxWidth().height(80.dp), horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.Bottom) {
+            rates.forEach { r ->
+                Box(Modifier.weight(1f).height((76f * (r ?: 0f)).coerceAtLeast(3f).dp).clip(RoundedCornerShape(4.dp)).background(if (r == null) off.copy(alpha = 0.4f) else on.copy(alpha = 0.35f + 0.65f * r)))
+            }
+        }
+        Text("Average share of habits kept in each of the last 12 weeks.", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}

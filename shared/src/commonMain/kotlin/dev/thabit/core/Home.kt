@@ -62,3 +62,23 @@ fun weekOf(today: LocalDate): Pair<LocalDate, LocalDate> {
 fun greetingFor(hour: Int): String = when (hour) { in 5..11 -> "Good morning"; in 12..16 -> "Good afternoon"; else -> "Good evening" }
 
 val DayOfWeek.shortLabel: String get() = name.take(3).lowercase().replaceFirstChar { it.uppercase() }
+
+/**
+ * The last [weeks] weeks (Monday to Sunday, oldest first) of habit completion per day for a heatmap; a day after [today], or with
+ * nothing due, has a null progress so it is drawn blank.
+ */
+fun heatmap(habits: List<Habit>, log: Map<String, Set<LocalDate>>, skips: Map<String, Set<LocalDate>>, today: LocalDate, weeks: Int = 12): List<List<Pair<LocalDate, Progress?>>> {
+    val thisMonday = today.minus(today.dayOfWeek.ordinal, DateTimeUnit.DAY)
+    return (weeks - 1 downTo 0).map { w ->
+        val monday = thisMonday.minus(w * 7, DateTimeUnit.DAY)
+        (0..6).map { i ->
+            val d = monday.plus(i, DateTimeUnit.DAY)
+            val due = dueHabits(habits, skips, d)
+            d to (if (d > today || due.isEmpty()) null else Progress(due.count { d in log[it.id].orEmpty() }, due.size))
+        }
+    }
+}
+
+/** Each heatmap week's average completion (0..1) over the days that had habits due, or null for a week with none. */
+fun weeklyRates(map: List<List<Pair<LocalDate, Progress?>>>): List<Float?> =
+    map.map { week -> week.mapNotNull { it.second?.fraction }.let { f -> if (f.isEmpty()) null else f.average().toFloat() } }

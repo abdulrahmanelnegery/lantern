@@ -47,4 +47,23 @@ class HomeTest {
     }
 
     @Test fun `greeting follows the hour`() { assertEquals("Good morning", greetingFor(8)); assertEquals("Good afternoon", greetingFor(13)); assertEquals("Good evening", greetingFor(22)); assertEquals("Good evening", greetingFor(3)) }
+
+    @Test fun `the heatmap has the asked number of weeks, blank future days and blank days with nothing due`() {
+        val gym = Habit("h2", "Gym", days = listOf(1, 3, 5))
+        val map = heatmap(listOf(gym), mapOf("h2" to setOf(LocalDate(2026, 10, 12))), emptyMap(), wed, 3)
+        assertEquals(3, map.size); assertEquals(7, map.first().size)
+        val last = map.last()
+        assertEquals(LocalDate(2026, 10, 12), last[0].first); assertEquals(Progress(1, 1), last[0].second)
+        assertNull(last[1].second)           // Tuesday: nothing due
+        assertEquals(Progress(0, 1), last[2].second) // Wednesday today, not done
+        assertNull(last[4].second)           // Friday is after today
+    }
+
+    @Test fun `weekly rates average the days with something due and skip empty weeks`() {
+        val read = Habit("h1", "Read")
+        val map = heatmap(listOf(read), mapOf("h1" to setOf(LocalDate(2026, 10, 12), LocalDate(2026, 10, 13))), emptyMap(), wed, 2)
+        val rates = weeklyRates(map)
+        assertEquals(2, rates.size); assertEquals(0f, rates[0]!!, 0.001f)
+        assertEquals(2f / 3f, rates[1]!!, 0.001f)
+    }
 }
