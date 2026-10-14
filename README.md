@@ -23,10 +23,11 @@ Thabit (ثابت, "steady") runs on **Android** and **Linux** (Debian and Ubuntu
 - **First start**: a short tour (reopen it from Settings or About) and a one-time "what's new" after each update.
 - **Notes**: Markdown notes with tags, pinning and search; a reading view and an edit view.
 - **Journal**: one entry a day with a mood, and a look back through the days.
-- **Tasks**: lists and a checklist with due dates (today, tomorrow, next week) and priorities.
+- **Tasks**: lists and a checklist with due dates (today, tomorrow, next week) and priorities; repeat daily, weekly or monthly (finishing one leaves the next open); steps inside a task, tags and a reminder time.
 - **Habits**: daily or chosen weekdays; swipe to check or undo, hold to skip; week and month views, streaks that skip days you skip on purpose, and a page for each habit with its history.
 - **The Zimam look**: a splash screen, an About page and the Zimam icon.
-- **Insights**: a day, week or month in numbers: what you wrote, did and kept up, with mood and habits by day.
+- **Insights**: a day, week or month in numbers: what you wrote, did and kept up, with mood and habits by day, plus a twelve-week habit heatmap and weekly completion bars.
+- **Reminders** (Android): give a habit or a task a time and a notification appears then and stays until you press Done (ticks the habit or finishes the task) or Later (ten minutes). Alarms are set again after a restart; notification permission is asked for only when a reminder exists, and without exact-alarm permission a reminder can come a few minutes late.
 - **Search** across notes, journal entries and tasks, from one place.
 - **Themes**: Zimam (warm paper and near-black with an orange accent) and five more palettes, each in light and dark, or follow the system.
 - **Export** the whole vault as a zip from Settings.
@@ -113,7 +114,7 @@ A feature depends only on `core` and `ui`, never on another feature; `scripts/ch
 
 ## Roadmap
 
-Reminders with sticky notifications, widgets, sync between devices, recurring tasks and charts. Money tracking left Thabit and became its own app, [Zimma](https://github.com/zimamlabs/zimma).
+Widgets, sync between devices and more insight charts. Notes and the journal will move to their own app, Athar, later; the files in your vault's `notes/` and `journal/` folders will stay untouched. Money tracking left Thabit and became its own app.
 
 ## Licence
 

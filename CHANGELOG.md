@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.0
+
+- **Reminders for habits and tasks** (Android). Give a habit or a task a time; a notification appears then and stays until you press Done (ticks the habit for today or finishes the task, and a repeating task leaves its next copy) or Later (ten minutes). One exact alarm is set for the soonest reminder (a few minutes late if exact alarms are not allowed), set again after a restart or a change of time, and when the app opens or closes. Notification permission is asked for only when a reminder exists.
+- **Habit charts in Insights.** A twelve-week heatmap of how much of each day's habits you kept, and the average for each week as bars.
+
 ## 0.7.0
 
 - **Dawem is now Thabit** (ثابت, "steady"), by Zimam Labs. Same app, same data: the Android app id is unchanged, so it updates in place, and the signing key is the same. The vault now lives in `Zimam/Thabit` (and `~/Zimam/Thabit` on Linux); `Zimam/Dawem`, `Dawem` and `Lantern` folders are copied in and checked, never deleted or overwritten, and stay as a backup. Settings can remove an old folder after a further check. The `.lantern` folder inside a vault keeps its name.
