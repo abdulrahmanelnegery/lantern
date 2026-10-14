@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.Dawem" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.Thabit" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">#0E0E0C</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>

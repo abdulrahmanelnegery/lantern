@@ -28,7 +28,7 @@ kotlin {
 }
 
 android {
-    namespace = "dev.dawem.shared"
+    namespace = "dev.thabit.shared"
     compileSdk = 36
     defaultConfig { minSdk = 26 }
     compileOptions {

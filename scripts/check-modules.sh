@@ -13,7 +13,7 @@ for dir in feature-*/; do
   for other in feature-*/; do
     other_pkg="${other%/}"; other_pkg="${other_pkg#feature-}"
     [ "$other_pkg" = "$pkg" ] && continue
-    hits="$(grep -rnE "^import dev\.dawem\.$other_pkg[.;]|dev\.dawem\.$other_pkg\.[A-Za-z]" "$name/src" --include='*.kt' || true)"
+    hits="$(grep -rnE "^import dev\.thabit\.$other_pkg[.;]|dev\.thabit\.$other_pkg\.[A-Za-z]" "$name/src" --include='*.kt' || true)"
     if [ -n "$hits" ]; then echo "$name uses the $other_pkg feature in source:"; echo "$hits"; bad=1; fi
   done
 done

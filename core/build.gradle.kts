@@ -23,7 +23,7 @@ kotlin {
 }
 
 android {
-    namespace = "dev.dawem.core"
+    namespace = "dev.thabit.core"
     compileSdk = 36
     defaultConfig { minSdk = 26 }
     compileOptions {

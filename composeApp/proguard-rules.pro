@@ -1,4 +1,4 @@
 -keepattributes *Annotation*, InnerClasses
 -dontwarn org.slf4j.**
--keep,includedescriptorclasses class dev.dawem.core.**$$serializer { *; }
--keepclassmembers class dev.dawem.core.** { *** Companion; }
+-keep,includedescriptorclasses class dev.thabit.core.**$$serializer { *; }
+-keepclassmembers class dev.thabit.core.** { *** Companion; }

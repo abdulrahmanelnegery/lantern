@@ -25,7 +25,7 @@ kotlin {
 }
 
 android {
-    namespace = "dev.dawem.ui"
+    namespace = "dev.thabit.ui"
     compileSdk = 36
     defaultConfig { minSdk = 26 }
     compileOptions {
