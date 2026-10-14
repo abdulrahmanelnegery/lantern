@@ -36,13 +36,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.dawem.core.Habit
-import dev.dawem.core.appliesOn
-import dev.dawem.core.habitStats
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import dev.dawem.habits.appliesOn
+import dev.dawem.habits.Habit
+import dev.dawem.habits.habitStats
 
 /** One habit: streaks, how often you keep it, the days of the week you do it, and a month you can edit. */
 @Composable

@@ -9,6 +9,15 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import dev.dawem.habits.Habit
+import dev.dawem.habits.HabitMark
+import dev.dawem.habits.habitStats
+import dev.dawem.habits.perfectDays
+import dev.dawem.habits.streak
+import dev.dawem.journal.JournalEntry
+import dev.dawem.journal.journalStreak
+import dev.dawem.notes.Note
+import dev.dawem.tasks.Task
 
 class VaultTest {
     private class Fixed(var at: String = "2026-10-14T09:30:00Z") : Clock {

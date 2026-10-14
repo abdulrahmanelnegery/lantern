@@ -4,10 +4,6 @@ import dev.dawem.ui.*
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.ImageComposeScene
 import androidx.compose.ui.unit.Density
-import dev.dawem.core.Habit
-import dev.dawem.core.JournalEntry
-import dev.dawem.core.Note
-import dev.dawem.core.Task
 import dev.dawem.core.Vault
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -21,6 +17,10 @@ import org.jetbrains.skia.EncodedImageFormat
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertTrue
+import dev.dawem.habits.Habit
+import dev.dawem.journal.JournalEntry
+import dev.dawem.notes.Note
+import dev.dawem.tasks.Task
 
 /**
  * Draws each screen offscreen into build/screenshots so the layout can be looked at without a device.

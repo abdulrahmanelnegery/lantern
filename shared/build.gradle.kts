@@ -11,6 +11,10 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(project(":core"))
+            api(project(":feature-notes"))
+            api(project(":feature-journal"))
+            api(project(":feature-tasks"))
+            api(project(":feature-habits"))
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.datetime)

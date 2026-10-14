@@ -13,7 +13,7 @@ VERSION="$(sed -n 's/.*versionName = "\(.*\)".*/\1/p' composeApp/build.gradle.kt
 : "${VERSION:?could not read versionName}"
 [ -n "${LANTERN_KEYSTORE:-}" ] || echo "note: LANTERN_KEYSTORE is not set, the APKs will be unsigned" >&2
 
-./gradlew --no-daemon :shared:desktopTest :composeApp:assembleRelease :composeApp:packageDeb
+./gradlew --no-daemon :shared:desktopTest :feature-notes:desktopTest :feature-journal:desktopTest :feature-tasks:desktopTest :feature-habits:desktopTest :composeApp:assembleRelease :composeApp:packageDeb
 
 OUT="dist/$VERSION"
 rm -rf "$OUT"; mkdir -p "$OUT"

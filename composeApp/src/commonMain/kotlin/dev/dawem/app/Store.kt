@@ -4,13 +4,13 @@ import dev.dawem.ui.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import dev.dawem.core.Habit
-import dev.dawem.core.HabitMark
-import dev.dawem.core.JournalEntry
-import dev.dawem.core.Note
-import dev.dawem.core.Task
 import dev.dawem.core.Vault
 import kotlinx.datetime.LocalDate
+import dev.dawem.habits.Habit
+import dev.dawem.habits.HabitMark
+import dev.dawem.journal.JournalEntry
+import dev.dawem.notes.Note
+import dev.dawem.tasks.Task
 
 /** What the screens read and change: the vault's contents as Compose state, rewritten after each change. */
 class DawemStore(val vault: Vault, val location: String) {

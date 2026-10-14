@@ -38,9 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.dawem.core.Habit
 import dev.dawem.core.newId
-import dev.dawem.core.streak
 import kotlinx.datetime.DateTimeUnit
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -60,10 +58,12 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
-import dev.dawem.core.HabitMark
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
 import kotlinx.datetime.minus
+import dev.dawem.habits.Habit
+import dev.dawem.habits.HabitMark
+import dev.dawem.habits.streak
 
 private enum class HabitView(val label: String) { Today("Today"), Week("Week"), Month("Month") }
 

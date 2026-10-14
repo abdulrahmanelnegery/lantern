@@ -42,8 +42,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dev.dawem.core.Note
 import kotlinx.coroutines.delay
+import dev.dawem.notes.Note
 
 @Composable
 fun NotesScreen(store: DawemStore, tag: String? = null) {

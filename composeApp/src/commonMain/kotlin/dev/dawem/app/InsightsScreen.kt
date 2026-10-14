@@ -34,12 +34,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.dawem.core.DaySummary
 import dev.dawem.core.daySummaries
-import dev.dawem.core.habitStats
 import dev.dawem.core.totals
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
+import dev.dawem.habits.habitStats
+import dev.dawem.habits.streak
 
 private enum class Period(val label: String) { Day("Day"), Week("Week"), Month("Month") }
 

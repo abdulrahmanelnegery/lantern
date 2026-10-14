@@ -35,11 +35,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import dev.dawem.core.Task
 import dev.dawem.core.newId
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.plus
+import dev.dawem.tasks.Task
 
 private enum class TaskFilter(val label: String) { Open("Open"), Due("Due"), Done("Done") }
 
