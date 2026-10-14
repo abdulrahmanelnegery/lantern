@@ -15,6 +15,10 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":shared"))
             implementation(project(":ui"))
+            implementation(project(":feature-notes"))
+            implementation(project(":feature-journal"))
+            implementation(project(":feature-tasks"))
+            implementation(project(":feature-habits"))
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -48,8 +52,8 @@ android {
         applicationId = "dev.lantern.notes"
         minSdk = 26
         targetSdk = 35
-        versionCode = 10
-        versionName = "0.6.0"
+        versionCode = 11
+        versionName = "0.6.1"
     }
     signingConfigs {
         create("release") {
@@ -96,7 +100,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Deb)
             packageName = "dawem"
-            packageVersion = "0.6.0"
+            packageVersion = "0.6.1"
             description = "Private notes, journal, tasks and habits in plain files"
             vendor = "Zimam"
             linux {

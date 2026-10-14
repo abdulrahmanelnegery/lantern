@@ -1,4 +1,4 @@
-package dev.dawem.app
+package dev.dawem.journal
 
 import dev.dawem.ui.*
 import androidx.compose.foundation.layout.Arrangement
@@ -26,23 +26,23 @@ private val faces = listOf("😞", "😕", "😐", "🙂", "😄")
 
 /** Every day you wrote about, newest first; tap one to read or change it. */
 @Composable
-fun JournalScreen(store: DawemStore) {
+fun JournalScreen(state: JournalState, today: kotlinx.datetime.LocalDate) {
     var open by remember { mutableStateOf<LocalDate?>(null) }
     // The list is read again whenever today's entry changes.
-    val dates = remember(store.todayEntry, store.today) { store.vault.journalDates() }
+    val dates = state.dates()
     PlatformBackHandler(open != null) { open = null }
     val day = open
     if (day != null) {
         Column(Modifier.fillMaxSize().padding(16.dp)) {
             Text(prettyDate(day) + " " + day.year, style = MaterialTheme.typography.titleLarge)
-            JournalPanel(store, day, Modifier.padding(top = 12.dp))
+            JournalPanel(state, day, Modifier.padding(top = 12.dp))
         }
         return
     }
     if (dates.isEmpty()) EmptyHint("No entries yet", "Write a few lines on the Today screen and they will show up here.")
     LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         items(dates, key = { it.toString() }) { d ->
-            val e: JournalEntry? = remember(d, store.todayEntry) { store.vault.journal(d) }
+            val e: JournalEntry? = state.entry(d)
             Panel(onClick = { open = d }) {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(e?.mood?.let { faces[(it - 1).coerceIn(0, 4)] } ?: "·", style = MaterialTheme.typography.titleLarge)

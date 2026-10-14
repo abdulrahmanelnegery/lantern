@@ -1,6 +1,7 @@
 package dev.dawem.app
 
 import dev.dawem.ui.*
+import dev.dawem.journal.JournalPanel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +37,6 @@ import kotlinx.coroutines.delay
 import dev.dawem.habits.streak
 import dev.dawem.journal.JournalEntry
 
-private val moods = listOf("😞" to "Low", "😕" to "Meh", "😐" to "Okay", "🙂" to "Good", "😄" to "Great")
 
 /** Today's cards, in the order and with the visibility chosen in Settings. */
 val TodayCards = listOf("quote" to "Affirmation and tip", "streaks" to "Streaks", "habits" to "Habits today", "tasks" to "Tasks today", "journal" to "Journal")
@@ -63,16 +63,16 @@ fun TodayScreen(store: DawemStore) {
                     Text(dev.dawem.core.Quotes.tip(today, shuffle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 "streaks" -> StreaksCard(store)
-                "journal" -> JournalPanel(store, today)
+                "journal" -> JournalPanel(store.journalState, today)
                 "habits" -> {
-        val todays = store.habits.filter { !it.archived && (it.days.isEmpty() || today.dayOfWeek.ordinal + 1 in it.days) }
+        val todays = store.habitsState.habits.filter { !it.archived && (it.days.isEmpty() || today.dayOfWeek.ordinal + 1 in it.days) }
         if (todays.isNotEmpty()) Panel {
             Text("Habits today", style = MaterialTheme.typography.titleSmall)
             todays.forEach { h ->
-                val days = store.habitLog[h.id].orEmpty()
+                val days = store.habitsState.log[h.id].orEmpty()
                 val done = today in days
                 Row(
-                    Modifier.fillMaxWidth().clip(RoundedCornerShape10).clickable { store.setHabitDone(h.id, today, !done) }.padding(vertical = 6.dp),
+                    Modifier.fillMaxWidth().clip(RoundedCornerShape10).clickable { store.habitsState.setDone(h.id, today, !done) }.padding(vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
@@ -82,7 +82,7 @@ fun TodayScreen(store: DawemStore) {
                         modifier = Modifier.size(28.dp),
                     )
                     Text(h.name, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                    val s = streak(h, days, today, store.habitSkips[h.id].orEmpty())
+                    val s = streak(h, days, today, store.habitsState.skips[h.id].orEmpty())
                     if (s > 0) Text("$s day streak", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
                 }
             }
@@ -90,12 +90,12 @@ fun TodayScreen(store: DawemStore) {
 
                 }
                 "tasks" -> {
-        val open = store.tasks.filter { !it.done && (it.due == null || it.due!! <= today) }.take(5)
+        val open = store.tasksState.tasks.filter { !it.done && (it.due == null || it.due!! <= today) }.take(5)
         if (open.isNotEmpty()) Panel {
             Text("Tasks for today", style = MaterialTheme.typography.titleSmall)
             open.forEach { t ->
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(false, { store.saveTasks(store.tasks.map { x -> if (x.id == t.id) x.copy(done = true, doneOn = store.today) else x }) })
+                    Checkbox(false, { store.tasksState.save(store.tasksState.tasks.map { x -> if (x.id == t.id) x.copy(done = true, doneOn = store.today) else x }) })
                     Column(Modifier.weight(1f)) {
                         Text(t.title, style = MaterialTheme.typography.bodyLarge)
                         t.due?.let { if (it < today) Text("Overdue: ${prettyDate(it)}", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.error) }
@@ -113,11 +113,11 @@ fun TodayScreen(store: DawemStore) {
 @Composable
 private fun StreaksCard(store: DawemStore) {
     val today = store.today
-    val active = store.habits.filter { !it.archived }
+    val active = store.habitsState.habits.filter { !it.archived }
     val todays = active.filter { it.days.isEmpty() || today.dayOfWeek.ordinal + 1 in it.days }
-    val best = active.maxOfOrNull { streak(it, store.habitLog[it.id].orEmpty(), today, store.habitSkips[it.id].orEmpty()) } ?: 0
-    val doneToday = todays.count { today in store.habitLog[it.id].orEmpty() }
-    val journalDays = remember(store.todayEntry, today) { store.vault.journalDates().toSet() }
+    val best = active.maxOfOrNull { streak(it, store.habitsState.log[it.id].orEmpty(), today, store.habitsState.skips[it.id].orEmpty()) } ?: 0
+    val doneToday = todays.count { today in store.habitsState.log[it.id].orEmpty() }
+    val journalDays = remember(store.journalState.entry(store.today), today) { store.journalState.dates().toSet() }
     Panel {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Column { Text("Best streak", style = MaterialTheme.typography.labelMedium); Text("$best ${if (best == 1) "day" else "days"}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary) }
@@ -128,41 +128,3 @@ private fun StreaksCard(store: DawemStore) {
 }
 
 private val RoundedCornerShape10 = androidx.compose.foundation.shape.RoundedCornerShape(10.dp)
-
-/** Mood and the journal text for one day, saved a moment after you stop typing. */
-@Composable
-fun JournalPanel(store: DawemStore, date: kotlinx.datetime.LocalDate, modifier: Modifier = Modifier) {
-    val entry = if (date == store.today) store.todayEntry else remember(date) { store.journal(date) }
-    var text by remember(date) { mutableStateOf(entry?.body.orEmpty()) }
-    var mood by remember(date) { mutableStateOf(entry?.mood) }
-    LaunchedEffect(text, mood) {
-        if (text == entry?.body.orEmpty() && mood == entry?.mood) return@LaunchedEffect
-        delay(700)
-        store.saveJournal(JournalEntry(date, text, mood, entry?.tags.orEmpty()))
-    }
-    Panel(modifier) {
-        Text("How are you?", style = MaterialTheme.typography.titleSmall)
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            moods.forEachIndexed { i, (face, label) ->
-                val value = i + 1
-                Column(
-                    Modifier.clip(CircleShape).clickable { mood = if (mood == value) null else value }.padding(6.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Box(
-                        Modifier.size(48.dp).clip(CircleShape).background(if (mood == value) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh),
-                        contentAlignment = Alignment.Center,
-                    ) { Text(face, style = MaterialTheme.typography.headlineSmall) }
-                    Text(label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
-        }
-        OutlinedTextField(
-            text, { text = it },
-            placeholder = { Text("What happened? What are you thankful for?") },
-            modifier = Modifier.fillMaxWidth(),
-            minLines = 4,
-            maxLines = 12,
-        )
-    }
-}

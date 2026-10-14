@@ -1,4 +1,4 @@
-package dev.dawem.app
+package dev.dawem.tasks
 
 import dev.dawem.ui.*
 import androidx.compose.foundation.clickable
@@ -47,12 +47,12 @@ private val priorityNames = listOf("None", "Low", "Medium", "High")
 
 /** [list]: null shows every task, "" the inbox, anything else that list. */
 @Composable
-fun TasksScreen(store: DawemStore, list: String? = null) {
+fun TasksScreen(state: TasksState, today: kotlinx.datetime.LocalDate, list: String? = null) {
     var filter by remember { mutableStateOf(TaskFilter.Open) }
     var editing by remember { mutableStateOf<Task?>(null) }
     var adding by remember { mutableStateOf(false) }
-    val today = store.today
-    val inList = store.tasks.filter { list == null || it.list == list }
+    val today = today
+    val inList = state.tasks.filter { list == null || it.list == list }
     fun matches(t: Task, f: TaskFilter) = when (f) {
         TaskFilter.Open -> !t.done
         TaskFilter.Due -> !t.done && t.due != null && t.due!! <= today
@@ -72,7 +72,7 @@ fun TasksScreen(store: DawemStore, list: String? = null) {
             LazyColumn(contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 items(shown, key = { it.id }) { t ->
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        Checkbox(t.done, { v -> store.saveTasks(store.tasks.map { x -> if (x.id == t.id) x.copy(done = v, doneOn = if (v) store.today else null) else x }) })
+                        Checkbox(t.done, { v -> state.save(state.tasks.map { x -> if (x.id == t.id) x.copy(done = v, doneOn = if (v) today else null) else x }) })
                         Column(Modifier.weight(1f).clickable { editing = t }) {
                             Text(t.title, style = MaterialTheme.typography.bodyLarge, textDecoration = if (t.done) TextDecoration.LineThrough else null, color = if (t.done) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface)
                             val meta = listOfNotNull(t.due?.let { prettyDate(it) }, t.list.takeIf { it.isNotEmpty() && list == null }, priorityNames[t.priority.coerceIn(0, 3)].takeIf { t.priority > 0 }?.let { "$it priority" })
@@ -81,26 +81,26 @@ fun TasksScreen(store: DawemStore, list: String? = null) {
                                 color = if (!t.done && t.due != null && t.due!! < today) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                        IconButton(onClick = { store.saveTasks(store.tasks.filter { it.id != t.id }) }) { Icon(Icons.Rounded.Close, "Delete", tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+                        IconButton(onClick = { state.save(state.tasks.filter { it.id != t.id }) }) { Icon(Icons.Rounded.Close, "Delete", tint = MaterialTheme.colorScheme.onSurfaceVariant) }
                     }
                 }
             }
         }
     }
-    if (adding) TaskDialog(store, Task(newId(), "", list = list.orEmpty()), "New task", onDismiss = { adding = false }) { t ->
-        store.saveTasks(listOf(t) + store.tasks); adding = false
+    if (adding) TaskDialog(state, today, Task(newId(), "", list = list.orEmpty()), "New task", onDismiss = { adding = false }) { t ->
+        state.save(listOf(t) + state.tasks); adding = false
     }
     editing?.let { current ->
-        TaskDialog(store, current, "Edit task", onDismiss = { editing = null }) { t ->
-            store.saveTasks(store.tasks.map { if (it.id == t.id) t else it }); editing = null
+        TaskDialog(state, today, current, "Edit task", onDismiss = { editing = null }) { t ->
+            state.save(state.tasks.map { if (it.id == t.id) t else it }); editing = null
         }
     }
 }
 
 @Composable
-private fun TaskDialog(store: DawemStore, start: Task, heading: String, onDismiss: () -> Unit, onSave: (Task) -> Unit) {
+private fun TaskDialog(state: TasksState, today: kotlinx.datetime.LocalDate, start: Task, heading: String, onDismiss: () -> Unit, onSave: (Task) -> Unit) {
     var task by remember(start.id) { mutableStateOf(start) }
-    val today = store.today
+    val today = today
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(heading) },
@@ -121,7 +121,7 @@ private fun TaskDialog(store: DawemStore, start: Task, heading: String, onDismis
                 Text("List", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 androidx.compose.foundation.lazy.LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     item { FilterChip(task.list.isEmpty(), { task = task.copy(list = "") }, { Text("Inbox") }) }
-                    items(store.taskLists()) { l -> FilterChip(task.list == l, { task = task.copy(list = l) }, { Text(l) }) }
+                    items(state.lists()) { l -> FilterChip(task.list == l, { task = task.copy(list = l) }, { Text(l) }) }
                 }
             }
         },

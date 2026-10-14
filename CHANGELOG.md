@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1
+
+- Internal: package rename (`dev.lantern` to `dev.dawem`) and a split into modules (`:core`, `:ui`, one module each for notes, journal, tasks and habits, and the app). No change in behaviour; your vault, settings and the app's identity on the phone are unchanged.
+
 ## 0.6.0
 
 - **Habits page.** Today view: swipe a habit right to mark it done, left to undo it, or hold it for skip, edit, analytics and archive. Skipped days do not break a streak. Week and Month views show every habit as a grid you can tap (hold a day to skip it), page back through time, and switch between all habits together or one habit at a time.

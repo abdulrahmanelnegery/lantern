@@ -1,6 +1,5 @@
-package dev.dawem.app
+package dev.dawem.ui
 
-import dev.dawem.ui.*
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 

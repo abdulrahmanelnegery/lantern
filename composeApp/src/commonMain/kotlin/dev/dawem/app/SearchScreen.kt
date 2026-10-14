@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SearchScreen(store: DawemStore, nav: Nav) {
     var query by remember { mutableStateOf("") }
-    val hits = remember(query, store.notes, store.tasks, store.todayEntry) { store.vault.search(query) }
+    val hits = remember(query, store.notesState.notes, store.tasksState.tasks, store.journalState.entry(store.today)) { store.vault.search(query) }
     Column(Modifier.fillMaxSize()) {
         OutlinedTextField(
             query, { query = it }, singleLine = true, placeholder = { Text("Search notes, journal and tasks") },
