@@ -33,8 +33,9 @@ class NotesRepository(private val files: VaultFiles) {
         val meta = linkedMapOf("id" to id, "title" to saved.title, "created" to created, "updated" to saved.updated, "tags" to Frontmatter.formatList(saved.tags))
         if (saved.pinned) meta["pinned"] = "true"
         val target = dir / "${slugOf(saved.title)}-$id.md"
-        noteFiles().filter { it.name.endsWith("-$id.md") && it != target }.forEach { fs.delete(it) }
+        val oldFiles = noteFiles().filter { it.name.endsWith("-$id.md") && it != target }
         files.write(target, Frontmatter.write(Document(meta, saved.body)))
+        oldFiles.forEach { fs.delete(it) }
         return saved
     }
 
