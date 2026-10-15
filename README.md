@@ -85,7 +85,7 @@ On Android the vault is private to the app by default. In the app you can allow 
 
 ## Privacy
 
-No account, no ads, no tracking. Thabit keeps your data on your phone in plain files you can open anywhere, and sends nothing over the network.
+No account, no ads, no tracking. Thabit keeps your data on your phone in plain files you can open anywhere, and sends nothing over the network. Android's Google backup is switched off for Thabit (`allowBackup="false"`), so the vault is never copied to your Google account behind your back; use *Export* in Settings to make your own copy. If you grant *All files access* so the vault lives in `Zimam/Thabit`, any other app that also has all-files access can read it; the private vault (the default) is not visible to other apps.
 
 ## Build
 
