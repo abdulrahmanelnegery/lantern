@@ -4,10 +4,14 @@ import dev.thabit.core.VaultFiles
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
+import okio.ForwardingFileSystem
+import okio.Path
+import okio.Sink
 import okio.Path.Companion.toPath
 import okio.fakefilesystem.FakeFileSystem
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 class NotesRepositoryTest {
@@ -34,6 +38,22 @@ class NotesRepositoryTest {
         assertEquals(1, files.size, files.toString())
         assertTrue(files.single().startsWith("new-name-"), files.toString())
         assertEquals(first.id, repo.notes().single().id)
+    }
+
+    @Test fun aFailedWriteDuringRenameLeavesTheOldNoteInPlace() {
+        var failWrites = false
+        val flaky = object : ForwardingFileSystem(fs) {
+            override fun sink(file: Path, mustCreate: Boolean): Sink {
+                if (failWrites) throw java.io.IOException("disk full")
+                return super.sink(file, mustCreate)
+            }
+        }
+        val flakyRepo = NotesRepository(VaultFiles(flaky, "/v".toPath(), clock, TimeZone.UTC))
+        val first = flakyRepo.save(Note("", "Old name", "precious", "", ""))
+        failWrites = true
+        assertFailsWith<java.io.IOException> { flakyRepo.save(first.copy(title = "New name")) }
+        failWrites = false
+        assertEquals("precious", flakyRepo.notes().single().body.trim())
     }
 
     @Test fun trashMovesTheFileInsteadOfDeletingIt() {
