@@ -8,7 +8,7 @@ plugins {
 }
 
 // The one place the version lives for the app and the desktop package; Brand.VERSION and CHANGELOG are edited by hand.
-val appVersion = "0.8.1"
+val appVersion = "0.9.0"
 
 kotlin {
     androidTarget()
@@ -54,7 +54,7 @@ android {
         applicationId = "dev.lantern.notes"
         minSdk = 26
         targetSdk = 35
-        versionCode = 16
+        versionCode = 17
         versionName = appVersion
     }
     signingConfigs {
