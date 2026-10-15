@@ -15,7 +15,7 @@
 
 Notes, a journal, tasks and habits in one private app. Your data is plain files in a folder you own, so it works offline, opens in any editor and moves between your phone and laptop by copying the folder.
 
-Thabit (ثابت, "steady") runs on **Android** and **Linux** (Debian and Ubuntu) from one codebase.
+Thabit (ثابت, "steady") is an **Android** app today; Linux comes later. The desktop code stays in the repository and is tested, but no desktop package is published.
 
 ## Features
 
@@ -49,11 +49,9 @@ Get the files for your system from the [latest release](../../releases/latest). 
 | Android phone (64-bit, almost every phone since 2016) | `Thabit_<version>_Android_arm64-v8a.apk` |
 | Android, older 32-bit | `Thabit_<version>_Android_armeabi-v7a.apk` |
 | Android emulator, Chromebook | `Thabit_<version>_Android_x86_64.apk` |
-| Debian, Ubuntu, Mint | `Thabit_<version>_Linux_amd64.deb` |
 
 ```
-sha256sum -c Thabit_<version>_Linux_amd64.deb.sha256
-sudo apt install ./Thabit_<version>_Linux_amd64.deb
+sha256sum -c Thabit_<version>_Android_arm64-v8a.apk.sha256
 ```
 
 ## Verify
@@ -94,10 +92,9 @@ No account, no ads, no tracking. Thabit keeps your data on your phone in plain f
 You need JDK 17 or newer and, for Android, the Android SDK (platform 36).
 
 ```
-./gradlew :shared:desktopTest :feature-notes:desktopTest :feature-journal:desktopTest :feature-tasks:desktopTest :feature-habits:desktopTest   # the vault and feature tests
+./gradlew :core:desktopTest :shared:desktopTest :feature-notes:desktopTest :feature-journal:desktopTest :feature-tasks:desktopTest :feature-habits:desktopTest :composeApp:desktopTest   # the vault and feature tests
 ./gradlew :composeApp:run                # run the desktop app
 ./gradlew :composeApp:assembleDebug      # Android debug APKs
-./gradlew :composeApp:packageDeb         # Linux .deb
 ```
 
 The code is split into modules, each with one job:
