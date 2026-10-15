@@ -5,6 +5,9 @@
 - **Thabit is now habits, tasks and insights.** Notes and the journal have moved to their own app, [Athar](https://github.com/zimamlabs/athar). Home, Search, Insights, the side menu, the tour and About no longer show them, and Insights drops the mood, words and notes tiles.
 - **Your notes and journal files are not touched.** Thabit never reads, rewrites or deletes the `notes/` and `journal/` folders in your vault; the vault export still includes them, and Athar can import them. A one-time card on Home ("Notes and journal moved to Athar", with Open Athar and Not now) appears only if those folders hold files. The layout is written down in `docs/vault-format.md`.
 - Search now covers tasks and habits. A user who only ever had notes is not shown the first-run tour again.
+- **Reminders are more dependable.** They are set again after an app update, a reminder that falls while the phone is off or asleep is shown when it wakes (up to 12 hours late), and a snooze survives a restart.
+- **A damaged `habits.json` or `settings.json` is kept** as a `.corrupt` copy and Thabit says so, instead of silently starting empty.
+- **Android cloud backup is off**, so your vault is not copied to your Google account. Use Export in Settings.
 - Internal: the `feature-notes` and `feature-journal` modules are deleted; CI and the release script run the `:core` and `:composeApp` desktop tests too and no longer build a Linux package (Thabit is an Android app for now).
 
 ## 0.8.1
