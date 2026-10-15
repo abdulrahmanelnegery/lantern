@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.1
+
+- **A new app icon.** A small cairn of balanced stones with a diamond on top, on the launcher, the splash, the About page and the desktop window. The old infinity icon is kept in `branding/drafts`.
+
 ## 0.8.0
 
 - **Reminders for habits and tasks** (Android). Give a habit or a task a time; a notification appears then and stays until you press Done (ticks the habit for today or finishes the task, and a repeating task leaves its next copy) or Later (ten minutes). One exact alarm is set for the soonest reminder (a few minutes late if exact alarms are not allowed), set again after a restart or a change of time, and when the app opens or closes. Notification permission is asked for only when a reminder exists.

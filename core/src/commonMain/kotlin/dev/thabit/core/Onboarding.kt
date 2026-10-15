@@ -30,6 +30,7 @@ object Onboarding {
 /** Short notes per version, taken from the changelog; shown once after an update. */
 object ReleaseNotes {
     private val notes: Map<String, List<String>> = mapOf(
+        "0.8.1" to listOf("A new app icon: a small cairn of stones, steady and balanced."),
         "0.8.0" to listOf(
             "Reminders for habits and tasks: a notification that stays until you press Done or Later.",
             "A twelve-week habit heatmap and weekly completion bars in Insights.",
