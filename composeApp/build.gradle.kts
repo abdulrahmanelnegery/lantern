@@ -115,3 +115,6 @@ compose.desktop {
         }
     }
 }
+
+// ManifestTest reads the Android manifest, so a manifest edit must re-run the desktop tests.
+tasks.named("desktopTest") { inputs.file("src/androidMain/AndroidManifest.xml") }
