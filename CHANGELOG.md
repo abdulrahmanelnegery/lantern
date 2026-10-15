@@ -21,7 +21,7 @@
 
 ## 0.7.0
 
-- **Dawem is now Thabit** (ثابت, "steady"), by Zimam Labs. Same app, same data: the Android app id is unchanged, so it updates in place, and the signing key is the same. The vault now lives in `Zimam/Thabit` (and `~/Zimam/Thabit` on Linux); `Zimam/Dawem`, `Dawem` and `Lantern` folders are copied in and checked, never deleted or overwritten, and stay as a backup. Settings can remove an old folder after a further check. The `.lantern` folder inside a vault keeps its name.
+- **A new name: Thabit** (ثابت, "steady"), by Zimam Labs. Same app, same data: the Android app id is unchanged, so it updates in place, and the signing key is the same. The vault now lives in `Zimam/Thabit` (and `~/Zimam/Thabit` on Linux); folders from earlier versions are copied in and checked, never deleted or overwritten, and stay as a backup. Settings can remove an old folder after a further check. The `.lantern` folder inside a vault keeps its name.
 - **A new Home page.** A hero with today's progress ring, a quick-add row, your week, today's habits, upcoming and overdue tasks, a 14-day mood line, recent and pinned notes, on this day, a weekly summary, the affirmation, streaks and what's new. Order and visibility are set in Settings (Home page).
 - **The final icon** (the infinity mark with the diamond) on the launcher, the splash, About and the README.
 - **A new look.** Warm dark and ivory surfaces, the orange accent, a glow behind the Home hero, large rounded cards with a hairline border and a small diamond accent on every screen. The other palettes still work.
@@ -31,7 +31,7 @@
 
 ## 0.6.1
 
-- Internal: package rename (`dev.lantern` to `dev.dawem`) and a split into modules (`:core`, `:ui`, one module each for notes, journal, tasks and habits, and the app). No change in behaviour; your vault, settings and the app's identity on the phone are unchanged.
+- Internal: package rename and a split into modules (`:core`, `:ui`, one module each for notes, journal, tasks and habits, and the app). No change in behaviour; your vault, settings and the app's identity on the phone are unchanged.
 
 ## 0.6.0
 
@@ -42,8 +42,8 @@
 
 ## 0.5.2
 
-- **Money tracking is gone from Dawem.** It is becoming its own app, Hasad, so Dawem stays about notes, journal, tasks and habits. The Money section, the money card on Today and the "Spent" totals in Insights are removed.
-- Files you already have in a vault's `money/` folder are left exactly where they are (Dawem simply no longer reads or writes them); delete the folder yourself when you no longer need it.
+- **Money tracking is gone.** It is becoming its own app, Hasad, so this app stays about notes, journal, tasks and habits. The Money section, the money card on Today and the "Spent" totals in Insights are removed.
+- Files you already have in a vault's `money/` folder are left exactly where they are (the app simply no longer reads or writes them); delete the folder yourself when you no longer need it.
 - Under the hood: skipped days for habits, streak and stats functions that count them, and a bank of quotes and tips, ready for the habits page coming next. The release is signed with every APK signature scheme.
 
 ## 0.5.1
@@ -52,9 +52,9 @@
 
 ## 0.5.0
 
-- **Lantern is now Dawem** (داوم, "keep at it"), made by [Zimam](https://github.com/zimamlabs): a new name, a new icon (a loop and a semi-square), a short splash screen, "by Zimam" in the side menu and an **About** page.
-- The vault folder is now `Dawem` (`~/Dawem` on Linux, `/Dawem` on the phone). On first start the old `Lantern` folder is renamed, so nothing is copied or lost. Inside the vault, the hidden `.lantern` settings folder keeps its name, so a vault opens the same in older versions.
-- Release files start with `Dawem_`. The Linux package is now called `dawem`; remove the old `lantern-notes` package after installing it.
+- **A new name, a new icon** (a loop and a semi-square), a short splash screen, "by Zimam" in the side menu and an **About** page.
+- The vault folder is renamed; the old folder is moved across, so nothing is copied or lost. Inside the vault, the hidden `.lantern` settings folder keeps its name, so a vault opens the same in older versions.
+- Release files and the Linux package take the new name; remove the previous Linux package after installing it.
 - The Android package id is unchanged, so installed copies update in place.
 
 ## 0.4.0
@@ -77,12 +77,12 @@
 - Tasks: an add button at the bottom right, like Notes. Tasks have a due date, a priority and a list; tap a task to edit it. Lists open from the side menu.
 - Search across notes, journal entries and tasks from one box.
 - Journal history: every day you wrote, newest first, and edit any of them.
-- Settings: where the vault is, an export of the whole vault as a zip, and (on Android) keeping the vault in a visible /Lantern folder.
+- Settings: where the vault is, an export of the whole vault as a zip, and (on Android) keeping the vault in a visible folder.
 - Wide screens keep the content at a readable width.
 
 ## 0.1.1
 
-- A new icon: a glowing lantern on a night background, with a themed (monochrome) version for Android 13 and later.
+- A new icon: a glowing light on a night background, with a themed (monochrome) version for Android 13 and later.
 - The Linux window and package use the same icon.
 
 ## 0.1.0

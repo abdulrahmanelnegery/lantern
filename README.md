@@ -2,7 +2,7 @@
 
 <h1 align="center">Thabit</h1>
 
-<p align="center">Habits, tasks and insights in plain files, by <a href="https://github.com/zimamlabs">Zimam Labs</a>. Thabit, formerly Dawem and Lantern.</p>
+<p align="center">Habits, tasks and insights in plain files, by <a href="https://github.com/zimamlabs">Zimam Labs</a>.</p>
 
 <p align="center">
   <a href="../../releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/zimamlabs/thabit?color=FF5A1F&labelColor=1A1613"></a>
@@ -15,7 +15,7 @@
 
 Habits, tasks and insights in one private app. Your data is plain files in a folder you own, so it works offline, opens in any editor and moves between your phone and laptop by copying the folder.
 
-Thabit (ثابت, "steady") is an **Android** app today; Linux comes later. The desktop code stays in the repository and is tested, but no desktop package is published.
+Thabit (ثابت, "steady") keeps its original application id, so it installs as an update over earlier versions and keeps your data. It is an **Android** app today; Linux comes later. The desktop code stays in the repository and is tested, but no desktop package is published.
 
 ## Features
 
@@ -73,13 +73,13 @@ Everything lives in one vault folder inside a `Zimam` folder (`~/Zimam/Thabit` o
 ```
 tasks/Tasks.md                 a Markdown checklist
 habits/habits.json, log.csv    what you track, and the days you did it
-.lantern/                      settings and the trash (the folder keeps its old name so existing vaults keep working)
+.lantern/                      the settings and trash folder, name kept for compatibility
 notes/, journal/               written by Thabit 0.8 and earlier; never read, changed or deleted now (see docs/vault-format.md)
 ```
 
 Open the folder in Obsidian, a text editor or a spreadsheet; Thabit reads it back. To move to another device, copy the folder or sync it with any file-sync tool.
 
-On Android the vault is private to the app by default. In the app you can allow *All files access* to keep it in the visible `Zimam/Thabit` folder instead. Older folders (`Thabit`, `Lantern`, the private vault) are copied in, every file is checked by count, size and SHA-256, and the old folder is kept as a backup: nothing is deleted, a file that already exists is never overwritten (both are kept), and if a check fails Thabit keeps using the old folder. *Settings* has a button to remove an old folder once it has been checked again. Vault exports are saved in an `exports` folder inside the vault (and are left out of the next export), so every visible file stays under `Zimam/Thabit`.
+On Android the vault is private to the app by default. In the app you can allow *All files access* to keep it in the visible `Zimam/Thabit` folder instead. Folders from earlier versions and the private vault are copied in, every file is checked by count, size and SHA-256, and the old folder is kept as a backup: nothing is deleted, a file that already exists is never overwritten (both are kept), and if a check fails Thabit keeps using the old folder. *Settings* has a button to remove an old folder once it has been checked again. Vault exports are saved in an `exports` folder inside the vault (and are left out of the next export), so every visible file stays under `Zimam/Thabit`.
 
 ## Privacy
 

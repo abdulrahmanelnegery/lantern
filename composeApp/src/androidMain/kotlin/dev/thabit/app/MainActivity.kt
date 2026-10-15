@@ -12,6 +12,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.CompositionLocalProvider
+import dev.thabit.core.LegacyNames
 import dev.thabit.core.Vault
 import dev.thabit.core.VaultLocation
 import dev.thabit.core.zipVault
@@ -92,16 +93,16 @@ class MainActivity : ComponentActivity() {
 
     /**
      * The vault is `Zimam/Thabit` on the phone when All files access is allowed, else a private folder. Older folders
-     * (`Zimam/Dawem`, `Dawem`, `Lantern`, and the private vault when no visible one exists) are copied in and checked, then left where
+     * (the folders in `LegacyNames`, and the private vault when no visible one exists) are copied in and checked, then left where
      * they are as a backup; if a copy cannot be verified the old folder stays in use. Nothing is deleted here.
      */
     private fun openStore(): ThabitStore {
-        // The private vault folder was Lantern, then Dawem: it moves across to Thabit once, by renaming (nothing is copied twice).
-        val private = File(filesDir, "Thabit").also { new -> if (!new.exists()) listOf("Dawem", "Lantern").map { File(filesDir, it) }.firstOrNull { it.isDirectory }?.renameTo(new) }
+        // An earlier private vault folder moves across to Thabit once, by renaming (nothing is copied twice).
+        val private = File(filesDir, "Thabit").also { new -> if (!new.exists()) LegacyNames.oldPrivateFolders.map { File(filesDir, it) }.firstOrNull { it.isDirectory }?.renameTo(new) }
         val sd = Environment.getExternalStorageDirectory()
         val fs = FileSystem.SYSTEM
         val shared = (File(sd, "Zimam/Thabit")).absolutePath.toPath()
-        val olds = listOf("Zimam/Dawem", "Dawem", "Lantern").map { File(sd, it).absolutePath.toPath() }
+        val olds = LegacyNames.oldVaultFolders.map { File(sd, it).absolutePath.toPath() }
         val canShare = Build.VERSION.SDK_INT >= 30 && Environment.isExternalStorageManager()
         val choice = VaultLocation.choose(fs, canShare, shared, olds, private.absolutePath.toPath())
         migrationMessage = choice.message

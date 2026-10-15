@@ -40,7 +40,7 @@ object ReleaseNotes {
             "A twelve-week habit heatmap and weekly completion bars in Insights.",
         ),
         "0.7.0" to listOf(
-            "Dawem is now Thabit. Same app and data; your vault is copied into Zimam/Thabit and the old folder is kept as a backup.",
+            "Your vault is now in Zimam/Thabit; an older folder is copied in and kept as a backup.",
             "A new Home page with today's progress, your week, mood, quick add, tasks, notes and a look back, in a new warm look.",
             "Tasks can repeat and have steps, tags and a reminder time. A first-run tour and these notes after each update.",
         ),
