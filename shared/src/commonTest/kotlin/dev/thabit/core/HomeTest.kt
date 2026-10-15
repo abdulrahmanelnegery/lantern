@@ -28,16 +28,6 @@ class HomeTest {
         assertEquals(Progress(1, 1), strip[0].second); assertEquals(Progress(0, 1), strip[2].second); assertEquals(Progress(0, 0), strip[1].second)
     }
 
-    @Test fun `mood series is oldest first with gaps as null`() {
-        val s = moodSeries({ if (it == wed) 4 else if (it == LocalDate(2026, 10, 12)) 2 else null }, wed, 3)
-        assertEquals(listOf(2, null, 4), s)
-    }
-
-    @Test fun `on this day finds earlier years only, newest first`() {
-        val dates = listOf(LocalDate(2025, 10, 14), LocalDate(2026, 10, 14), LocalDate(2024, 10, 14), LocalDate(2025, 10, 15))
-        assertEquals(listOf(LocalDate(2025, 10, 14), LocalDate(2024, 10, 14)), onThisDay(dates, wed))
-    }
-
     @Test fun `upcoming tasks list overdue first, then soonest, skip done and plain undated ones`() {
         val tasks = listOf(
             Task("a", "later", due = LocalDate(2026, 10, 20)), Task("b", "overdue", due = LocalDate(2026, 10, 10)),

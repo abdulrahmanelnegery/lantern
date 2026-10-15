@@ -71,24 +71,23 @@ class Vault(
     fun setHabitMark(habitId: String, date: LocalDate, mark: HabitMark?) = habitsRepo.setMark(habitId, date, mark)
     fun setHabitDone(habitId: String, date: LocalDate, done: Boolean) = habitsRepo.setDone(habitId, date, done)
 
+    /** True when `notes/` or `journal/` hold files. They moved to Athar; Thabit never reads, rewrites or deletes them. */
+    fun hasNotesOrJournalFiles(): Boolean = listOf("notes", "journal").any { name ->
+        val dir = files.dir(name)
+        fs.exists(dir) && fs.listRecursively(dir).any { fs.metadataOrNull(it)?.isRegularFile == true }
+    }
+
     // ---- search ----------------------------------------------------------------------------
 
     data class Hit(val kind: String, val title: String, val snippet: String, val id: String)
 
-    /** Looks through notes, journal entries and tasks for [query] (case-insensitive). */
+    /** Looks through tasks and habits for [query] (case-insensitive). */
     fun search(query: String): List<Hit> {
         val q = query.trim().lowercase()
         if (q.isEmpty()) return emptyList()
-        fun snippet(text: String): String {
-            val at = text.lowercase().indexOf(q).coerceAtLeast(0)
-            return text.substring((at - 30).coerceAtLeast(0), (at + 60).coerceAtMost(text.length)).replace('\n', ' ')
-        }
         val hits = ArrayList<Hit>()
-        notes().filter { it.title.lowercase().contains(q) || it.body.lowercase().contains(q) || it.tags.any { t -> t.lowercase().contains(q) } }
-            .forEach { hits += Hit("note", it.title, snippet(it.body), it.id) }
-        journalDates().mapNotNull { journal(it) }.filter { it.body.lowercase().contains(q) }
-            .forEach { hits += Hit("journal", it.date.toString(), snippet(it.body), it.date.toString()) }
         tasks().filter { it.title.lowercase().contains(q) }.forEach { hits += Hit("task", it.title, if (it.done) "done" else "open", it.id) }
+        habits().filter { it.name.lowercase().contains(q) }.forEach { hits += Hit("habit", it.name, if (it.archived) "archived" else "habit", it.id) }
         return hits
     }
 }

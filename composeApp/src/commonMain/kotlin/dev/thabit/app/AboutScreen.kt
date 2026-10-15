@@ -37,11 +37,11 @@ fun AboutScreen(store: ThabitStore) {
                 BrandMark(Modifier.size(112.dp))
                 Text(Brand.NAME, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.SemiBold)
                 Text("ثابت", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
-                Text("Notes, journal, tasks and habits, kept in plain files", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
+                Text("Habits, tasks and insights, kept in plain files", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
                 Text("Version ${Brand.VERSION}", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-        Text("Thabit (\"steady\") is one private place for your notes, a daily journal, tasks and habits. Everything is plain files in a folder you own, so it works offline, opens in any editor and moves between your phone and laptop by copying the folder.", style = MaterialTheme.typography.bodyLarge)
+        Text("Thabit (\"steady\") is one private place for your habits and tasks, with insights on how you are doing. Notes and journal now live in Athar. Everything is plain files in a folder you own, so it works offline, opens in any editor and moves between your phone and laptop by copying the folder.", style = MaterialTheme.typography.bodyLarge)
         Panel {
             Text("Show the tour again", style = MaterialTheme.typography.titleSmall)
             Text("A quick walk through what Thabit does and where your data lives.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)

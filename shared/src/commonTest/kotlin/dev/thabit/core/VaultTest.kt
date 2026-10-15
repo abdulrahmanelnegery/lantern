@@ -113,13 +113,14 @@ class VaultTest {
         assertEquals(setOf(LocalDate(2026, 10, 13)), v.habitLog()["h1"])
     }
 
-    @Test fun searchFindsNotesJournalAndTasks() {
+    @Test fun searchFindsTasksAndHabitsOnly() {
         val v = vault()
         v.saveNote(Note("", "Garden plan", "plant tomatoes in spring", "", ""))
         v.saveJournal(JournalEntry(LocalDate(2026, 10, 14), "Bought tomatoes today", 3))
         v.saveTasks(listOf(Task("t1", "Water the tomatoes")))
+        v.saveHabits(listOf(Habit("h1", "Eat a tomato a day")))
         val kinds = v.search("TOMATO").map { it.kind }.toSet()
-        assertEquals(setOf("note", "journal", "task"), kinds)
+        assertEquals(setOf("task", "habit"), kinds)
         assertTrue(v.search("   ").isEmpty())
     }
 
@@ -163,18 +164,16 @@ class InsightsTest {
         val day = LocalDate(2026, 10, 13)
         val summary = daySummaries(
             day, today,
-            journal = { if (it == day) JournalEntry(it, "one two three", 4) else null },
-            notes = listOf(Note("n", "t", "b", "2026-10-13T08:00:00", "2026-10-13T08:00:00")),
             tasks = listOf(Task("a", "x", done = true, doneOn = day), Task("b", "y", done = true)),
             habitLog = mapOf("h" to setOf(day, today)),
         )
         assertEquals(2, summary.size)
         val d = summary.first()
-        assertEquals(3, d.journalWords); assertEquals(4, d.mood); assertEquals(1, d.notesCreated)
         assertEquals(1, d.tasksDone); assertEquals(1, d.habitsDone)
-        assertTrue(summary.last().journalWords == 0 && summary.last().habitsDone == 1)
+        assertTrue(summary.last().tasksDone == 0 && summary.last().habitsDone == 1)
+        assertTrue(DaySummary(day, 0, 0).isEmpty)
         val t = totals(summary)
-        assertEquals(1, t.journalDays); assertEquals(4.0, t.moodAverage); assertEquals(2, t.habitChecks)
+        assertEquals(1, t.tasks); assertEquals(2, t.habitChecks); assertEquals(2, t.days)
     }
 
     @Test fun aTaskKeepsItsDoneDayInTheFile() {
