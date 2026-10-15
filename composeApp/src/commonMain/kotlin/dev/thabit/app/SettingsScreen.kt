@@ -41,6 +41,11 @@ import androidx.compose.ui.unit.dp
 fun SettingsScreen(store: ThabitStore) {
     val platform = LocalPlatform.current
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = 32.dp)) {
+        val kept = store.vault.files.corruptCopies
+        if (kept.isNotEmpty()) Text(
+            "A data file could not be read, so Thabit started without it and kept a copy: ${kept.joinToString()}. Fix or restore it from the folder.",
+            Modifier.padding(horizontal = 24.dp, vertical = 12.dp), color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium,
+        )
         Header("Appearance")
         Row(Modifier.padding(horizontal = 24.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             listOf("system" to "System", "light" to "Light", "dark" to "Dark").forEach { (id, label) ->

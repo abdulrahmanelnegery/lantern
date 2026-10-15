@@ -52,4 +52,13 @@ class HabitsRepositoryTest {
         fs.write("/v/habits/habits.json".toPath()) { writeUtf8("{ not json") }
         assertEquals(emptyList(), repo.habits())
     }
+
+    @Test fun aBrokenHabitsFileIsKeptWhenTheNextHabitIsSaved() {
+        fs.createDirectories("/v/habits".toPath())
+        fs.write("/v/habits/habits.json".toPath()) { writeUtf8("{ not json") }
+        repo.save(repo.habits() + Habit("h1", "Read"))
+        val kept = fs.list("/v/habits".toPath()).single { it.name.startsWith("habits.json.corrupt-") }
+        assertEquals("{ not json", fs.read(kept) { readUtf8() })
+        assertEquals(listOf("Read"), repo.habits().map { it.name })
+    }
 }

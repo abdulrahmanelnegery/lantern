@@ -46,7 +46,7 @@ class Vault(
 
     private val settingsPath get() = root / ".lantern" / "settings.json"
 
-    fun settings(): AppSettings = files.read(settingsPath)?.let { runCatching { files.json.decodeFromString(AppSettings.serializer(), it) }.getOrNull() } ?: AppSettings()
+    fun settings(): AppSettings = files.readJson(settingsPath, AppSettings.serializer(), AppSettings())
 
     fun saveSettings(settings: AppSettings) = files.write(settingsPath, files.json.encodeToString(AppSettings.serializer(), settings))
 
