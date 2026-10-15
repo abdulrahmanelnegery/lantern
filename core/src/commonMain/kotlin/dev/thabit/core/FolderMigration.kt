@@ -112,7 +112,7 @@ object VaultLocation {
         return Choice(shared, null)
     }
 
-    /** The marker and clash label for an old folder: `Zimam/Dawem` and `Dawem` are different folders, so they get different labels. */
+    /** The marker and clash label for an old folder: `Zimam/X` and `X` are different folders, so they get different labels. */
     internal fun labelOf(old: Path) = if (old.parent?.name == "Zimam") "Zimam-${old.name}" else old.name
 
     /** Old folders whose every file is verified in [shared] right now, so removing them loses nothing. */

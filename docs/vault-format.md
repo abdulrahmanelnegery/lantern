@@ -1,6 +1,6 @@
 # Vault format (for importers)
 
-A Thabit vault is one folder of plain files (`Zimam/Thabit` on the phone). Since 0.9.0 Thabit only reads and writes the habits, tasks and settings files. The notes and journal folders below were written by Thabit 0.8 and earlier (and by Dawem and Lantern before it); Thabit no longer touches them, so an importer such as Athar can rely on this layout. Thabit never deletes or rewrites those files, and its vault export includes them.
+A Thabit vault is one folder of plain files (`Zimam/Thabit` on the phone). Since 0.9.0 Thabit only reads and writes the habits, tasks and settings files. The notes and journal folders below were written by Thabit 0.8 and earlier (and by earlier versions); Thabit no longer touches them, so an importer such as Athar can rely on this layout. Thabit never deletes or rewrites those files, and its vault export includes them.
 
 ```
 notes/<slug>-<id>.md             one note per file: Markdown with a small header
@@ -8,7 +8,7 @@ journal/<year>/<yyyy-mm-dd>.md   one journal entry per day
 tasks/Tasks.md                   a Markdown checklist
 habits/habits.json               what is tracked
 habits/log.csv                   one row per done or skipped day
-.lantern/settings.json           app settings (the folder keeps this name on purpose)
+.lantern/settings.json           app settings; `.lantern/` is the settings and trash folder, name kept for compatibility
 .lantern/trash/                  notes moved to the trash (left out of exports)
 exports/                         zips made by Export (left out of the next export)
 ```

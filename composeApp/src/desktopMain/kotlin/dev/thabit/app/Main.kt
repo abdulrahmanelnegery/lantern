@@ -7,6 +7,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import dev.thabit.core.LegacyNames
 import dev.thabit.core.Vault
 import dev.thabit.core.VaultLocation
 import dev.thabit.core.zipVault
@@ -20,11 +21,11 @@ import java.io.File
 
 fun main() = application {
     val home = System.getProperty("user.home")
-    // The vault is ~/Zimam/Thabit. Older folders (~/Zimam/Dawem, ~/Dawem, and ~/Lantern from before the renames) are copied in and checked,
+    // The vault is ~/Zimam/Thabit. Older folders (see LegacyNames) are copied in and checked,
     // then left where they are as a backup; if a copy cannot be verified the old folder stays in use.
     val fs = FileSystem.SYSTEM
     val shared = File(home, "Zimam/Thabit").absolutePath.toPath()
-    val olds = listOf("Zimam/Dawem", "Dawem", "Lantern").map { File(home, it).absolutePath.toPath() }
+    val olds = LegacyNames.oldVaultFolders.map { File(home, it).absolutePath.toPath() }
     val choice = VaultLocation.choose(fs, true, shared, olds, shared)
     val dir = File(choice.dir.toString()).also { it.mkdirs() }
     val store = ThabitStore(Vault(fs, dir.absolutePath.toPath()), dir.absolutePath)

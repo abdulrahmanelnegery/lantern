@@ -81,13 +81,13 @@ class FolderMigrationTest {
     }
 
     @Test fun `two old folders with the same name in different places keep separate markers and both are copied`() {
-        val a = "/sd/Zimam/Dawem".toPath(); val b = "/sd/Dawem".toPath(); val target = "/sd/Zimam/Thabit".toPath()
-        put("/sd/Zimam/Dawem/notes/a.md", "A"); put("/sd/Dawem/notes/b.md", "B"); put("/sd/Dawem/notes/a.md", "different A")
+        val (oldA, oldB) = LegacyNames.oldVaultFolders; val nameB = oldB.substringAfterLast("/"); val a = "/sd/$oldA".toPath(); val b = "/sd/$oldB".toPath(); val target = "/sd/Zimam/Thabit".toPath()
+        put("/sd/$oldA/notes/a.md", "A"); put("/sd/$oldB/notes/b.md", "B"); put("/sd/$oldB/notes/a.md", "different A")
         val c = VaultLocation.choose(fs, true, target, listOf(a, b), "/data/Thabit".toPath())
         assertEquals(target, c.dir)
         assertEquals("A", read("/sd/Zimam/Thabit/notes/a.md")); assertEquals("B", read("/sd/Zimam/Thabit/notes/b.md"))
-        assertEquals("different A", read("/sd/Zimam/Thabit/notes/a (from Dawem).md"))
-        assertTrue(fs.exists(FolderMigration.marker(target, "Zimam-Dawem"))); assertTrue(fs.exists(FolderMigration.marker(target, "Dawem")))
+        assertEquals("different A", read("/sd/Zimam/Thabit/notes/a (from $nameB).md"))
+        assertTrue(fs.exists(FolderMigration.marker(target, oldA.replace("/", "-")))); assertTrue(fs.exists(FolderMigration.marker(target, nameB)))
         assertEquals(listOf(a, b), VaultLocation.removable(fs, target, target, listOf(a, b)))
     }
 }
