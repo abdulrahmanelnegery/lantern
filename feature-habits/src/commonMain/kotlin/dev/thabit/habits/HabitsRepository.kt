@@ -12,7 +12,7 @@ class HabitsRepository(private val files: VaultFiles) {
     private val habitsPath get() = files.dir("habits") / "habits.json"
     private val logPath get() = files.dir("habits") / "log.csv"
 
-    fun habits(): List<Habit> = files.read(habitsPath)?.let { runCatching { files.json.decodeFromString(ListSerializer(Habit.serializer()), it) }.getOrNull() }.orEmpty()
+    fun habits(): List<Habit> = files.readJson(habitsPath, ListSerializer(Habit.serializer()), emptyList())
 
     fun save(habits: List<Habit>) = files.write(habitsPath, files.json.encodeToString(ListSerializer(Habit.serializer()), habits))
 
