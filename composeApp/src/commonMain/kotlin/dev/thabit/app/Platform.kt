@@ -16,6 +16,8 @@ class PlatformActions(
     val removableOldFolders: () -> List<String> = { emptyList() },
     /** Removes one such folder, after checking again; true when it was removed. */
     val removeOldFolder: (String) -> Boolean = { false },
+    /** Opens an installed app by its package id; false when it is not installed (or the platform cannot tell). */
+    val openInstalledApp: (String) -> Boolean = { false },
     /** Why the old folder is still in use, when the copy could not be verified. */
     val migrationMessage: String? = null,
 )

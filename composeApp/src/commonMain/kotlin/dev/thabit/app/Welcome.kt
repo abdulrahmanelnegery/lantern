@@ -53,7 +53,7 @@ fun TourScreen(store: ThabitStore, onDone: () -> Unit) {
         HorizontalPager(pager, Modifier.weight(1f).fillMaxWidth()) { page ->
             Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
                 when (page) {
-                    0 -> TourPage("Welcome to ${Brand.NAME}", "Notes, a journal, tasks and habits in one private app. Your Home shows how today is going and what is next.") 
+                    0 -> TourPage("Welcome to ${Brand.NAME}", "Habits, tasks and insights in one private app. Your Home shows how today is going and what is next.") 
                     1 -> {
                         TourPage("Your data is yours", "Everything is plain files in one folder: ${store.location}. No account, nothing sent anywhere. Open it in any editor, Obsidian or a sync tool.")
                         if (platform.allowVisibleFolder != null && !platform.visibleFolderOn) {
@@ -82,7 +82,7 @@ fun TourScreen(store: ThabitStore, onDone: () -> Unit) {
                             }
                         }
                     }
-                    else -> TourPage("Ready", "Swipe habits to tick them off, write a note in a tap, and look back on the Home page. You can open this tour again from About.")
+                    else -> TourPage("Ready", "Swipe habits to tick them off, add a task in a tap, and look back in Insights. You can open this tour again from About.")
                 }
             }
         }

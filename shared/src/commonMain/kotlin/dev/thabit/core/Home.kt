@@ -37,14 +37,6 @@ fun weekStrip(habits: List<Habit>, log: Map<String, Set<LocalDate>>, skips: Map<
     }
 }
 
-/** The last [days] moods ending [today], oldest first; a day without a mood is null. */
-fun moodSeries(mood: (LocalDate) -> Int?, today: LocalDate, days: Int = 14): List<Int?> =
-    (days - 1 downTo 0).map { mood(today.minus(it, DateTimeUnit.DAY)) }
-
-/** Earlier years' entries for today's month and day, newest year first. */
-fun onThisDay(entryDates: Collection<LocalDate>, today: LocalDate): List<LocalDate> =
-    entryDates.filter { it.monthNumber == today.monthNumber && it.dayOfMonth == today.dayOfMonth && it.year < today.year }.sortedDescending()
-
 /** Overdue tasks first (oldest first), then the ones due soonest, then undated ones by priority; done tasks never. */
 fun upcomingTasks(tasks: List<Task>, today: LocalDate, limit: Int = 6): List<Task> =
     tasks.filter { !it.done }

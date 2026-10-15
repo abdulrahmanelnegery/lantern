@@ -9,6 +9,10 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- Backup is off on purpose: Google Auto Backup would copy the private vault to the user's Google account. Export from Settings instead. -->
+
+    <!-- Lets the "moved to Athar" card on Home see whether Athar is installed, to open it instead of its download page. -->
+    <queries><package android:name="dev.athar.app" /></queries>
+
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
