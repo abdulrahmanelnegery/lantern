@@ -13,7 +13,7 @@ VERSION="$(sed -n 's/^val appVersion = "\(.*\)".*/\1/p' composeApp/build.gradle.
 : "${VERSION:?could not read versionName}"
 [ -n "${THABIT_KEYSTORE:-}" ] || echo "note: THABIT_KEYSTORE is not set, the APKs will be unsigned" >&2
 
-./gradlew --no-daemon :core:desktopTest :shared:desktopTest :feature-notes:desktopTest :feature-journal:desktopTest :feature-tasks:desktopTest :feature-habits:desktopTest :composeApp:desktopTest :composeApp:assembleRelease
+./gradlew --no-daemon :core:desktopTest :shared:desktopTest :feature-tasks:desktopTest :feature-habits:desktopTest :composeApp:desktopTest :composeApp:assembleRelease
 
 OUT="dist/$VERSION"
 rm -rf "$OUT"; mkdir -p "$OUT"

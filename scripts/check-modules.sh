@@ -24,5 +24,12 @@ for base in core ui; do
   fi
 done
 
+# Notes and journal moved to Athar in 0.9.0: nothing here may bring the modules or their packages back.
+for gone in feature-notes feature-journal; do
+  if [ -e "$gone" ]; then echo "$gone was removed (notes and journal live in Athar) but exists again"; bad=1; fi
+done
+hits="$(grep -rnE "^import dev\.thabit\.(notes|journal)[.;]|project\(\":feature-(notes|journal)\"" --include='*.kt' --include='*.kts' . | grep -v '/build/' || true)"
+if [ -n "$hits" ]; then echo "references to the removed notes or journal modules:"; echo "$hits"; bad=1; fi
+
 if [ "$bad" -ne 0 ]; then echo "module rules broken"; exit 1; fi
 echo "module rules ok"
