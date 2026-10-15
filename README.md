@@ -33,7 +33,7 @@ Thabit (ثابت, "steady") is an **Android** app today; Linux comes later. The 
 
 ## Languages
 
-English today. Arabic and right-to-left screens are being added; this line will say when they are in.
+English only today. Arabic and right-to-left screens are planned and are not in the app yet; this line will say when they are.
 
 ## Screenshots
 
@@ -41,7 +41,7 @@ Screenshots: coming with the next release.
 
 ## Download
 
-Get the files for your system from the [latest release](../../releases/latest). Each file has a matching `.sha256` checksum.
+Get the file for your phone from the [latest release](../../releases/latest). Each file has a matching `.sha256` checksum.
 
 | System | File |
 |---|---|
@@ -109,7 +109,16 @@ A feature depends only on `core` and `ui`, never on another feature; `scripts/ch
 
 ## Roadmap
 
-Widgets, sync between devices and more insight charts. Notes and the journal moved to their own app, Athar, in 0.9.0; the files in your vault's `notes/` and `journal/` folders stay untouched. Money tracking left Thabit and became its own app.
+Android today, Linux later. In this order:
+
+1. Reliability first: the open [audit issues](https://github.com/zimamlabs/thabit/issues?q=is%3Aissue+is%3Aopen+label%3Aaudit).
+2. Arabic and right-to-left: strings move to resources first, then the translation.
+3. The standard Zimam shell: side drawer, Settings in sections, colour themes and text size.
+4. Repeating tasks done right.
+5. Home screen widgets (today's habits, streak ring, next reminder).
+6. Sync between devices (later).
+
+Notes and the journal moved to their own app, Athar, in 0.9.0; the files in your vault's `notes/` and `journal/` folders stay untouched. Money tracking left Thabit and became its own app.
 
 ## Licence
 
