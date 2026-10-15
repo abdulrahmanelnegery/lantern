@@ -6,5 +6,5 @@ import dev.thabit.ui.*
 object Brand {
     const val NAME = "Thabit"
     const val MAKER = "Zimam"
-    const val VERSION = "0.8.0"
+    const val VERSION = "0.8.1"
 }
