@@ -14,6 +14,7 @@ import dev.thabit.core.Reminders
 import dev.thabit.core.Vault
 import dev.thabit.tasks.Recurrence
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
@@ -38,15 +39,38 @@ object ReminderAlarms {
     /** True when something has a reminder time, so the activity knows to ask for notification permission. */
     fun anyReminder(context: Context): Boolean = vault(context)?.let { Reminders.any(it.habits(), it.tasks()) } ?: false
 
+    private fun prefs(context: Context) = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+
+    private fun loadSnooze(p: android.content.SharedPreferences, zone: TimeZone): Reminder? {
+        val kind = p.getString("snoozeKind", null) ?: return null
+        val at = p.getLong("snoozeAt", 0).takeIf { it > 0 } ?: return null
+        return Reminder(Reminder.Kind.valueOf(kind), p.getString("snoozeRef", "") ?: "", p.getString("snoozeTitle", "") ?: "", Instant.fromEpochMilliseconds(at).toLocalDateTime(zone))
+    }
+
+    /**
+     * One scheduling pass: shows what came due since the previous pass (a Doze delay, a switched-off phone, two at the same minute),
+     * keeps a snooze across restarts, then sets the one alarm for the soonest reminder left. [snoozed] starts a new ten minute snooze.
+     */
     fun schedule(context: Context, snoozed: Reminder? = null) {
         val manager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, ReminderReceiver::class.java)
         manager.cancel(pending(context, 0, intent))
         val zone = TimeZone.currentSystemDefault()
         val now = Clock.System.now()
+        val nowLocal = now.toLocalDateTime(zone)
         val v = vault(context) ?: return
-        val next = snoozed?.let { it.copy(at = now.plus(kotlin.time.Duration.parse("${SNOOZE_MINUTES}m")).toLocalDateTime(zone)) }
-            ?: Reminders.upcoming(v.habits(), v.tasks(), v.habitLog(), v.habitSkips(), now.toLocalDateTime(zone)).firstOrNull() ?: return
+        val p = prefs(context)
+        snoozed?.let { s ->
+            val at = now.plus(kotlin.time.Duration.parse("${SNOOZE_MINUTES}m"))
+            p.edit().putString("snoozeKind", s.kind.name).putString("snoozeRef", s.refId).putString("snoozeTitle", s.title).putLong("snoozeAt", at.toEpochMilliseconds()).apply()
+        }
+        val lastPass = p.getLong("lastPass", 0).takeIf { it > 0 }?.let { Instant.fromEpochMilliseconds(it).toLocalDateTime(zone) }
+        val plan = Reminders.plan(v.habits(), v.tasks(), v.habitLog(), v.habitSkips(), nowLocal, lastPass, loadSnooze(p, zone))
+        plan.showNow.forEach { show(context, it.kind.name, it.refId, it.title) }
+        val edit = p.edit().putLong("lastPass", now.toEpochMilliseconds())
+        if (plan.snooze == null) edit.remove("snoozeKind").remove("snoozeAt")
+        edit.apply()
+        val next = plan.next ?: return
         intent.putExtra("kind", next.kind.name).putExtra("ref", next.refId).putExtra("title", next.title)
         val millis = next.at.toInstant(zone).toEpochMilliseconds()
         val exact = Build.VERSION.SDK_INT < Build.VERSION_CODES.S || manager.canScheduleExactAlarms()
@@ -83,11 +107,10 @@ object ReminderAlarms {
     }
 }
 
-/** Fires at a reminder: shows the notification, then sets the alarm for the next one. */
+/** Fires at a reminder: shows what came due and sets the alarm for the next one. */
 class ReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        val kind = intent.getStringExtra("kind"); val ref = intent.getStringExtra("ref"); val title = intent.getStringExtra("title")
-        if (kind != null && ref != null && title != null) ReminderAlarms.show(context, kind, ref, title)
+        // The scheduling pass shows everything that came due, this reminder included, then sets the next alarm.
         ReminderAlarms.schedule(context)
     }
 }
