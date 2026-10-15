@@ -30,6 +30,10 @@ object Onboarding {
 /** Short notes per version, taken from the changelog; shown once after an update. */
 object ReleaseNotes {
     private val notes: Map<String, List<String>> = mapOf(
+        "0.9.0" to listOf(
+            "Thabit is now habits, tasks and insights. Notes and the journal moved to Athar.",
+            "Your notes and journal files stay in your folder, untouched, and Athar can import them.",
+        ),
         "0.8.1" to listOf("A new app icon: a small cairn of stones, steady and balanced."),
         "0.8.0" to listOf(
             "Reminders for habits and tasks: a notification that stays until you press Done or Later.",
