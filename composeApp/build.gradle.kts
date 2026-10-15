@@ -7,6 +7,9 @@ plugins {
     alias(libs.plugins.compose.multiplatform)
 }
 
+// The one place the version lives for the app and the desktop package; Brand.VERSION and CHANGELOG are edited by hand.
+val appVersion = "0.8.1"
+
 kotlin {
     androidTarget()
     jvm("desktop")
@@ -54,7 +57,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 16
-        versionName = "0.8.1"
+        versionName = appVersion
     }
     signingConfigs {
         create("release") {
@@ -101,7 +104,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Deb)
             packageName = "thabit"
-            packageVersion = "0.6.1"
+            packageVersion = appVersion
             description = "Private notes, journal, tasks and habits in plain files"
             vendor = "Zimam"
             linux {
