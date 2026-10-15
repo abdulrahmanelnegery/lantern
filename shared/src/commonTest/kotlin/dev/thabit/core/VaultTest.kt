@@ -14,9 +14,6 @@ import dev.thabit.habits.HabitMark
 import dev.thabit.habits.habitStats
 import dev.thabit.habits.perfectDays
 import dev.thabit.habits.streak
-import dev.thabit.journal.JournalEntry
-import dev.thabit.journal.journalStreak
-import dev.thabit.notes.Note
 import dev.thabit.tasks.Task
 
 class VaultTest {
@@ -26,53 +23,9 @@ class VaultTest {
 
     private fun vault(clock: Clock = Fixed()) = Vault(FakeFileSystem(), "/v".toPath(), clock, kotlinx.datetime.TimeZone.UTC)
 
-    @Test fun frontmatterRoundTrips() {
-        val doc = Document(linkedMapOf("title" to "A: tricky \"title\"", "tags" to Frontmatter.formatList(listOf("a", "b c", "d,e"))), "Body\nline two\n")
-        val back = Frontmatter.parse(Frontmatter.write(doc))
-        assertEquals("A: tricky \"title\"", back.meta["title"])
-        assertEquals(listOf("a", "b c", "d,e"), back.list("tags"))
-        assertEquals("Body\nline two\n", back.body)
-    }
-
-    @Test fun textWithoutHeaderIsJustABody() {
-        val doc = Frontmatter.parse("# Hello\n\ntext")
-        assertTrue(doc.meta.isEmpty())
-        assertEquals("# Hello\n\ntext", doc.body)
-    }
-
     @Test fun csvHandlesQuotesCommasAndNewlines() {
         val rows = listOf(listOf("a", "b,c", "d \"q\""), listOf("x", "line\ntwo", ""))
         assertEquals(rows, Csv.parse(Csv.format(rows)))
-    }
-
-    @Test fun notesAreSavedRenamedAndTrashed() {
-        val v = vault()
-        val saved = v.saveNote(Note("", "First idea", "# First idea\n\nhello", "", "", listOf("work")))
-        assertEquals(1, v.notes().size)
-        assertEquals("work", v.notes().single().tags.single())
-        v.saveNote(saved.copy(title = "Renamed"))
-        assertEquals(1, v.notes().size, "a rename moves the file, it does not copy it")
-        assertEquals("Renamed", v.notes().single().title)
-        v.trashNote(saved.id)
-        assertTrue(v.notes().isEmpty())
-    }
-
-    @Test fun pinnedNotesComeFirst() {
-        val v = vault()
-        v.saveNote(Note("", "old", "x", "", ""))
-        v.saveNote(Note("", "pinned", "y", "", "", pinned = true))
-        assertEquals("pinned", v.notes().first().title)
-    }
-
-    @Test fun journalSavesMoodAndEmptyEntriesVanish() {
-        val v = vault()
-        val day = LocalDate(2026, 10, 14)
-        v.saveJournal(JournalEntry(day, "A good day.", 4, listOf("home")))
-        assertEquals(4, v.journal(day)?.mood)
-        assertEquals("A good day.", v.journal(day)?.body)
-        assertEquals(listOf(day), v.journalDates())
-        v.saveJournal(JournalEntry(day, "", null))
-        assertNull(v.journal(day))
     }
 
     @Test fun tasksRoundTripAsAMarkdownChecklist() {
@@ -115,8 +68,6 @@ class VaultTest {
 
     @Test fun searchFindsTasksAndHabitsOnly() {
         val v = vault()
-        v.saveNote(Note("", "Garden plan", "plant tomatoes in spring", "", ""))
-        v.saveJournal(JournalEntry(LocalDate(2026, 10, 14), "Bought tomatoes today", 3))
         v.saveTasks(listOf(Task("t1", "Water the tomatoes")))
         v.saveHabits(listOf(Habit("h1", "Eat a tomato a day")))
         val kinds = v.search("TOMATO").map { it.kind }.toSet()
@@ -124,9 +75,7 @@ class VaultTest {
         assertTrue(v.search("   ").isEmpty())
     }
 
-    @Test fun slugsAreSafe() {
-        assertEquals("hello-world", slugOf("  Hello, World!  "))
-        assertEquals("untitled", slugOf("???"))
+    @Test fun idsAreShortAndFileSafe() {
         assertEquals(8, newId().length)
     }
 }
@@ -212,9 +161,7 @@ class HabitMarksTest {
         assertTrue(v.habitSkips()["h1"].isNullOrEmpty())
     }
 
-    @Test fun journalAndPerfectDayStreaks() {
-        val days = setOf(13, 12, 11, 9).map { LocalDate(2026, 10, it) }.toSet()
-        assertEquals(3, journalStreak(days, today), "today empty does not break it")
+    @Test fun perfectDayStreaks() {
         val habits = listOf(Habit("a", "A"), Habit("b", "B"))
         val done = mapOf("a" to setOf(13, 12, 11).map { LocalDate(2026, 10, it) }.toSet(), "b" to setOf(13, 11).map { LocalDate(2026, 10, it) }.toSet())
         val skipped = mapOf("b" to setOf(LocalDate(2026, 10, 12)))

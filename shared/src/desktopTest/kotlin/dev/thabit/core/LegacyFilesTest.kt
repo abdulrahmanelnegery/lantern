@@ -72,4 +72,9 @@ class LegacyFilesTest {
     @Test fun aVaultWithoutThemHasNoLegacyFiles() {
         assertTrue(!Vault(fs, root).hasNotesOrJournalFiles())
     }
+
+    @Test fun openingAFreshVaultDoesNotCreateTheOldFolders() {
+        Vault(fs, root).let { it.saveTasks(listOf(Task("t", "x"))); it.settings() }
+        assertTrue(!fs.exists(root / "notes") && !fs.exists(root / "journal"))
+    }
 }

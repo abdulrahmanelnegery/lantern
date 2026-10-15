@@ -15,8 +15,6 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":shared"))
             implementation(project(":ui"))
-            implementation(project(":feature-notes"))
-            implementation(project(":feature-journal"))
             implementation(project(":feature-tasks"))
             implementation(project(":feature-habits"))
             implementation(compose.runtime)
@@ -102,7 +100,7 @@ compose.desktop {
             targetFormats(TargetFormat.Deb)
             packageName = "thabit"
             packageVersion = "0.6.1"
-            description = "Private notes, journal, tasks and habits in plain files"
+            description = "Habits, tasks and insights in plain files"
             vendor = "Zimam"
             linux {
                 menuGroup = "Office"

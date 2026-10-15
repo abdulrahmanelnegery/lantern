@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "thabit"
-include(":core", ":ui", ":feature-notes", ":feature-journal", ":feature-tasks", ":feature-habits", ":shared", ":composeApp")
+include(":core", ":ui", ":feature-tasks", ":feature-habits", ":shared", ":composeApp")

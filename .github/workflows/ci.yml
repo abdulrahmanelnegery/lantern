@@ -27,7 +27,7 @@ jobs:
       - name: Module rules
         run: scripts/check-modules.sh
       - name: Vault tests
-        run: ./gradlew :shared:desktopTest :feature-notes:desktopTest :feature-journal:desktopTest :feature-tasks:desktopTest :feature-habits:desktopTest
+        run: ./gradlew :shared:desktopTest :feature-tasks:desktopTest :feature-habits:desktopTest
       - name: Android debug build
         run: ./gradlew :composeApp:assembleDebug
       - name: Linux package

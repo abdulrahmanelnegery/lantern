@@ -6,10 +6,6 @@ import kotlinx.datetime.TimeZone
 import dev.thabit.habits.Habit
 import dev.thabit.habits.HabitMark
 import dev.thabit.habits.HabitsRepository
-import dev.thabit.journal.JournalEntry
-import dev.thabit.journal.JournalRepository
-import dev.thabit.notes.Note
-import dev.thabit.notes.NotesRepository
 import dev.thabit.tasks.Task
 import dev.thabit.tasks.TasksRepository
 import okio.FileSystem
@@ -19,11 +15,10 @@ import okio.Path
  * A Thabit vault: one folder of plain files, readable in any editor.
  *
  * ```
- * notes/<title>-<id>.md            Markdown with a small header (id, title, tags, dates)
- * journal/<year>/<date>.md         one file a day: mood in the header, text below
  * tasks/Tasks.md                   a Markdown checklist
  * habits/habits.json, log.csv      what you track, and the days you did it
  * .lantern/                        settings and the trash
+ * notes/, journal/                  left by older versions; Thabit never reads, writes or deletes them (see docs/vault-format.md)
  * ```
  */
 class Vault(
@@ -33,8 +28,6 @@ class Vault(
     zone: TimeZone = TimeZone.currentSystemDefault(),
 ) {
     val files = VaultFiles(fs, root, clock, zone)
-    val notesRepo = NotesRepository(files)
-    val journalRepo = JournalRepository(files)
     val tasksRepo = TasksRepository(files)
     val habitsRepo = HabitsRepository(files)
 
@@ -50,16 +43,7 @@ class Vault(
 
     fun saveSettings(settings: AppSettings) = files.write(settingsPath, files.json.encodeToString(AppSettings.serializer(), settings))
 
-    // ---- the features, kept under their old names so callers do not change ------------------
-
-    fun notes(): List<Note> = notesRepo.notes()
-    fun saveNote(note: Note): Note = notesRepo.save(note)
-    fun trashNote(id: String) = notesRepo.trash(id)
-
-    fun journal(date: LocalDate): JournalEntry? = journalRepo.entry(date)
-    fun saveJournal(entry: JournalEntry) = journalRepo.save(entry)
-    fun journalDates(): List<LocalDate> = journalRepo.dates()
-    fun journalEntries(days: Int): List<JournalEntry> = journalRepo.entries(days)
+    // ---- the features, kept under their short names so callers do not change ----------------
 
     fun tasks(): List<Task> = tasksRepo.tasks()
     fun saveTasks(tasks: List<Task>) = tasksRepo.save(tasks)
