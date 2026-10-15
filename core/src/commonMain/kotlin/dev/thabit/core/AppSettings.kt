@@ -17,4 +17,6 @@ data class AppSettings(
     val lastSeenVersion: String = "",
     /** True once the first-install tour was finished or skipped. */
     val tourDone: Boolean = false,
+    /** True once the one-time "Notes and journal moved to Athar" card was dismissed. */
+    val atharNoticeDismissed: Boolean = false,
 )

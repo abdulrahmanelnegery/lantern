@@ -46,9 +46,7 @@ import dev.thabit.habits.streak
 
 private enum class Period(val label: String) { Day("Day"), Week("Week"), Month("Month") }
 
-private val moodFaces = listOf("😞", "😕", "😐", "🙂", "😄")
-
-/** The whole picture for a day, a week or a month: what you wrote, did and kept up. */
+/** A day, a week or a month in numbers: the tasks you finished and the habits you kept. */
 @Composable
 fun InsightsScreen(store: ThabitStore, onOpenHabit: (String) -> Unit) {
     var period by remember { mutableStateOf(Period.Week) }
@@ -62,8 +60,8 @@ fun InsightsScreen(store: ThabitStore, onOpenHabit: (String) -> Unit) {
             Period.Month -> today.minus(back, DateTimeUnit.MONTH).let { m -> LocalDate(m.year, m.monthNumber, 1) to LocalDate(m.year, m.monthNumber, 1).plus(1, DateTimeUnit.MONTH).minus(1, DateTimeUnit.DAY) }
         }.let { (a, b) -> a to minOf(b, today) }
     }
-    val days = remember(from, to, store.notesState.notes, store.tasksState.tasks, store.habitsState.log, store.journalState.entry(store.today)) {
-        daySummaries(from, to, store.journalState::entry, store.notesState.notes, store.tasksState.tasks, store.habitsState.log)
+    val days = remember(from, to, store.tasksState.tasks, store.habitsState.log) {
+        daySummaries(from, to, store.tasksState.tasks, store.habitsState.log)
     }
     val sum = totals(days)
 
@@ -78,29 +76,22 @@ fun InsightsScreen(store: ThabitStore, onOpenHabit: (String) -> Unit) {
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Tile2("Journal", "${sum.journalDays}", "of ${sum.days} days", Modifier.weight(1f))
-            Tile2("Words", "${sum.words}", "written", Modifier.weight(1f))
-            Tile2("Mood", sum.moodAverage?.let { moodFaces[(it.toInt() - 1).coerceIn(0, 4)] + " %.1f".format(it) } ?: "–", "average", Modifier.weight(1f))
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            Tile2("Notes", "${sum.notes}", "written", Modifier.weight(1f))
             Tile2("Tasks", "${sum.tasks}", "done", Modifier.weight(1f))
             Tile2("Habits", "${sum.habitChecks}", "kept", Modifier.weight(1f))
         }
 
         if (days.size > 1) Panel {
-            Text("Mood and habits by day", style = MaterialTheme.typography.titleSmall)
+            Text("Habits by day", style = MaterialTheme.typography.titleSmall)
             val topHabits = (days.maxOfOrNull { it.habitsDone } ?: 0).coerceAtLeast(1)
             Row(Modifier.fillMaxWidth().height(110.dp), horizontalArrangement = Arrangement.spacedBy(if (days.size > 14) 2.dp else 6.dp), verticalAlignment = Alignment.Bottom) {
                 days.forEach { d ->
                     Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
-                        if (days.size <= 14) Text(d.mood?.let { moodFaces[(it - 1).coerceIn(0, 4)] } ?: " ", style = MaterialTheme.typography.labelSmall)
                         Box(Modifier.fillMaxWidth().height((70f * d.habitsDone / topHabits).coerceAtLeast(2f).dp).clip(RoundedCornerShape(4.dp)).background(MaterialTheme.colorScheme.primary.copy(alpha = if (d.habitsDone > 0) 0.9f else 0.25f)))
                         if (days.size <= 14) Text(d.date.dayOfMonth.toString(), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
-            Text("Bars are habits done; faces are the day's mood.", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Each bar is the number of habits kept that day.", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
 
         val habits = store.habitsState.habits.filter { !it.archived }
@@ -124,7 +115,7 @@ fun InsightsScreen(store: ThabitStore, onOpenHabit: (String) -> Unit) {
 
         SectionTitle("History")
         val active = days.filter { !it.isEmpty }.asReversed()
-        if (active.isEmpty()) EmptyHint("Nothing recorded", "Days with a journal entry, notes, tasks or habits show up here.")
+        if (active.isEmpty()) EmptyHint("Nothing recorded", "Days with finished tasks or kept habits show up here.")
         active.forEach { d -> DayRow(d) }
     }
 }
@@ -133,12 +124,9 @@ fun InsightsScreen(store: ThabitStore, onOpenHabit: (String) -> Unit) {
 private fun DayRow(d: DaySummary) {
     Panel {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(d.mood?.let { moodFaces[(it - 1).coerceIn(0, 4)] } ?: "·", style = MaterialTheme.typography.titleLarge)
             Text(prettyDate(d.date), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
         }
         val parts = listOfNotNull(
-            d.journalWords.takeIf { it > 0 }?.let { "$it words written" },
-            d.notesCreated.takeIf { it > 0 }?.let { "$it ${if (it == 1) "note" else "notes"}" },
             d.tasksDone.takeIf { it > 0 }?.let { "$it ${if (it == 1) "task" else "tasks"} done" },
             d.habitsDone.takeIf { it > 0 }?.let { "$it ${if (it == 1) "habit" else "habits"} kept" },
         )

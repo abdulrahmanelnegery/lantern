@@ -75,7 +75,7 @@ fun SettingsScreen(store: ThabitStore) {
         Header("Your vault")
         Text(store.location, Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyLarge)
         Text(
-            "${store.notesState.notes.size} notes, ${store.tasksState.tasks.size} tasks, ${store.habitsState.habits.count { !it.archived }} habits. " +
+            "${store.tasksState.tasks.size} tasks, ${store.habitsState.habits.count { !it.archived }} habits. " +
                 "Everything is plain files in this folder, so any editor, Obsidian or a sync tool can read it.",
             Modifier.padding(horizontal = 24.dp, vertical = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -89,7 +89,7 @@ fun SettingsScreen(store: ThabitStore) {
         Action(Icons.Rounded.FolderSpecial, "Show the tour again", "The short introduction from the first start.") { store.tourOpen = true }
         Header("About")
         Text("${Brand.NAME} ${Brand.VERSION}  ·  by ${Brand.MAKER}", Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyLarge)
-        Text("Private notes, journal, tasks and habits. MIT licence.", Modifier.padding(horizontal = 24.dp, vertical = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Habits, tasks and insights in plain files. MIT licence.", Modifier.padding(horizontal = 24.dp, vertical = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -107,7 +107,7 @@ private fun OldFolders(platform: PlatformActions) {
         androidx.compose.material3.AlertDialog(
             onDismissRequest = { asking = null },
             title = { Text("Remove the old folder?") },
-            text = { Text("$path will be deleted after Thabit checks once more that every file in it is also in your Zimam folder. This cannot be undone.") },
+            text = { Text("$path will be deleted after Thabit checks once more that every file in it is also in your Zimam folder. This includes any notes and journal files in it, which Athar can import. This cannot be undone.") },
             confirmButton = { androidx.compose.material3.TextButton(onClick = { platform.removeOldFolder(path); asking = null; tick++ }) { Text("Remove") } },
             dismissButton = { androidx.compose.material3.TextButton(onClick = { asking = null }) { Text("Keep it") } },
         )

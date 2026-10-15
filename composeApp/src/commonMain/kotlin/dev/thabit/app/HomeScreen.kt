@@ -6,17 +6,12 @@ import dev.thabit.core.ReleaseNotes
 import dev.thabit.core.Progress
 import dev.thabit.core.dayProgress
 import dev.thabit.core.daySummaries
-import dev.thabit.core.greetingFor
-import dev.thabit.core.moodSeries
-import dev.thabit.core.newId
-import dev.thabit.core.onThisDay
 import dev.thabit.core.totals
+import dev.thabit.core.greetingFor
+import dev.thabit.core.newId
 import dev.thabit.core.upcomingTasks
-import dev.thabit.core.weekOf
 import dev.thabit.core.weekStrip
 import dev.thabit.habits.streak
-import dev.thabit.journal.JournalPanel
-import dev.thabit.journal.journalStreak
 import dev.thabit.tasks.Task
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -36,20 +31,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AutoStories
 import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.Description
-import androidx.compose.material.icons.rounded.EmojiEmotions
-import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Loop
-import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material.icons.rounded.Today
 import androidx.compose.material.icons.rounded.TrendingUp
 import androidx.compose.material.icons.rounded.NewReleases
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -64,21 +57,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.minus
 
 /** The Home cards the user can reorder or hide in Settings; the hero header on top is always there. */
 val TodayCards = listOf(
     "capture" to "Quick add", "week" to "Your week", "habits" to "Habits today", "tasks" to "Tasks",
-    "mood" to "Mood, last 14 days", "notes" to "Notes", "onthisday" to "On this day", "weekly" to "This week in numbers",
-    "quote" to "Affirmation and tip", "streaks" to "Streaks", "journal" to "Journal", "whatsnew" to "What's new",
+    "weekly" to "This week in numbers", "quote" to "Affirmation and tip", "streaks" to "Streaks", "whatsnew" to "What's new",
 )
 
 fun todayOrder(settings: dev.thabit.core.AppSettings): List<String> {
@@ -86,7 +78,7 @@ fun todayOrder(settings: dev.thabit.core.AppSettings): List<String> {
     return (settings.homeOrder.filter { it in ids } + ids).distinct()
 }
 
-/** The Home page: today's progress, your week, mood, quick add, tasks, notes and a look back, as cards in the order set in Settings. */
+/** The Home page: today's progress, your week, quick add, habits and tasks, as cards in the order set in Settings. */
 @Composable
 fun HomeScreen(store: ThabitStore, nav: Nav) {
     val today = store.today
@@ -97,25 +89,19 @@ fun HomeScreen(store: ThabitStore, nav: Nav) {
 
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Hero(store, progress)
+        if (store.showAtharNotice) AtharNoticeCard(store)
         todayOrder(store.settings).filter { it !in store.settings.homeHidden }.forEach { id ->
             when (id) {
-                "capture" -> QuickAdd(
-                    onNote = { nav.go(Section.Notes) }, onTask = { newTask = true },
-                    onJournal = { nav.screen = Screen.Journal }, onHabit = { nav.go(Section.Habits) },
-                )
+                "capture" -> QuickAdd(onTask = { newTask = true }, onHabit = { nav.go(Section.Habits) })
                 "week" -> WeekCard(store)
                 "habits" -> HabitsCard(store)
                 "tasks" -> TasksCard(store, nav)
-                "mood" -> MoodCard(store)
-                "notes" -> NotesCard(store, nav)
-                "onthisday" -> OnThisDayCard(store, nav)
                 "weekly" -> WeeklyCard(store)
                 "quote" -> HomeCard("Today", Icons.Rounded.Today, onClick = { shuffle++ }) {
                     Text(Quotes.affirmation(today, shuffle), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                     Text(Quotes.tip(today, shuffle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 "streaks" -> StreaksCard(store)
-                "journal" -> JournalPanel(store.journalState, today)
                 "whatsnew" -> HomeCard("What's new in ${Brand.VERSION}", Icons.Rounded.NewReleases) {
                     ReleaseNotes.forVersion(Brand.VERSION).take(3).forEach { Text("•  $it", style = MaterialTheme.typography.bodyMedium) }
                 }
@@ -183,12 +169,10 @@ fun ProgressRing(fraction: Float, size: androidx.compose.ui.unit.Dp, color: Colo
 }
 
 @Composable
-private fun QuickAdd(onNote: () -> Unit, onTask: () -> Unit, onJournal: () -> Unit, onHabit: () -> Unit) {
+private fun QuickAdd(onTask: () -> Unit, onHabit: () -> Unit) {
     HomeCard("Quick add", Icons.Rounded.TrendingUp) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            QuickButton(Icons.Rounded.Description, "Note", onNote)
             QuickButton(Icons.Rounded.CheckCircle, "Task", onTask)
-            QuickButton(Icons.Rounded.AutoStories, "Journal", onJournal)
             QuickButton(Icons.Rounded.Loop, "Habit", onHabit)
         }
     }
@@ -264,69 +248,15 @@ private fun TasksCard(store: ThabitStore, nav: Nav) {
 }
 
 @Composable
-private fun MoodCard(store: ThabitStore) {
-    val today = store.today
-    val dates = store.journalState.dates()
-    val series = remember(dates, today, store.journalState.entry(today)) { moodSeries({ store.journalState.entry(it)?.mood }, today) }
-    val moods = series.filterNotNull()
-    HomeCard("Mood, last 14 days", Icons.Rounded.EmojiEmotions, onClick = { /* the journal records it */ }) {
-        if (moods.isEmpty()) { Text("Add a mood to your journal entries and it shows up here.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant); return@HomeCard }
-        val line = MaterialTheme.colorScheme.primary
-        val grid = MaterialTheme.colorScheme.outlineVariant
-        Canvas(Modifier.fillMaxWidth().height(72.dp)) {
-            val stepX = size.width / (series.size - 1).coerceAtLeast(1)
-            fun y(m: Int) = size.height - (m - 1) / 4f * size.height * 0.84f - size.height * 0.08f
-            for (m in 1..5 step 2) drawLine(grid, Offset(0f, y(m)), Offset(size.width, y(m)), 1f)
-            val path = Path()
-            var started = false
-            series.forEachIndexed { i, m -> if (m != null) { val p = Offset(i * stepX, y(m)); if (!started) { path.moveTo(p.x, p.y); started = true } else path.lineTo(p.x, p.y) } }
-            drawPath(path, line, style = Stroke(4f, cap = StrokeCap.Round, join = StrokeJoin.Round))
-            series.forEachIndexed { i, m -> if (m != null) drawCircle(line, 6f, Offset(i * stepX, y(m))) }
-        }
-        Text("Average ${"%.1f".format(moods.average())} of 5 over ${moods.size} ${if (moods.size == 1) "entry" else "entries"}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-}
-
-@Composable
-private fun NotesCard(store: ThabitStore, nav: Nav) {
-    val notes = store.notesState.notes.take(4)
-    if (notes.isEmpty()) return
-    HomeCard("Notes", Icons.Rounded.Description, onClick = { nav.go(Section.Notes) }) {
-        notes.forEach { n ->
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (n.pinned) Icon(Icons.Rounded.PushPin, "Pinned", Modifier.size(16.dp), tint = MaterialTheme.colorScheme.primary)
-                Text(n.title.ifBlank { "Untitled" }, Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(n.updated.take(10), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-        }
-    }
-}
-
-@Composable
-private fun OnThisDayCard(store: ThabitStore, nav: Nav) {
-    val dates = onThisDay(store.journalState.dates(), store.today)
-    if (dates.isEmpty()) return
-    HomeCard("On this day", Icons.Rounded.History, onClick = { nav.screen = Screen.Journal }) {
-        dates.take(2).forEach { d ->
-            val e = store.journalState.entry(d) ?: return@forEach
-            Column {
-                Text("${d.year}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
-                Text(e.body.trim().lineSequence().firstOrNull { it.isNotBlank() } ?: "(no text)", style = MaterialTheme.typography.bodyMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
-            }
-        }
-    }
-}
-
-@Composable
 private fun WeeklyCard(store: ThabitStore) {
     val today = store.today
-    val (monday, _) = weekOf(today)
-    val sums = remember(today, store.notesState.notes, store.tasksState.tasks, store.habitsState.log, store.journalState.dates()) {
-        totals(daySummaries(monday, today, { store.journalState.entry(it) }, store.notesState.notes, store.tasksState.tasks, store.habitsState.log))
+    val monday = today.minus(today.dayOfWeek.ordinal, DateTimeUnit.DAY)
+    val sums = remember(today, store.tasksState.tasks, store.habitsState.log) {
+        totals(daySummaries(monday, today, store.tasksState.tasks, store.habitsState.log))
     }
     HomeCard("This week in numbers", Icons.Rounded.TrendingUp) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Stat("Words written", sums.words.toString()); Stat("Habits kept", sums.habitChecks.toString()); Stat("Tasks done", sums.tasks.toString()); Stat("Notes", sums.notes.toString())
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Stat("Habits kept", sums.habitChecks.toString()); Stat("Tasks done", sums.tasks.toString())
         }
     }
 }
@@ -339,7 +269,7 @@ private fun Stat(label: String, value: String) {
     }
 }
 
-/** The longest running habit streak, how many of today's habits are done, and the days in a row with a journal entry. */
+/** The longest running habit streak and how many of today's habits are done. */
 @Composable
 private fun StreaksCard(store: ThabitStore) {
     val today = store.today
@@ -347,11 +277,26 @@ private fun StreaksCard(store: ThabitStore) {
     val todays = active.filter { it.days.isEmpty() || today.dayOfWeek.ordinal + 1 in it.days }
     val best = active.maxOfOrNull { streak(it, store.habitsState.log[it.id].orEmpty(), today, store.habitsState.skips[it.id].orEmpty()) } ?: 0
     val doneToday = todays.count { today in store.habitsState.log[it.id].orEmpty() }
-    val journalDays = remember(store.journalState.entry(today), today) { store.journalState.dates().toSet() }
-    val j = journalStreak(journalDays, today)
     HomeCard("Streaks", Icons.Rounded.TrendingUp) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Stat("Best streak", "$best ${if (best == 1) "day" else "days"}"); Stat("Habits today", "$doneToday of ${todays.size}"); Stat("Journal", "$j ${if (j == 1) "day" else "days"}")
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Stat("Best streak", "$best ${if (best == 1) "day" else "days"}"); Stat("Habits today", "$doneToday of ${todays.size}")
+        }
+    }
+}
+
+private const val ATHAR_PACKAGE = "dev.athar.app"
+private const val ATHAR_RELEASES = "https://github.com/zimamlabs/athar/releases"
+
+/** Shown once to people whose vault has notes or journal files: those moved to Athar, and Thabit leaves the files alone. */
+@Composable
+private fun AtharNoticeCard(store: ThabitStore) {
+    val platform = LocalPlatform.current
+    val uri = LocalUriHandler.current
+    HomeCard("Notes and journal moved to Athar", Icons.Rounded.NewReleases) {
+        Text("Thabit is now for habits, tasks and insights. Your notes and journal stay in your Thabit folder untouched, and Athar can import them.", style = MaterialTheme.typography.bodyMedium)
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)) {
+            TextButton(onClick = { store.saveSettings(store.settings.copy(atharNoticeDismissed = true)) }) { Text("Not now") }
+            Button(onClick = { if (!platform.openInstalledApp(ATHAR_PACKAGE)) uri.openUri(ATHAR_RELEASES) }) { Text("Open Athar") }
         }
     }
 }

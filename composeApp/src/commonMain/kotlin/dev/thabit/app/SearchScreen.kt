@@ -11,9 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AutoStories
 import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.Loop
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,32 +28,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
-/** One box that searches notes, journal entries and tasks. */
+/** One box that searches tasks and habits. */
 @Composable
 fun SearchScreen(store: ThabitStore, nav: Nav) {
     var query by remember { mutableStateOf("") }
-    val hits = remember(query, store.notesState.notes, store.tasksState.tasks, store.journalState.entry(store.today)) { store.vault.search(query) }
+    val hits = remember(query, store.tasksState.tasks, store.habitsState.habits) { store.vault.search(query) }
     Column(Modifier.fillMaxSize()) {
         OutlinedTextField(
-            query, { query = it }, singleLine = true, placeholder = { Text("Search notes, journal and tasks") },
+            query, { query = it }, singleLine = true, placeholder = { Text("Search tasks and habits") },
             leadingIcon = { Icon(Icons.Rounded.Search, null) },
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
             shape = androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
         )
-        if (query.isBlank()) EmptyHint("Search everything", "Type a word to look through your notes, journal and tasks at once.")
+        if (query.isBlank()) EmptyHint("Search everything", "Type a word to look through your tasks and habits at once.")
         else if (hits.isEmpty()) EmptyHint("Nothing found", "Try another word.")
         LazyColumn(Modifier.padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(hits) { h ->
                 Panel(onClick = {
-                    when (h.kind) {
-                        "note" -> nav.go(Section.Notes)
-                        "task" -> nav.go(Section.Tasks)
-                        else -> nav.screen = Screen.Journal
-                    }
+                    if (h.kind == "habit") { nav.go(Section.Habits); nav.habitId = h.id } else nav.go(Section.Tasks)
                 }) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Icon(
-                            when (h.kind) { "note" -> Icons.Rounded.Description; "task" -> Icons.Rounded.CheckCircle; else -> Icons.Rounded.AutoStories },
+                            if (h.kind == "habit") Icons.Rounded.Loop else Icons.Rounded.CheckCircle,
                             null, tint = MaterialTheme.colorScheme.primary,
                         )
                         Column(Modifier.weight(1f)) {

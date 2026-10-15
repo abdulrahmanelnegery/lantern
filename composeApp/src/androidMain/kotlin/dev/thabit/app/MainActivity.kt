@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
             visibleFolderOn = Build.VERSION.SDK_INT < 30 || Environment.isExternalStorageManager(),
             removableOldFolders = { removable() },
             removeOldFolder = { removeOld(it) },
+            openInstalledApp = { id -> packageManager.getLaunchIntentForPackage(id)?.let { startActivity(it); true } ?: false },
             migrationMessage = migrationMessage,
         )
         // Reminders open the same vault from their receivers, so remember where it is.
