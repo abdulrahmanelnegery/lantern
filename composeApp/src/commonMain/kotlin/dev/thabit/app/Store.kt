@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dev.thabit.core.AppSettings
+import dev.thabit.core.SettingsRepository
 import dev.thabit.core.Vault
 import dev.thabit.habits.HabitsState
 import dev.thabit.tasks.TasksState
@@ -13,7 +14,8 @@ class ThabitStore(val vault: Vault, val location: String) {
     val tasksState = TasksState(vault.tasksRepo)
     val habitsState = HabitsState(vault.habitsRepo)
 
-    var settings by mutableStateOf(vault.settings())
+    private val settingsRepo = SettingsRepository(vault)
+    var settings by mutableStateOf(settingsRepo.current)
         private set
     var today by mutableStateOf(vault.today())
         private set
@@ -26,7 +28,7 @@ class ThabitStore(val vault: Vault, val location: String) {
     /** Reads everything again (the vault may have changed on disk, or the date rolled over). */
     fun reload() {
         tasksState.reload(); habitsState.reload()
-        today = vault.today(); settings = vault.settings(); hasNotesOrJournalFiles = vault.hasNotesOrJournalFiles()
+        today = vault.today(); settings = settingsRepo.reload(); hasNotesOrJournalFiles = vault.hasNotesOrJournalFiles()
     }
 
     /**
@@ -41,5 +43,5 @@ class ThabitStore(val vault: Vault, val location: String) {
     /** Set to open the first-install tour again from Settings or About. */
     var tourOpen by mutableStateOf(false)
 
-    fun saveSettings(value: AppSettings) { vault.saveSettings(value); settings = value }
+    fun saveSettings(value: AppSettings) { settings = settingsRepo.update { value } }
 }

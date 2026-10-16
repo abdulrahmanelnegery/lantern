@@ -8,6 +8,11 @@ import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.thabit.core.AppSettings
@@ -35,7 +40,7 @@ class Palette(val id: String, val label: String, val swatch: Long, private val l
 val Palettes = listOf(
     Palette(
         "zimam", "Zimam", 0xFF5A1F,
-        longArrayOf(0xE5481A, 0xFFFFFF, 0xFFDDD0, 0x3A0E00, 0x6B5B4B, 0x4F5F7A, 0xFFF8F0, 0xFFFFFF, 0xF6ECDF, 0x1A1613, 0x5E5A52, 0xE2D6C4),
+        longArrayOf(0xD63F12, 0xFFFFFF, 0xFFDDD0, 0x3A0E00, 0x6B5B4B, 0x4F5F7A, 0xFFF8F0, 0xFFFFFF, 0xF6ECDF, 0x1A1613, 0x5E5A52, 0xE2D6C4),
         longArrayOf(0xFF5A1F, 0x1A0A02, 0x4A1D0B, 0xFFDDD0, 0xD9CDB8, 0xA9B8D0, 0x0F0F0F, 0x1A1613, 0x241E19, 0xF5F1E8, 0xA9A59B, 0x3A332D),
     ),
     Palette(
@@ -67,12 +72,26 @@ val Palettes = listOf(
 
 fun paletteOf(id: String): Palette = Palettes.firstOrNull { it.id == id } ?: Palettes.first()
 
+/** Font scale for each text size step: small, normal, large, largest. */
+val textScales = floatArrayOf(0.88f, 1f, 1.15f, 1.3f)
+
+/** True when the Compact density is on; screens read [rowGap] and [gutter] instead of the flag. */
+val LocalCompact = compositionLocalOf { false }
+val rowGap: Dp @Composable get() = if (LocalCompact.current) 8.dp else 12.dp
+val gutter: Dp @Composable get() = if (LocalCompact.current) 16.dp else 20.dp
+
 @Composable
 fun ThabitTheme(settings: AppSettings = AppSettings(), content: @Composable () -> Unit) {
     val dark = when (settings.mode) { "dark" -> true; "light" -> false; else -> isSystemInDarkTheme() }
-    MaterialTheme(
-        colorScheme = paletteOf(settings.palette).scheme(dark),
-        shapes = Shapes(small = RoundedCornerShape(10.dp), medium = RoundedCornerShape(16.dp), large = RoundedCornerShape(28.dp)),
-        content = content,
-    )
+    val density = LocalDensity.current
+    CompositionLocalProvider(
+        LocalDensity provides Density(density.density, density.fontScale * textScales[settings.textSize.coerceIn(0, 3)]),
+        LocalCompact provides (settings.density == "compact"),
+    ) {
+        MaterialTheme(
+            colorScheme = paletteOf(settings.palette).scheme(dark),
+            shapes = Shapes(small = RoundedCornerShape(10.dp), medium = RoundedCornerShape(16.dp), large = RoundedCornerShape(28.dp)),
+            content = content,
+        )
+    }
 }
